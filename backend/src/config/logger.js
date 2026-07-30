@@ -12,19 +12,21 @@ const consoleFormat = combine(
   printf(({ level, message, timestamp: ts, stack }) => `${ts} [${level}]: ${stack || message}`)
 );
 
-const fileRotateTransport = new winston.transports.DailyRotateFile({
-  filename: path.join('logs', 'roxaval-%DATE%.log'),
-  datePattern: 'YYYY-MM-DD',
-  maxSize: '20m',
-  maxFiles: '14d',
-  format: combine(timestamp(), errors({ stack: true }), json()),
-});
+// Vercel's serverless filesystem is read-only outside /tmp, so file
+// transports (which mkdir 'logs/' on disk) can't run there. Vercel already
+// captures console output in its own Runtime Logs, so console-only is
+// sufficient in that environment.
+const transports = [new winston.transports.Console({ format: consoleFormat })];
 
-const logger = winston.createLogger({
-  level: env.LOG_LEVEL,
-  transports: [
-    new winston.transports.Console({ format: consoleFormat }),
-    fileRotateTransport,
+if (!process.env.VERCEL) {
+  transports.push(
+    new winston.transports.DailyRotateFile({
+      filename: path.join('logs', 'roxaval-%DATE%.log'),
+      datePattern: 'YYYY-MM-DD',
+      maxSize: '20m',
+      maxFiles: '14d',
+      format: combine(timestamp(), errors({ stack: true }), json()),
+    }),
     new winston.transports.DailyRotateFile({
       filename: path.join('logs', 'error-%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
@@ -32,8 +34,13 @@ const logger = winston.createLogger({
       maxSize: '20m',
       maxFiles: '30d',
       format: combine(timestamp(), errors({ stack: true }), json()),
-    }),
-  ],
+    })
+  );
+}
+
+const logger = winston.createLogger({
+  level: env.LOG_LEVEL,
+  transports,
   exitOnError: false,
 });
 
