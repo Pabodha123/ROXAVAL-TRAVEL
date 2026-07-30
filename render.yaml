@@ -1,0 +1,86 @@
+services:
+  - type: web
+    name: roxaval-backend
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: API_PREFIX
+        value: /api/v1
+      - key: CLIENT_URL
+        sync: false
+      - key: ADMIN_URL
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 30d
+      - key: JWT_COOKIE_EXPIRES_IN
+        value: 30
+      - key: BCRYPT_SALT_ROUNDS
+        value: 12
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: COMPANY_NAME
+        value: Roxaval Travels
+      - key: COMPANY_ADDRESS
+        sync: false
+      - key: COMPANY_PHONE
+        sync: false
+      - key: COMPANY_EMAIL
+        sync: false
+      - key: COMPANY_WEBSITE
+        sync: false
+      - key: WHATSAPP_BUSINESS_NUMBER
+        sync: false
+      - key: BANK_NAME
+        sync: false
+      - key: BANK_ACCOUNT_NAME
+        sync: false
+      - key: BANK_ACCOUNT_NUMBER
+        sync: false
+      - key: BANK_BRANCH
+        sync: false
+      - key: BANK_SWIFT
+        sync: false
+      - key: MAX_FILE_UPLOAD_MB
+        value: 5
+      - key: UPLOAD_RECEIPTS_DIR
+        value: uploads/receipts
+      - key: UPLOAD_DOCUMENTS_DIR
+        value: uploads/documents
+      - key: RATE_LIMIT_WINDOW_MIN
+        value: 15
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 300
+      - key: LOG_LEVEL
+        value: info
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_MODEL
+        value: claude-sonnet-5
+    disk:
+      name: uploads
+      mountPath: /opt/render/project/src/backend/uploads
+      sizeGB: 1
