@@ -5,21 +5,9 @@ import { useTranslation } from 'react-i18next';
 import {
   ArrowRightIcon,
   CheckIcon,
-  MapPinIcon,
-  MessageCircleIcon,
-  SparklesIcon } from
+  MessageCircleIcon } from
 'lucide-react';
 import { Reveal } from '../ui/Reveal';
-
-const SRI_LANKA_PATH = 'M110,10 C142,12 158,45 158,78 C158,110 142,132 152,164 C162,196 180,218 176,255 C172,290 162,312 158,338 C154,368 134,400 112,416 C96,398 74,376 60,347 C46,318 38,291 34,262 C30,230 40,200 46,176 C52,152 36,135 36,105 C36,80 44,55 62,38 C76,25 88,18 110,10 Z';
-
-const topDestinations = [
-{ name: 'Sigiriya', x: 115, y: 125 },
-{ name: 'Kandy', x: 108, y: 185 },
-{ name: 'Colombo', x: 55, y: 205 },
-{ name: 'Ella', x: 128, y: 270 },
-{ name: 'Yala', x: 150, y: 310 },
-{ name: 'Mirissa', x: 95, y: 370 }];
 
 export function CustomTourCta() {
   const { t } = useTranslation('home');
@@ -84,83 +72,35 @@ export function CustomTourCta() {
             whileInView={{ rotate: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="relative rounded-[2rem] border border-white/15 bg-white/[0.09] p-5 shadow-2xl backdrop-blur-md sm:p-6">
-            
-            <div className="flex items-center justify-between border-b border-white/15 pb-5">
-              <div className="flex items-center gap-3">
-                <span className="grid h-11 w-11 place-items-center rounded-2xl bg-gold text-forest">
-                  <MapPinIcon className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-white">{t('customTourCta.cardTitle')}</p>
-                  <p className="mt-0.5 text-xs text-cream/60">{t('customTourCta.cardSubtitle')}</p>
-                </div>
-              </div>
-              <SparklesIcon className="h-5 w-5 text-gold" />
-            </div>
+            className="group relative overflow-hidden rounded-[2rem] bg-[#e6f6ec] p-6 shadow-2xl sm:p-10">
 
-            <div className="relative mx-auto mt-6 aspect-[11/21] w-full max-w-[220px]">
-              <svg viewBox="0 0 220 420" className="h-full w-full overflow-visible">
-                <motion.path
-                  d={SRI_LANKA_PATH}
-                  fill="rgba(219,187,111,0.08)"
-                  stroke="#dbbb6f"
-                  strokeWidth={1.5}
-                  strokeLinejoin="round"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  whileInView={{ pathLength: 1, opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }} />
+            <motion.div
+              aria-hidden="true"
+              animate={{ opacity: [0.35, 0.65, 0.35] }}
+              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+              className="pointer-events-none absolute -left-12 -top-12 h-56 w-56 rounded-full bg-gold/30 blur-3xl" />
 
-                {topDestinations.map((d, i) =>
-                <g key={d.name}>
-                    <motion.circle
-                    cx={d.x}
-                    cy={d.y}
-                    r={9}
-                    fill="rgba(200,162,76,0.35)"
-                    initial={{ scale: 0, opacity: 0 }}
-                    whileInView={{ scale: [0, 1.6, 1.6], opacity: [0, 0.6, 0] }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 1.1 + i * 0.15, duration: 1.8, repeat: Infinity, repeatDelay: 0.8 }} />
+            <motion.div
+              aria-hidden="true"
+              animate={{ opacity: [0.3, 0.55, 0.3] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+              className="pointer-events-none absolute -bottom-14 -right-10 h-64 w-64 rounded-full bg-emerald-light/30 blur-3xl" />
 
-                    <motion.circle
-                    cx={d.x}
-                    cy={d.y}
-                    r={4}
-                    fill="#c8a24c"
-                    stroke="#0f3d2e"
-                    strokeWidth={1.5}
-                    initial={{ scale: 0, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 1 + i * 0.15, duration: 0.4, ease: [0.22, 1, 0.36, 1] }} />
-                  </g>
-                )}
-              </svg>
-              {topDestinations.map((d, i) =>
-              <motion.span
-                key={d.name}
-                initial={{ opacity: 0, y: 4 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 1.15 + i * 0.15, duration: 0.4 }}
-                className="absolute -translate-x-1/2 translate-y-1.5 whitespace-nowrap text-[10px] font-medium text-cream/90"
-                style={{ left: `${d.x / 220 * 100}%`, top: `${d.y / 420 * 100}%` }}>
+            <motion.div
+              className="relative mx-auto aspect-square w-full max-w-[380px]"
+              animate={{ y: [0, -14, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              whileHover={{ scale: 1.06, rotate: -1 }}
+              style={{ transformOrigin: 'center' }}>
 
-                  {d.name}
-                </motion.span>
-              )}
-            </div>
+              <img
+                src="/sri-lanka-map.webp"
+                alt="Sri Lanka"
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-contain drop-shadow-[0_25px_50px_rgba(15,61,46,0.35)] transition-transform duration-700 ease-out will-change-transform" />
 
-            <div className="mt-6 flex items-center gap-3 rounded-2xl bg-white/10 p-4">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-light text-white">
-                <SparklesIcon className="h-4 w-4" />
-              </span>
-              <p className="text-xs leading-relaxed text-cream/75">
-                {t('customTourCta.cardNote')}
-              </p>
-            </div>
+            </motion.div>
           </motion.div>
           <div className="absolute -right-4 -top-5 hidden rounded-full bg-gold px-4 py-2 text-xs font-bold text-forest shadow-lg sm:block">
             {t('customTourCta.cardBadge')}
