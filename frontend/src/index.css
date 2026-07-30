@@ -1,0 +1,56 @@
+/* @import url() FONT IMPORTS MUST ALWAYS BE AT THE VERY TOP OF THIS FILE, ABOVE THE TAILWIND IMPORTS — DO NOT DELETE THIS COMMENT */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* CRITICAL: THE FOLLOWING TAILWIND IMPORTS MUST NEVER BE DELETED OR REORDERED — DO NOT DELETE THIS COMMENT */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
+
+:root {
+  --forest: #0f3d2e;
+  --emerald: #1a7a5e;
+  --gold: #c8a24c;
+  --cream: #f6f1e7;
+  --sand: #efe6d6;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background-color: #f6f1e7;
+  color: #1c2b25;
+  -webkit-font-smoothing: antialiased;
+}
+.font-display {
+  font-family: 'Fraunces', Georgia, serif;
+}
+::selection {
+  background-color: rgba(200, 162, 76, 0.35);
+}
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #efe6d6;
+}
+::-webkit-scrollbar-thumb {
+  background: #1a7a5e;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0f3d2e;
+}
+/* Marquee helper for hero destinations */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

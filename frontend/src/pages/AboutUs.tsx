@@ -1,0 +1,207 @@
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { CompassIcon, HeartHandshakeIcon, LeafIcon, SparklesIcon, StarIcon, MessageCircleIcon, MapIcon } from 'lucide-react';
+import { PageBanner } from '../components/layout/PageBanner';
+import { SectionHeading } from '../components/ui/SectionHeading';
+import { Stats } from '../components/sections/Stats';
+import { WhyChoose } from '../components/sections/WhyChoose';
+import { apiGetList } from '../lib/api';
+import type { Review } from '../types/review';
+
+const CORE_VALUES = [
+{ icon: HeartHandshakeIcon, title: 'Integrity', text: 'Transparent pricing and honest advice, every single time.' },
+{ icon: SparklesIcon, title: 'Excellence', text: 'Meticulous planning so every detail of your journey feels effortless.' },
+{ icon: LeafIcon, title: 'Sustainability', text: 'Partnering with local communities and protecting the island we love.' },
+{ icon: CompassIcon, title: 'Genuine Hospitality', text: 'Sri Lankan warmth woven into every welcome, meal and farewell.' }];
+
+
+const TEAM = [
+{ role: 'Founder & Managing Director', initials: 'FD' },
+{ role: 'Head of Travel Design', initials: 'TD' },
+{ role: 'Lead Tour Operations Manager', initials: 'OM' },
+{ role: 'Guest Relations Lead', initials: 'GR' }];
+
+
+export function AboutUs() {
+  const [testimonials, setTestimonials] = useState<Review[]>([]);
+
+  useEffect(() => {
+    apiGetList<Review>('/reviews', { limit: 3, sort: '-createdAt' }).
+    then(({ data }) => setTestimonials(data)).
+    catch(() => {});
+  }, []);
+
+  return (
+    <main className="min-h-screen bg-cream pt-16">
+      <PageBanner
+        eyebrow="Our Story"
+        title="About Roxaval Travels"
+        subtitle="Wings to explore Sri Lanka — a local team crafting fully customized journeys across the island."
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'About Us' }]} />
+
+
+      {/* Company Introduction */}
+      <section className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8">
+        <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }}>
+          <SectionHeading eyebrow="Who we are" title="Your Trusted Local Travel Partner" align="left" />
+          <p className="mt-6 text-base leading-relaxed text-forest/70">
+            Roxaval Travels is a Sri Lanka-based travel agency dedicated to crafting luxurious, fully customized journeys across
+            the island — from ancient kingdoms to golden beaches. We believe travel should feel personal, so every itinerary we
+            build is designed around you: your pace, your interests and your budget.
+          </p>
+          <p className="mt-4 text-base leading-relaxed text-forest/70">
+            From the moment you reach out to the moment you land back home, our local experts handle every hotel, guide,
+            vehicle and detail — so all you have to do is show up and explore.
+          </p>
+        </motion.div>
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }} className="overflow-hidden rounded-[2rem] shadow-lift">
+          <img src="/f1dc4405-8788-4026-86f6-8dcd6433d54c.jpg" alt="Sri Lanka landscape" className="h-full w-full object-cover" />
+        </motion.div>
+      </section>
+
+      {/* Our Story */}
+      <section className="bg-white py-20">
+        <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }} className="order-2 overflow-hidden rounded-[2rem] shadow-lift lg:order-1">
+            <img src="/e12be888-4561-43cf-b8a3-fb6d9de4b630.jpg" alt="Roxaval Travels journey" className="h-full w-full object-cover" />
+          </motion.div>
+          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }} className="order-1 lg:order-2">
+            <SectionHeading eyebrow="Our Story" title="Built on a Love for This Island" align="left" />
+            <p className="mt-6 text-base leading-relaxed text-forest/70">
+              Roxaval Travels began with a simple idea — that visitors deserve to experience Sri Lanka the way locals do,
+              not through a rigid, one-size-fits-all package. Over more than a decade, that idea grew into a full-service
+              travel agency built around custom itineraries, trusted local guides and genuine care for every traveler.
+            </p>
+            <p className="mt-4 text-base leading-relaxed text-forest/70">
+              Today, thousands of travelers have explored the island with us — from the ancient cities of the Cultural
+              Triangle to the misty tea trails of the hill country and the sun-soaked shores of the south coast.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Mission & Vision */}
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeading eyebrow="What Drives Us" title="Mission & Vision" subtitle="The principles behind every itinerary we design." />
+        <div className="mt-14 grid gap-6 sm:grid-cols-2">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.6 }} className="rounded-3xl bg-forest p-8 text-white shadow-lift sm:p-10">
+            <MapIcon className="h-8 w-8 text-gold" />
+            <h3 className="font-display mt-5 text-2xl font-semibold">Our Mission</h3>
+            <p className="mt-3 leading-relaxed text-cream/80">
+              To craft seamless, fully personalized Sri Lankan journeys — connecting travelers with authentic experiences,
+              trusted local partners and unforgettable memories, with honesty and care at every step.
+            </p>
+          </motion.div>
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.6, delay: 0.1 }} className="rounded-3xl bg-emerald p-8 text-white shadow-lift sm:p-10">
+            <StarIcon className="h-8 w-8 text-gold" />
+            <h3 className="font-display mt-5 text-2xl font-semibold">Our Vision</h3>
+            <p className="mt-3 leading-relaxed text-cream/80">
+              To be Sri Lanka's most trusted name in personalized travel — recognized for elevating every visitor's journey
+              while championing sustainable, community-rooted tourism across the island.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Core Values */}
+      <section className="bg-white py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeading eyebrow="What We Stand For" title="Our Core Values" />
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {CORE_VALUES.map((v, i) =>
+            <motion.div
+              key={v.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="rounded-3xl bg-cream p-7 text-center shadow-soft">
+
+                <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-emerald/10 text-emerald">
+                  <v.icon className="h-7 w-7" />
+                </div>
+                <h3 className="mt-5 font-display text-lg font-semibold text-forest">{v.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-forest/65">{v.text}</p>
+              </motion.div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Years of Experience / Company Statistics */}
+      <Stats />
+
+      {/* Why Choose Roxaval Travels */}
+      <WhyChoose />
+
+      {/* Team Introduction */}
+      <section className="bg-white py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeading eyebrow="Meet the Team" title="The People Behind Your Journey" subtitle="A small, dedicated team of travel designers and local experts." />
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {TEAM.map((m, i) =>
+            <motion.div
+              key={m.role}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="rounded-3xl bg-cream p-7 text-center shadow-soft">
+
+                <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-forest text-lg font-bold text-white">
+                  {m.initials}
+                </div>
+                <h3 className="mt-5 font-display text-base font-semibold text-forest">{m.role}</h3>
+              </motion.div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Customer Testimonials */}
+      {testimonials.length > 0 &&
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <SectionHeading eyebrow="Kind Words" title="What Our Travelers Say" />
+          <div className="mt-14 grid gap-6 sm:grid-cols-3">
+            {testimonials.map((r, i) =>
+          <motion.div
+            key={r._id}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5, delay: i * 0.1 }}
+            className="rounded-3xl bg-white p-7 shadow-soft">
+
+                <div className="flex gap-0.5 text-gold">
+                  {Array.from({ length: 5 }).map((_, s) => <StarIcon key={s} className={`h-4 w-4 ${s < r.rating ? 'fill-gold' : 'fill-none text-forest/20'}`} />)}
+                </div>
+                <p className="mt-4 text-sm leading-relaxed text-forest/70">&ldquo;{r.text}&rdquo;</p>
+                <p className="mt-4 text-sm font-semibold text-forest">{r.customer?.user?.fullName || 'Verified Traveler'}</p>
+                {r.country && <p className="text-xs text-forest/50">{r.country}</p>}
+              </motion.div>
+          )}
+          </div>
+        </section>
+      }
+
+      {/* CTA */}
+      <section className="relative overflow-hidden bg-forest py-20 text-center text-white">
+        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-emerald/30 blur-3xl" />
+        <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-gold/10 blur-3xl" />
+        <div className="relative z-10 mx-auto max-w-2xl px-4">
+          <h2 className="font-display text-3xl font-semibold sm:text-4xl">Ready to Start Planning?</h2>
+          <p className="mt-4 text-cream/80">Let's design a Sri Lankan journey that's entirely yours.</p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <Link to="/packages#custom-tour" className="flex items-center gap-2 rounded-full bg-gold px-8 py-3.5 font-semibold text-forest shadow-soft transition-transform hover:scale-105">
+              <SparklesIcon className="h-4 w-4" /> Plan My Tour
+            </Link>
+            <Link to="/contact" className="flex items-center gap-2 rounded-full border border-white/30 px-8 py-3.5 font-semibold text-white transition-colors hover:bg-white/10">
+              <MessageCircleIcon className="h-4 w-4" /> Contact Us
+            </Link>
+          </div>
+        </div>
+      </section>
+    </main>);
+
+}
