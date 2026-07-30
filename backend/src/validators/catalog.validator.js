@@ -1,9 +1,10 @@
 const { z } = require('zod');
+const { localizedField, localizedFieldArray } = require('./shared/localized');
 
 // ---------- Activity ----------
 const createActivitySchema = z.object({
-  name: z.string().min(2),
-  description: z.string().min(10),
+  name: localizedField(2),
+  description: localizedField(10),
   image: z.string().min(1),
   gallery: z.array(z.string()).optional(),
   category: z.enum(['Adventure', 'Wildlife', 'Culture', 'Relaxation', 'Scenic', 'Water Sports', 'Nature']).optional(),
@@ -11,11 +12,11 @@ const createActivitySchema = z.object({
   priceFrom: z.number().min(0).optional(),
   destinations: z.array(z.string()).optional(),
   difficultyLevel: z.enum(['Easy', 'Moderate', 'Hard']).optional(),
-  location: z.string().optional(),
-  bestSeason: z.string().optional(),
-  highlights: z.array(z.string()).optional(),
-  thingsIncluded: z.array(z.string()).optional(),
-  thingsToBring: z.array(z.string()).optional(),
+  location: localizedField(0).optional(),
+  bestSeason: localizedField(0).optional(),
+  highlights: localizedFieldArray().optional(),
+  thingsIncluded: localizedFieldArray().optional(),
+  thingsToBring: localizedFieldArray().optional(),
   mapLocation: z.object({ lat: z.number(), lng: z.number() }).optional(),
   isFeatured: z.boolean().optional(),
   status: z.enum(['draft', 'published', 'archived']).optional(),
@@ -24,20 +25,20 @@ const updateActivitySchema = createActivitySchema.partial();
 
 // ---------- Hotel ----------
 const roomTypeSchema = z.object({
-  name: z.string().min(2),
+  name: localizedField(2),
   maxOccupancy: z.number().int().min(1).optional(),
   pricePerNight: z.number().positive(),
-  amenities: z.array(z.string()).optional(),
+  amenities: localizedFieldArray().optional(),
 });
 const createHotelSchema = z.object({
-  name: z.string().min(2),
+  name: localizedField(2),
   category: z.enum(['Budget', 'Standard', 'Deluxe', 'Boutique', 'Luxury', 'Resort']).optional(),
   starRating: z.number().min(1).max(5).optional(),
   destination: z.string().min(1),
-  address: z.string().min(5),
-  description: z.string().min(10),
+  address: localizedField(5),
+  description: localizedField(10),
   images: z.array(z.string()).optional(),
-  amenities: z.array(z.string()).optional(),
+  amenities: localizedFieldArray().optional(),
   roomTypes: z.array(roomTypeSchema).optional(),
   contactPerson: z.string().optional(),
   contactPhone: z.string().optional(),
@@ -92,9 +93,9 @@ const moderateReviewSchema = z.object({
 
 // ---------- Blog ----------
 const createBlogSchema = z.object({
-  title: z.string().min(3),
-  excerpt: z.string().min(10),
-  content: z.string().min(20),
+  title: localizedField(3),
+  excerpt: localizedField(10),
+  content: localizedField(20),
   featuredImage: z.string().min(1),
   gallery: z.array(z.string()).optional(),
   category: z.string().min(2),

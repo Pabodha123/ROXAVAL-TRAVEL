@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const { localizedString, localizedStringArray } = require('./shared/localizedField');
 
 /**
  * Standalone bookable experience (Wildlife Safari, Train Journey, etc.)
@@ -8,9 +9,9 @@ const slugify = require('slugify');
  */
 const activitySchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true, unique: true },
+    name: localizedString('Activity name is required'),
     slug: { type: String, unique: true, index: true },
-    description: { type: String, required: true },
+    description: localizedString('Description is required'),
     image: { type: String, required: true },
     gallery: { type: [String], default: [] },
     category: {
@@ -22,11 +23,11 @@ const activitySchema = new mongoose.Schema(
     priceFrom: { type: Number, default: 0 },
     destinations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Destination' }],
     difficultyLevel: { type: String, enum: ['Easy', 'Moderate', 'Hard'], default: 'Easy' },
-    location: { type: String, trim: true, default: '' },
-    bestSeason: { type: String, trim: true, default: '' },
-    highlights: { type: [String], default: [] },
-    thingsIncluded: { type: [String], default: [] },
-    thingsToBring: { type: [String], default: [] },
+    location: localizedString(),
+    bestSeason: localizedString(),
+    highlights: localizedStringArray(),
+    thingsIncluded: localizedStringArray(),
+    thingsToBring: localizedStringArray(),
     mapLocation: {
       lat: { type: Number },
       lng: { type: Number },
@@ -38,11 +39,12 @@ const activitySchema = new mongoose.Schema(
 );
 
 activitySchema.pre('save', function setSlug(next) {
-  if (this.isModified('name')) this.slug = slugify(this.name, { lower: true, strict: true });
+  if (this.isModified('name.en')) this.slug = slugify(this.name.en, { lower: true, strict: true });
   next();
 });
 
-activitySchema.index({ name: 'text', description: 'text' });
+activitySchema.index({ 'name.en': 1 }, { unique: true });
+activitySchema.index({ 'name.en': 'text', 'description.en': 'text' });
 activitySchema.index({ status: 1, category: 1 });
 
 module.exports = mongoose.model('Activity', activitySchema);

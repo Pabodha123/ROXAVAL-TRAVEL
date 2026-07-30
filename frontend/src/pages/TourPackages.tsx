@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { SparklesIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { CustomTourWizard } from '../components/packages/CustomTourWizard';
 import { useApiList } from '../hooks/useApiList';
 import { PackageCard } from '../components/packages/PackageCard';
@@ -12,19 +13,21 @@ import type { TourPackage } from '../types/tourPackage';
 
 const CATEGORY_OPTIONS = ['Best Seller', 'Scenic', 'Adventure', 'Relax', 'Luxury', 'Signature', 'Honeymoon', 'Family', 'Wildlife'].map((v) => ({ label: v, value: v }));
 const TOUR_TYPE_OPTIONS = ['Private', 'Group'].map((v) => ({ label: v, value: v }));
-const SORT_OPTIONS = [
-{ label: 'Newest', value: '-createdAt' },
-{ label: 'Price: Low to High', value: 'price' },
-{ label: 'Price: High to Low', value: '-price' },
-{ label: 'Highest Rated', value: '-rating' },
-{ label: 'Duration: Short to Long', value: 'durationDays' }];
-
 
 export function TourPackages() {
+  const { t } = useTranslation('packages');
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [tourType, setTourType] = useState('');
   const [sort, setSort] = useState('-createdAt');
+
+  const SORT_OPTIONS = [
+    { label: t('sort.newest'), value: '-createdAt' },
+    { label: t('sort.priceLowToHigh'), value: 'price' },
+    { label: t('sort.priceHighToLow'), value: '-price' },
+    { label: t('sort.highestRated'), value: '-rating' },
+    { label: t('sort.durationShortToLong'), value: 'durationDays' },
+  ];
 
   const { items, meta, loading, error, hasMore, loadMore } = useApiList<TourPackage>('/packages', {
     q: search || undefined,
@@ -40,7 +43,7 @@ export function TourPackages() {
         <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-emerald/30 blur-3xl" />
         <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-gold/10 blur-3xl" />
         <div className="relative z-10 mx-auto max-w-7xl px-4 text-left sm:px-6 lg:px-8">
-          <BreadcrumbBackRow breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Tour Packages' }]} />
+          <BreadcrumbBackRow breadcrumbs={[{ label: t('breadcrumb.home'), href: '/' }, { label: t('breadcrumb.packages') }]} />
         </div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -50,10 +53,10 @@ export function TourPackages() {
 
           <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-gold-light">
             <span className="h-px w-8 bg-gold" />
-            Curated journeys
+            {t('eyebrow')}
           </span>
-          <h1 className="font-display mt-4 text-4xl font-semibold sm:text-6xl">Tour Packages</h1>
-          <p className="mt-4 text-cream/80">Thoughtfully designed itineraries — or the foundation for a trip we tailor entirely around you.</p>
+          <h1 className="font-display mt-4 text-4xl font-semibold sm:text-6xl">{t('title')}</h1>
+          <p className="mt-4 text-cream/80">{t('subtitle')}</p>
         </motion.div>
       </section>
 
@@ -62,10 +65,10 @@ export function TourPackages() {
         <FilterBar
           search={search}
           onSearchChange={setSearch}
-          searchPlaceholder="Search tour packages…"
+          searchPlaceholder={t('searchPlaceholder')}
           filters={[
-          { key: 'category', label: 'Categories', options: CATEGORY_OPTIONS },
-          { key: 'tourType', label: 'Types', options: TOUR_TYPE_OPTIONS }]}
+          { key: 'category', label: t('filters.categories'), options: CATEGORY_OPTIONS },
+          { key: 'tourType', label: t('filters.types'), options: TOUR_TYPE_OPTIONS }]}
 
           values={{ category, tourType }}
           onFilterChange={(key, value) => {
@@ -77,10 +80,10 @@ export function TourPackages() {
           onSortChange={setSort} />
 
 
-        {loading && items.length === 0 && <LoadingState title="Loading tour packages…" />}
-        {error && <ErrorState title="Couldn't load tour packages" message={error} />}
+        {loading && items.length === 0 && <LoadingState title={t('loading')} />}
+        {error && <ErrorState title={t('loadError')} message={error} />}
         {!loading && !error && items.length === 0 &&
-        <EmptyState title="No tour packages found" message="Try a different search term or clear your filters." />
+        <EmptyState title={t('noResults')} message={t('noResultsHint')} />
         }
 
         {items.length > 0 &&
@@ -102,10 +105,10 @@ export function TourPackages() {
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1.5 text-sm font-semibold text-white backdrop-blur-md">
-              <SparklesIcon className="h-4 w-4 text-gold" /> Tailor Made For You
+              <SparklesIcon className="h-4 w-4 text-gold" /> {t('customTour.badge')}
             </span>
-            <h2 className="font-display mt-6 text-4xl sm:text-6xl font-bold text-white">Customize Your Tour</h2>
-            <p className="mt-4 text-lg text-cream/90 max-w-2xl mx-auto">Don't see exactly what you're looking for? Use our interactive planner to design your perfect Sri Lankan getaway step by step.</p>
+            <h2 className="font-display mt-6 text-4xl sm:text-6xl font-bold text-white">{t('customTour.title')}</h2>
+            <p className="mt-4 text-lg text-cream/90 max-w-2xl mx-auto">{t('customTour.subtitle')}</p>
           </div>
 
           <CustomTourWizard />

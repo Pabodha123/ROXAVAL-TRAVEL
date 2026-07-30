@@ -1,0 +1,69 @@
+{
+  "hero": {
+    "titleLine1": "Entdecken Sie die Schönheit Sri Lankas",
+    "titleLine2": "mit Roxaval Travels",
+    "subtitle": "Von nebligen Teehügeln über goldene Strände bis zu alten Königreichen — wir gestalten luxuriöse, vollständig individuelle Reisen quer über die Perle des Indischen Ozeans.",
+    "explorePackages": "Reisepakete Entdecken",
+    "customizeYourTour": "Reise Individuell Gestalten"
+  },
+  "destinations": {
+    "eyebrow": "Beliebte Reiseziele",
+    "explore": "Entdecken"
+  },
+  "packages": {
+    "eyebrow": "Kuratierte Reisen",
+    "title": "Empfohlene Reisepakete",
+    "subtitle": "Durchdacht gestaltete Reiserouten — oder die Grundlage für eine Reise, die wir ganz nach Ihren Wünschen anpassen.",
+    "from": "Ab",
+    "viewDetails": "Details Ansehen",
+    "viewAllPackages": "Alle Pakete Ansehen"
+  },
+  "activities": {
+    "eyebrow": "Unternehmungen",
+    "title": "Spannende Aktivitäten",
+    "subtitle": "Abenteuer, Wildtiere und Kultur — unvergessliche Erlebnisse in jeder Reise.",
+    "exploreActivity": "Aktivität Entdecken",
+    "viewAllActivities": "Alle Aktivitäten Ansehen"
+  },
+  "stats": {
+    "yearsExperience": "Jahre Erfahrung",
+    "happyTravelers": "Zufriedene Reisende",
+    "curatedTours": "Kuratierte Touren",
+    "averageRating": "Durchschnittliche Bewertung"
+  },
+  "whyChoose": {
+    "eyebrow": "Der Roxaval-Unterschied",
+    "title": "Warum Roxaval Travels Wählen",
+    "subtitle": "Mehr als ein Reiseveranstalter — Ihr vertrauensvoller lokaler Partner für eine nahtlose, sichere und beseelte Sri-Lanka-Reise."
+  },
+  "reviews": {
+    "eyebrow": "Reisegeschichten",
+    "title": "Von Reisenden Weltweit Geliebt",
+    "subtitle": "Echte Worte von Gästen, die Sri Lanka mit uns erkundet haben.",
+    "previous": "Vorherige Bewertung",
+    "next": "Nächste Bewertung"
+  },
+  "blog": {
+    "eyebrow": "Aus dem Reisejournal",
+    "title": "Neueste Reisegeschichten",
+    "subtitle": "Ratgeber, Tipps und Geschichten für Ihr nächstes Sri-Lanka-Abenteuer.",
+    "viewAllPosts": "Alle Beiträge ansehen",
+    "readMore": "Weiterlesen"
+  },
+  "customTourCta": {
+    "eyebrow": "Ganz nach Ihnen gestaltet",
+    "titleLine1": "Ihre Perfekte Reise",
+    "titleHighlight": "Nicht Gefunden?",
+    "subtitle": "Gestalten Sie Ihren eigenen Sri-Lanka-Urlaub nach Ihren Reisewünschen. Teilen Sie uns Ihre Anforderungen mit, und unsere Reiseexperten erstellen eine persönliche Reiseroute speziell für Sie.",
+    "benefit1": "Abgestimmt auf Ihr Tempo",
+    "benefit2": "Handverlesene Unterkünfte & Erlebnisse",
+    "benefit3": "Lokale Expertise, durchgängig",
+    "benefit4": "Keine Buchungspflicht",
+    "createMyCustomTour": "Meine Individuelle Reise Erstellen",
+    "talkToExpert": "Mit Einem Experten Sprechen",
+    "cardTitle": "Top-Reiseziele",
+    "cardSubtitle": "Entdecken Sie die Insel mit uns",
+    "cardNote": "Teilen Sie Ihre Ideen. Wir senden Ihnen innerhalb von 24 Stunden eine einzigartige Reiseroute.",
+    "cardBadge": "100% nach Ihren Wünschen"
+  }
+}

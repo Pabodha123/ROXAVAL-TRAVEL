@@ -1,0 +1,15 @@
+{
+  "myTours": {
+    "title": "My Tours",
+    "subtitle": "Track your bookings and custom tour requests in one place.",
+    "bookings": "Bookings",
+    "customRequests": "Custom Requests"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Everything we've sent you, in one place.",
+    "markAllRead": "Mark all as read",
+    "empty": "No notifications yet",
+    "emptyHint": "We'll let you know when something needs your attention."
+  }
+}

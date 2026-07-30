@@ -4,12 +4,13 @@ import { Loader2Icon, SaveIcon } from 'lucide-react';
 import { apiGetOne, apiPatch, apiPost, ApiRequestError } from '../../../lib/api';
 import { useToast } from '../../components/ToastProvider';
 import { PageHeader } from '../../components/PageHeader';
-import { TextField, TextAreaField, SelectField, TagListInput, ImageUploader } from '../../components/fields/Fields';
+import { TextField, SelectField, TagListInput, ImageUploader } from '../../components/fields/Fields';
+import { TranslatedInput, TranslatedTextarea, emptyLocalizedString, type LocalizedString } from '../../components/fields/TranslatedFields';
 
 interface BlogPostDetail {
-  title: string;
-  excerpt: string;
-  content: string;
+  title: LocalizedString;
+  excerpt: LocalizedString;
+  content: LocalizedString;
   featuredImage: string;
   gallery: string[];
   category: string;
@@ -26,9 +27,9 @@ export function AdminBlogForm() {
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
 
-  const [title, setTitle] = useState('');
-  const [excerpt, setExcerpt] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState<LocalizedString>(emptyLocalizedString());
+  const [excerpt, setExcerpt] = useState<LocalizedString>(emptyLocalizedString());
+  const [content, setContent] = useState<LocalizedString>(emptyLocalizedString());
   const [featuredImage, setFeaturedImage] = useState<string[]>([]);
   const [gallery, setGallery] = useState<string[]>([]);
   const [category, setCategory] = useState('');
@@ -37,7 +38,7 @@ export function AdminBlogForm() {
 
   useEffect(() => {
     if (!isEdit) return;
-    apiGetOne<BlogPostDetail>(`/blogs/${id}`).
+    apiGetOne<BlogPostDetail>(`/blogs/${id}`, { raw: true }).
     then((p) => {
       setTitle(p.title);
       setExcerpt(p.excerpt);
@@ -80,15 +81,15 @@ export function AdminBlogForm() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="rounded-2xl bg-white p-6 shadow-soft">
           <div className="grid gap-4 sm:grid-cols-2">
-            <TextField label="Title" value={title} onChange={setTitle} required />
+            <TranslatedInput label="Title" value={title} onChange={setTitle} required />
             <TextField label="Category" value={category} onChange={setCategory} required />
             <SelectField label="Status" value={status} onChange={setStatus} options={[{ label: 'Draft', value: 'draft' }, { label: 'Published', value: 'published' }, { label: 'Archived', value: 'archived' }]} />
           </div>
           <div className="mt-4">
-            <TextAreaField label="Excerpt" value={excerpt} onChange={setExcerpt} rows={2} required />
+            <TranslatedTextarea label="Excerpt" value={excerpt} onChange={setExcerpt} rows={2} required />
           </div>
           <div className="mt-4">
-            <TextAreaField label="Content" value={content} onChange={setContent} rows={10} required />
+            <TranslatedTextarea label="Content" value={content} onChange={setContent} rows={10} required />
           </div>
           <div className="mt-4">
             <TagListInput label="Tags" value={tags} onChange={setTags} />

@@ -1,0 +1,28 @@
+{
+  "modal": {
+    "bookTitle": "{{name}} Buchen",
+    "travelDate": "Reisedatum",
+    "adults": "Erwachsene",
+    "children": "Kinder",
+    "infants": "Kleinkinder",
+    "specialRequests": "Besondere Wünsche (optional)",
+    "estimatedTotal": "Geschätzter Gesamtpreis",
+    "confirmBooking": "Buchung Bestätigen",
+    "selectDateError": "Bitte wählen Sie ein Reisedatum.",
+    "createError": "Buchung konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+    "successToast": "Buchung {{reference}} erstellt — fahren Sie mit der Zahlung in Meine Reisen fort."
+  },
+  "payment": {
+    "title": "Zahlung",
+    "method": "Zahlungsmethode",
+    "bankTransfer": "Banküberweisung",
+    "whatsapp": "WhatsApp",
+    "card": "Karte",
+    "amount": "Betrag",
+    "reference": "Referenz",
+    "uploadReceipt": "Beleg Hochladen",
+    "submitPayment": "Zahlung Absenden",
+    "submitError": "Zahlung konnte nicht übermittelt werden. Bitte versuchen Sie es erneut.",
+    "successToast": "Zahlung übermittelt — wir bestätigen in Kürze."
+  }
+}

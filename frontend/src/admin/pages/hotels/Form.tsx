@@ -4,27 +4,28 @@ import { Loader2Icon, SaveIcon, TrashIcon } from 'lucide-react';
 import { apiGetList, apiGetOne, apiPatch, apiPost, ApiRequestError } from '../../../lib/api';
 import { useToast } from '../../components/ToastProvider';
 import { PageHeader } from '../../components/PageHeader';
-import { TextField, TextAreaField, NumberField, SelectField, CheckboxField, TagListInput, ImageUploader, RepeatSection } from '../../components/fields/Fields';
+import { TextField, NumberField, SelectField, CheckboxField, ImageUploader, RepeatSection } from '../../components/fields/Fields';
+import { TranslatedInput, TranslatedTextarea, TranslatedTagListInput, emptyLocalizedString, type LocalizedString } from '../../components/fields/TranslatedFields';
 
 const CATEGORY_OPTIONS = ['Budget', 'Standard', 'Deluxe', 'Boutique', 'Luxury', 'Resort'];
 const MEAL_PLAN_OPTIONS = ['Room Only', 'Bed & Breakfast', 'Half Board', 'Full Board', 'All Inclusive'];
 
 interface RoomType {
-  name: string;
+  name: LocalizedString;
   maxOccupancy: number;
   pricePerNight: number;
-  amenities: string[];
+  amenities: LocalizedString[];
 }
 
 interface HotelDetail {
-  name: string;
+  name: LocalizedString;
   category: string;
   starRating: number;
   destination?: { _id: string };
-  address: string;
-  description: string;
+  address: LocalizedString;
+  description: LocalizedString;
   images: string[];
-  amenities: string[];
+  amenities: LocalizedString[];
   roomTypes: RoomType[];
   contactPerson: string;
   contactPhone: string;
@@ -33,7 +34,7 @@ interface HotelDetail {
   status: string;
 }
 
-const emptyRoomType = (): RoomType => ({ name: '', maxOccupancy: 2, pricePerNight: 0, amenities: [] });
+const emptyRoomType = (): RoomType => ({ name: emptyLocalizedString(), maxOccupancy: 2, pricePerNight: 0, amenities: [] });
 
 export function AdminHotelForm() {
   const { id } = useParams<{id: string;}>();
@@ -45,14 +46,14 @@ export function AdminHotelForm() {
   const [saving, setSaving] = useState(false);
   const [destOptions, setDestOptions] = useState<{ value: string; label: string }[]>([]);
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState<LocalizedString>(emptyLocalizedString());
   const [category, setCategory] = useState('Standard');
   const [starRating, setStarRating] = useState(3);
   const [destination, setDestination] = useState('');
-  const [address, setAddress] = useState('');
-  const [description, setDescription] = useState('');
+  const [address, setAddress] = useState<LocalizedString>(emptyLocalizedString());
+  const [description, setDescription] = useState<LocalizedString>(emptyLocalizedString());
   const [images, setImages] = useState<string[]>([]);
-  const [amenities, setAmenities] = useState<string[]>([]);
+  const [amenities, setAmenities] = useState<LocalizedString[]>([]);
   const [mealPlans, setMealPlans] = useState<string[]>([]);
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([emptyRoomType()]);
   const [contactPerson, setContactPerson] = useState('');
@@ -69,7 +70,7 @@ export function AdminHotelForm() {
 
   useEffect(() => {
     if (!isEdit) return;
-    apiGetOne<HotelDetail>(`/hotels/${id}`).
+    apiGetOne<HotelDetail>(`/hotels/${id}`, { raw: true }).
     then((h) => {
       setName(h.name);
       setCategory(h.category);
@@ -79,8 +80,8 @@ export function AdminHotelForm() {
       setDescription(h.description);
       setImages(h.images || []);
       const known = new Set(MEAL_PLAN_OPTIONS);
-      setAmenities((h.amenities || []).filter((a) => !known.has(a)));
-      setMealPlans((h.amenities || []).filter((a) => known.has(a)));
+      setAmenities((h.amenities || []).filter((a) => !known.has(a.en)));
+      setMealPlans((h.amenities || []).filter((a) => known.has(a.en)).map((a) => a.en));
       setRoomTypes(h.roomTypes?.length ? h.roomTypes : [emptyRoomType()]);
       setContactPerson(h.contactPerson || '');
       setContactPhone(h.contactPhone || '');
@@ -106,7 +107,7 @@ export function AdminHotelForm() {
       address,
       description,
       images,
-      amenities: [...amenities, ...mealPlans],
+      amenities: [...amenities, ...mealPlans.map((m) => ({ en: m, de: '', fr: '' }))],
       roomTypes,
       contactPerson,
       contactPhone,
@@ -140,15 +141,15 @@ export function AdminHotelForm() {
         <div className="rounded-2xl bg-white p-6 shadow-soft">
           <p className="mb-4 font-display text-sm font-semibold text-forest">Basics</p>
           <div className="grid gap-4 sm:grid-cols-2">
-            <TextField label="Hotel Name" value={name} onChange={setName} required />
+            <TranslatedInput label="Hotel Name" value={name} onChange={setName} required />
             <SelectField label="Destination" value={destination} onChange={setDestination} options={[{ label: 'Select destination', value: '' }, ...destOptions]} required />
             <SelectField label="Category" value={category} onChange={setCategory} options={CATEGORY_OPTIONS.map((c) => ({ label: c, value: c }))} />
             <NumberField label="Star Rating" value={starRating} onChange={setStarRating} min={1} step={1} />
             <SelectField label="Status" value={status} onChange={setStatus} options={[{ label: 'Active', value: 'active' }, { label: 'Inactive', value: 'inactive' }]} />
-            <TextField label="Address" value={address} onChange={setAddress} required />
+            <TranslatedInput label="Address" value={address} onChange={setAddress} required />
           </div>
           <div className="mt-4">
-            <TextAreaField label="Description" value={description} onChange={setDescription} required />
+            <TranslatedTextarea label="Description" value={description} onChange={setDescription} required />
           </div>
           <div className="mt-4">
             <CheckboxField label="Partner hotel" checked={isPartner} onChange={setIsPartner} />
@@ -160,7 +161,7 @@ export function AdminHotelForm() {
           <div className="grid gap-4 sm:grid-cols-2">
             <ImageUploader label="Gallery" value={images} onChange={setImages} />
             <div className="space-y-4">
-              <TagListInput label="Amenities" value={amenities} onChange={setAmenities} />
+              <TranslatedTagListInput label="Amenities" value={amenities} onChange={setAmenities} />
               <div>
                 <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-forest/60">Meal Plans</p>
                 <div className="flex flex-wrap gap-2">
@@ -187,7 +188,7 @@ export function AdminHotelForm() {
             {roomTypes.map((r, i) =>
             <div key={i} className="rounded-xl border border-forest/10 p-4">
                 <div className="grid gap-3 sm:grid-cols-4">
-                  <TextField label="Room Name" value={r.name} onChange={(v) => updateRoomType(i, { name: v })} />
+                  <TranslatedInput label="Room Name" value={r.name} onChange={(v) => updateRoomType(i, { name: v })} />
                   <NumberField label="Max Occupancy" value={r.maxOccupancy} onChange={(v) => updateRoomType(i, { maxOccupancy: v })} min={1} />
                   <NumberField label="Price / Night (USD)" value={r.pricePerNight} onChange={(v) => updateRoomType(i, { pricePerNight: v })} min={0} />
                   <div className="flex items-end">
@@ -198,7 +199,7 @@ export function AdminHotelForm() {
                   }
                   </div>
                   <div className="sm:col-span-4">
-                    <TagListInput label="Room Amenities" value={r.amenities} onChange={(v) => updateRoomType(i, { amenities: v })} />
+                    <TranslatedTagListInput label="Room Amenities" value={r.amenities} onChange={(v) => updateRoomType(i, { amenities: v })} />
                   </div>
                 </div>
               </div>

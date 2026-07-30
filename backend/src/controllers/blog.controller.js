@@ -3,8 +3,10 @@ const catchAsync = require('../utils/catchAsync');
 const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
 const factory = require('./factory');
+const { localizeDoc } = require('../utils/localize');
 
-const base = factory(Blog, { searchableFields: ['title', 'content', 'tags'], populate: ['author'] });
+const translatableFields = ['title', 'excerpt', 'content'];
+const base = factory(Blog, { searchableFields: ['title', 'content', 'tags'], populate: ['author'], translatableFields });
 
 const create = catchAsync(async (req, res) => {
   const blog = await Blog.create({ ...req.body, author: req.user._id });
@@ -23,7 +25,8 @@ const getBySlug = catchAsync(async (req, res) => {
     { new: true }
   );
   if (!blog) throw ApiError.notFound('Blog post not found');
-  new ApiResponse(200, blog, 'Blog post fetched').send(res);
+  const data = req.query.raw === 'true' ? blog : localizeDoc(blog, req.lang || 'en', translatableFields);
+  new ApiResponse(200, data, 'Blog post fetched').send(res);
 });
 
 module.exports = { ...base, create, getAllPublished, getBySlug };

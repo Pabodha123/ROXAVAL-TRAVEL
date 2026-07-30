@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Loader2Icon, SearchXIcon, TriangleAlertIcon, type LucideIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface StatusStateProps {
   icon?: LucideIcon;
@@ -29,14 +30,17 @@ function Frame({ icon: Icon, title, message, action, spin }: StatusStateProps & 
 
 }
 
-export function LoadingState({ title = 'Loading…', message }: Partial<StatusStateProps>) {
-  return <Frame icon={Loader2Icon} title={title} message={message} spin />;
+export function LoadingState({ title, message }: Partial<StatusStateProps>) {
+  const { t } = useTranslation();
+  return <Frame icon={Loader2Icon} title={title ?? t('status.loading')} message={message} spin />;
 }
 
-export function EmptyState({ title = 'Nothing found', message = 'Try adjusting your search or filters.', action }: Partial<StatusStateProps>) {
-  return <Frame icon={SearchXIcon} title={title} message={message} action={action} />;
+export function EmptyState({ title, message, action }: Partial<StatusStateProps>) {
+  const { t } = useTranslation();
+  return <Frame icon={SearchXIcon} title={title ?? t('status.noResults')} message={message ?? t('status.noResultsHint')} action={action} />;
 }
 
-export function ErrorState({ title = 'Something went wrong', message, action }: Partial<StatusStateProps>) {
-  return <Frame icon={TriangleAlertIcon} title={title} message={message || 'Please try again in a moment.'} action={action} />;
+export function ErrorState({ title, message, action }: Partial<StatusStateProps>) {
+  const { t } = useTranslation();
+  return <Frame icon={TriangleAlertIcon} title={title ?? t('status.error')} message={message ?? t('status.tryAgainMoment')} action={action} />;
 }

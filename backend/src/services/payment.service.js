@@ -37,7 +37,7 @@ const createPayment = async (customerUserId, payload) => {
     whatsappLink = buildWhatsAppPaymentLink({
       bookingReference: booking.bookingReference,
       customerName: customerUserId.fullName || 'Customer',
-      packageName: booking.tourPackage?.name || 'Customized Tour',
+      packageName: booking.tourPackage?.name?.en || 'Customized Tour',
       travelDate: booking.travelDate.toDateString(),
       totalAmount: booking.pricing.totalAmount,
       advanceAmount: booking.pricing.advanceAmount,

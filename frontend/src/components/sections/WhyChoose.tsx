@@ -2,17 +2,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { whyChoose } from '../../data/content';
 import { SectionHeading } from '../ui/SectionHeading';
 
 export function WhyChoose() {
+  const { t } = useTranslation('home');
   return (
     <section id="my-tours" className="relative py-24 bg-cream">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="The Roxaval difference"
-          title="Why Choose Roxaval Travels"
-          subtitle="More than a tour operator — your trusted local partner for a seamless, safe and soulful Sri Lankan escape."
+          eyebrow={t('whyChoose.eyebrow')}
+          title={t('whyChoose.title')}
+          subtitle={t('whyChoose.subtitle')}
           stagger />
 
 

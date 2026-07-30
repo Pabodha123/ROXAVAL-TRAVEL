@@ -4,11 +4,31 @@ import { Loader2Icon, SaveIcon } from 'lucide-react';
 import { apiGetList, apiGetOne, apiPatch, apiPost, ApiRequestError } from '../../../lib/api';
 import { useToast } from '../../components/ToastProvider';
 import { PageHeader } from '../../components/PageHeader';
-import { TextField, TextAreaField, NumberField, SelectField, CheckboxField, TagListInput, RefMultiSelect, ImageUploader } from '../../components/fields/Fields';
-import type { Activity } from '../../../types/activity';
+import { NumberField, SelectField, CheckboxField, RefMultiSelect, ImageUploader } from '../../components/fields/Fields';
+import { TranslatedInput, TranslatedTextarea, TranslatedTagListInput, emptyLocalizedString, type LocalizedString } from '../../components/fields/TranslatedFields';
 
 const CATEGORY_OPTIONS = ['Adventure', 'Wildlife', 'Culture', 'Relaxation', 'Scenic', 'Water Sports', 'Nature'];
 const DIFFICULTY_OPTIONS = ['Easy', 'Moderate', 'Hard'];
+
+interface AdminActivityRaw {
+  name: LocalizedString;
+  description: LocalizedString;
+  image: string;
+  gallery: string[];
+  category: string;
+  durationHours: number;
+  priceFrom: number;
+  destinations: { _id: string }[];
+  difficultyLevel: string;
+  location: LocalizedString;
+  bestSeason: LocalizedString;
+  highlights: LocalizedString[];
+  thingsIncluded: LocalizedString[];
+  thingsToBring: LocalizedString[];
+  mapLocation?: { lat: number; lng: number };
+  isFeatured: boolean;
+  status: string;
+}
 
 export function AdminActivityForm() {
   const { id } = useParams<{id: string;}>();
@@ -20,8 +40,8 @@ export function AdminActivityForm() {
   const [saving, setSaving] = useState(false);
   const [destOptions, setDestOptions] = useState<{ value: string; label: string }[]>([]);
 
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState<LocalizedString>(emptyLocalizedString());
+  const [description, setDescription] = useState<LocalizedString>(emptyLocalizedString());
   const [image, setImage] = useState<string[]>([]);
   const [gallery, setGallery] = useState<string[]>([]);
   const [category, setCategory] = useState('Adventure');
@@ -29,11 +49,11 @@ export function AdminActivityForm() {
   const [priceFrom, setPriceFrom] = useState(0);
   const [destinations, setDestinations] = useState<string[]>([]);
   const [difficultyLevel, setDifficultyLevel] = useState('Easy');
-  const [location, setLocation] = useState('');
-  const [bestSeason, setBestSeason] = useState('');
-  const [highlights, setHighlights] = useState<string[]>([]);
-  const [thingsIncluded, setThingsIncluded] = useState<string[]>([]);
-  const [thingsToBring, setThingsToBring] = useState<string[]>([]);
+  const [location, setLocation] = useState<LocalizedString>(emptyLocalizedString());
+  const [bestSeason, setBestSeason] = useState<LocalizedString>(emptyLocalizedString());
+  const [highlights, setHighlights] = useState<LocalizedString[]>([]);
+  const [thingsIncluded, setThingsIncluded] = useState<LocalizedString[]>([]);
+  const [thingsToBring, setThingsToBring] = useState<LocalizedString[]>([]);
   const [lat, setLat] = useState<number | ''>('');
   const [lng, setLng] = useState<number | ''>('');
   const [isFeatured, setIsFeatured] = useState(false);
@@ -47,7 +67,7 @@ export function AdminActivityForm() {
 
   useEffect(() => {
     if (!isEdit) return;
-    apiGetOne<Activity>(`/activities/${id}`).
+    apiGetOne<AdminActivityRaw>(`/activities/${id}`, { raw: true }).
     then((a) => {
       setName(a.name);
       setDescription(a.description);
@@ -58,8 +78,8 @@ export function AdminActivityForm() {
       setPriceFrom(a.priceFrom);
       setDestinations(a.destinations.map((d) => d._id));
       setDifficultyLevel(a.difficultyLevel);
-      setLocation(a.location || '');
-      setBestSeason(a.bestSeason || '');
+      setLocation(a.location || emptyLocalizedString());
+      setBestSeason(a.bestSeason || emptyLocalizedString());
       setHighlights(a.highlights || []);
       setThingsIncluded(a.thingsIncluded || []);
       setThingsToBring(a.thingsToBring || []);
@@ -119,17 +139,17 @@ export function AdminActivityForm() {
         <div className="rounded-2xl bg-white p-6 shadow-soft">
           <p className="mb-4 font-display text-sm font-semibold text-forest">Basics</p>
           <div className="grid gap-4 sm:grid-cols-2">
-            <TextField label="Name" value={name} onChange={setName} required />
-            <TextField label="Location" value={location} onChange={setLocation} />
+            <TranslatedInput label="Name" value={name} onChange={setName} required />
+            <TranslatedInput label="Location" value={location} onChange={setLocation} />
             <SelectField label="Category" value={category} onChange={setCategory} options={CATEGORY_OPTIONS.map((c) => ({ label: c, value: c }))} />
             <SelectField label="Difficulty" value={difficultyLevel} onChange={setDifficultyLevel} options={DIFFICULTY_OPTIONS.map((c) => ({ label: c, value: c }))} />
             <NumberField label="Duration (Hours)" value={durationHours} onChange={setDurationHours} min={0.5} step={0.5} />
             <NumberField label="Price From (USD)" value={priceFrom} onChange={setPriceFrom} min={0} />
-            <TextField label="Best Season" value={bestSeason} onChange={setBestSeason} placeholder="e.g. Dec – Mar" />
+            <TranslatedInput label="Best Season" value={bestSeason} onChange={setBestSeason} placeholder="e.g. Dec – Mar" />
             <SelectField label="Status" value={status} onChange={setStatus} options={[{ label: 'Draft', value: 'draft' }, { label: 'Published', value: 'published' }, { label: 'Archived', value: 'archived' }]} />
           </div>
           <div className="mt-4">
-            <TextAreaField label="Description" value={description} onChange={setDescription} required />
+            <TranslatedTextarea label="Description" value={description} onChange={setDescription} required />
           </div>
           <div className="mt-4">
             <CheckboxField label="Feature on homepage" checked={isFeatured} onChange={setIsFeatured} />
@@ -152,9 +172,9 @@ export function AdminActivityForm() {
               <NumberField label="Map Latitude" value={lat} onChange={setLat} step={0.0001} />
               <NumberField label="Map Longitude" value={lng} onChange={setLng} step={0.0001} />
             </div>
-            <TagListInput label="Highlights" value={highlights} onChange={setHighlights} />
-            <TagListInput label="Things Included" value={thingsIncluded} onChange={setThingsIncluded} />
-            <TagListInput label="Things to Bring" value={thingsToBring} onChange={setThingsToBring} />
+            <TranslatedTagListInput label="Highlights" value={highlights} onChange={setHighlights} />
+            <TranslatedTagListInput label="Things Included" value={thingsIncluded} onChange={setThingsIncluded} />
+            <TranslatedTagListInput label="Things to Bring" value={thingsToBring} onChange={setThingsToBring} />
           </div>
         </div>
 

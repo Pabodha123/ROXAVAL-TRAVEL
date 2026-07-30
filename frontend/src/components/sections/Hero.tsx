@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRightIcon, PlayIcon, ChevronDownIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const slides = [
 { name: 'Sigiriya', image: "/f1dc4405-8788-4026-86f6-8dcd6433d54c.jpg" },
@@ -12,6 +13,7 @@ const slides = [
 
 
 export function Hero() {
+  const { t } = useTranslation('home');
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -44,8 +46,8 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className="font-display mt-6 max-w-3xl text-4xl sm:text-6xl lg:text-7xl font-semibold leading-[1.05] text-white">
           
-          Discover the Beauty of Sri Lanka
-          <span className="block text-gold">with Roxaval Travels</span>
+          {t('hero.titleLine1')}
+          <span className="block text-gold">{t('hero.titleLine2')}</span>
         </motion.h1>
 
         <motion.p
@@ -53,9 +55,8 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
           className="mt-6 max-w-xl text-base sm:text-lg text-cream/85 leading-relaxed">
-          
-          From misty tea hills to golden beaches and ancient kingdoms  we craft luxurious, fully personalized journeys
-          across the pearl of the Indian Ocean.
+
+          {t('hero.subtitle')}
         </motion.p>
 
         <motion.div
@@ -68,14 +69,14 @@ export function Hero() {
             href="#packages"
             className="group inline-flex items-center justify-center gap-2 rounded-full bg-gold px-7 py-4 text-sm font-semibold text-forest shadow-lift transition-transform hover:scale-105 active:scale-95">
             
-            Explore Tour Packages
+            {t('hero.explorePackages')}
             <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </a>
           <Link
             to="/packages#custom-tour"
             className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 backdrop-blur px-7 py-4 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-forest">
 
-            <PlayIcon className="h-4 w-4" /> Customize Your Tour
+            <PlayIcon className="h-4 w-4" /> {t('hero.customizeYourTour')}
           </Link>
         </motion.div>
       </div>

@@ -1,5 +1,5 @@
 const path = require('path');
-const { Booking, HotelVoucher, Document } = require('../models');
+const { Booking, HotelVoucher, Document, Customer } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { generateHotelVoucherPdf } = require('../utils/hotelVoucherPdf');
 const { hotelVoucherEmail } = require('../utils/emailTemplates');
@@ -80,7 +80,8 @@ const loadBookingContext = async (bookingId) => {
 
 const renderAndSavePdf = async (voucher, adminId) => {
   const fileName = `voucher-${voucher.voucherNumber}-${Date.now()}.pdf`;
-  const filePath = await generateHotelVoucherPdf(voucher, fileName);
+  const customer = await Customer.findById(voucher.customer).select('preferredLanguage');
+  const filePath = await generateHotelVoucherPdf(voucher, fileName, customer?.preferredLanguage || 'en');
   const fileUrl = `/uploads/documents/${path.basename(filePath)}`;
 
   if (voucher.document) {
@@ -122,7 +123,7 @@ const generateVouchersForBooking = async (bookingId, adminId) => {
   const customerUser = booking.customer.user;
   const tourReferenceNumber =
     booking.sourceType === 'customized' ? booking.itinerary?.customTourRequest?.referenceNumber || '' : booking.bookingReference;
-  const tourPackageName = booking.sourceType === 'package' ? booking.tourPackage?.name : booking.itinerary?.title;
+  const tourPackageName = booking.sourceType === 'package' ? booking.tourPackage?.name?.en : booking.itinerary?.title;
   const lastDayNumber = days.reduce((max, d) => Math.max(max, d.dayNumber), 1);
   const tourEndDate = booking.returnDate || addDays(booking.travelDate, lastDayNumber - 1);
 
@@ -151,8 +152,8 @@ const generateVouchersForBooking = async (bookingId, adminId) => {
       bookingReference: booking.bookingReference,
       emergencyContact: customerUser.phone,
       hotelSnapshot: {
-        name: stay.hotel.name,
-        address: stay.hotel.address,
+        name: stay.hotel.name?.en || '',
+        address: stay.hotel.address?.en || '',
         contactPhone: stay.hotel.contactPhone,
         contactEmail: stay.hotel.contactEmail,
         starRating: stay.hotel.starRating,
@@ -225,6 +226,8 @@ const emailVoucher = async (voucherId, audience) => {
   const to = audience === 'hotel' ? voucher.hotelSnapshot.contactEmail : voucher.customerEmail;
   if (!to) throw ApiError.badRequest(`No ${audience === 'hotel' ? 'hotel contact' : 'customer'} email is on file for this voucher.`);
 
+  const lang = audience === 'customer' ? (await Customer.findById(voucher.customer).select('preferredLanguage'))?.preferredLanguage || 'en' : 'en';
+
   const attachmentPath = path.resolve(process.cwd(), env.UPLOADS.documentsDir, voucher.document.fileName);
   await sendEmail({
     to,
@@ -232,7 +235,7 @@ const emailVoucher = async (voucherId, audience) => {
       audience === 'hotel'
         ? `Booking Confirmation Request — ${voucher.voucherNumber} — ${voucher.hotelSnapshot.name}`
         : `Your Hotel Voucher — ${voucher.hotelSnapshot.name} (${voucher.voucherNumber})`,
-    html: hotelVoucherEmail({ voucher, audience }),
+    html: hotelVoucherEmail({ voucher, audience, lang }),
     attachments: [{ filename: voucher.document.fileName, path: attachmentPath }],
   });
 

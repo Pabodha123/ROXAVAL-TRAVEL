@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import { StarIcon, QuoteIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { reviews } from '../../data/content';
 import { SectionHeading } from '../ui/SectionHeading';
 
@@ -9,6 +10,7 @@ const AUTOPLAY_INTERVAL = 4000;
 const SWIPE_THRESHOLD = 50;
 
 export function Reviews() {
+  const { t } = useTranslation('home');
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -38,10 +40,10 @@ export function Reviews() {
     <section id="reviews" className="relative py-24 bg-white overflow-hidden">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Traveler stories"
-          title="Loved by Travelers Worldwide"
-          subtitle="Real words from guests who explored Sri Lanka with us." />
-        
+          eyebrow={t('reviews.eyebrow')}
+          title={t('reviews.title')}
+          subtitle={t('reviews.subtitle')} />
+
 
         <div
           className="relative mt-14"
@@ -82,7 +84,7 @@ export function Reviews() {
           </div>
 
           <div className="mt-6 flex items-center justify-center gap-4">
-            <button onClick={() => go(-1)} aria-label="Previous review" className="grid h-11 w-11 place-items-center rounded-full border border-forest/15 text-forest transition-colors hover:bg-forest hover:text-white">
+            <button onClick={() => go(-1)} aria-label={t('reviews.previous')} className="grid h-11 w-11 place-items-center rounded-full border border-forest/15 text-forest transition-colors hover:bg-forest hover:text-white">
               <ChevronLeftIcon className="h-5 w-5" />
             </button>
             <div className="flex gap-2">
@@ -95,7 +97,7 @@ export function Reviews() {
 
               )}
             </div>
-            <button onClick={() => go(1)} aria-label="Next review" className="grid h-11 w-11 place-items-center rounded-full border border-forest/15 text-forest transition-colors hover:bg-forest hover:text-white">
+            <button onClick={() => go(1)} aria-label={t('reviews.next')} className="grid h-11 w-11 place-items-center rounded-full border border-forest/15 text-forest transition-colors hover:bg-forest hover:text-white">
               <ChevronRightIcon className="h-5 w-5" />
             </button>
           </div>

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const { localizedString, localizedStringArray } = require('./shared/localizedField');
 
 /**
  * A tourist attraction that belongs to a destination
@@ -7,13 +8,13 @@ const slugify = require('slugify');
  */
 const attractionSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
-    description: { type: String, required: true },
+    name: localizedString('Attraction name is required'),
+    description: localizedString('Attraction description is required'),
     images: { type: [String], default: [] },
     bestVisitingMonths: { type: [String], default: [] },
     estimatedVisitDuration: { type: String, default: '' }, // e.g. "2-3 hours"
     googleMapsLink: { type: String, default: '' },
-    travelTips: { type: [String], default: [] },
+    travelTips: localizedStringArray(),
     entryFee: { type: Number, default: 0 },
   },
   { timestamps: true, _id: true }
@@ -21,7 +22,7 @@ const attractionSchema = new mongoose.Schema(
 
 const destinationSchema = new mongoose.Schema(
   {
-    name: { type: String, required: [true, 'Destination name is required'], trim: true, unique: true },
+    name: localizedString('Destination name is required'),
     slug: { type: String, unique: true, index: true },
     region: {
       type: String,
@@ -33,13 +34,13 @@ const destinationSchema = new mongoose.Schema(
       enum: ['Cultural', 'Wildlife', 'Beach', 'Hill Country', 'City', 'Nature', 'Adventure'],
       required: [true, 'Category is required'],
     },
-    description: { type: String, required: true },
+    description: localizedString('Description is required'),
     heroImage: { type: String, required: true },
     gallery: { type: [String], default: [] },
     attractions: { type: [attractionSchema], default: [] }, // "Top Attractions" on the detail page
-    history: { type: String, default: '' },
-    whyVisit: { type: [String], default: [] },
-    popularActivities: { type: [String], default: [] },
+    history: localizedString(),
+    whyVisit: localizedStringArray(),
+    popularActivities: localizedStringArray(),
     bestTimeToVisit: { type: String, default: '' },
     openingHours: { type: String, default: '' }, // free text; not every destination has fixed hours
     entranceFee: {
@@ -47,7 +48,7 @@ const destinationSchema = new mongoose.Schema(
       currency: { type: String, default: 'USD' },
       notes: { type: String, default: '' },
     },
-    travelTips: { type: [String], default: [] },
+    travelTips: localizedStringArray(),
     nearbyDestinations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Destination' }],
     mapLocation: {
       lat: { type: Number },
@@ -65,11 +66,12 @@ const destinationSchema = new mongoose.Schema(
 );
 
 destinationSchema.pre('save', function setSlug(next) {
-  if (this.isModified('name')) this.slug = slugify(this.name, { lower: true, strict: true });
+  if (this.isModified('name.en')) this.slug = slugify(this.name.en, { lower: true, strict: true });
   next();
 });
 
-destinationSchema.index({ name: 'text', description: 'text' });
+destinationSchema.index({ 'name.en': 1 }, { unique: true });
+destinationSchema.index({ 'name.en': 'text', 'description.en': 'text' });
 destinationSchema.index({ status: 1, isFeatured: 1 });
 
 module.exports = mongoose.model('Destination', destinationSchema);

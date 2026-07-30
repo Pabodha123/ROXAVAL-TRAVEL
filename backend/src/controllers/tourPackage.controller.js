@@ -3,9 +3,11 @@ const catchAsync = require('../utils/catchAsync');
 const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
 const factory = require('./factory');
+const { localizeDoc } = require('../utils/localize');
 
 const populate = ['destinations', 'activities', 'hotels', 'itinerary.destinations', 'itinerary.activities', 'itinerary.hotel'];
-const base = factory(TourPackage, { searchableFields: ['name', 'description'], populate });
+const translatableFields = ['name', 'description', 'highlights', 'includedServices', 'excludedServices', 'itinerary.title', 'itinerary.description'];
+const base = factory(TourPackage, { searchableFields: ['name', 'description'], populate, translatableFields });
 
 const create = catchAsync(async (req, res) => {
   const pkg = await TourPackage.create({ ...req.body, createdBy: req.user._id });
@@ -22,7 +24,8 @@ const getAllPublic = catchAsync(async (req, res, next) => {
 const getBySlug = catchAsync(async (req, res) => {
   const pkg = await TourPackage.findOne({ slug: req.params.slug, status: 'published' }).populate(populate);
   if (!pkg) throw ApiError.notFound('Tour package not found');
-  new ApiResponse(200, pkg, 'Tour package fetched').send(res);
+  const data = req.query.raw === 'true' ? pkg : localizeDoc(pkg, req.lang || 'en', translatableFields);
+  new ApiResponse(200, data, 'Tour package fetched').send(res);
 });
 
 const setStatus = (status) =>

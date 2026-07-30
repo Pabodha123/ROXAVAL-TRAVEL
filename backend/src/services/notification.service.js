@@ -1,4 +1,4 @@
-const { Notification, User, Admin } = require('../models');
+const { Notification, User, Admin, Customer } = require('../models');
 const logger = require('../config/logger');
 const { sendEmail } = require('../utils/email');
 const { notificationEmail } = require('../utils/emailTemplates');
@@ -15,9 +15,13 @@ const notify = async ({ recipient, type, title, message, link = '', relatedModel
   try {
     const notification = await Notification.create({ recipient, type, title, message, link, relatedModel, relatedId });
 
-    const user = await User.findById(recipient).select('email fullName');
+    const [user, customer] = await Promise.all([
+      User.findById(recipient).select('email fullName'),
+      Customer.findOne({ user: recipient }).select('preferredLanguage'),
+    ]);
     if (user?.email) {
-      await sendEmail({ to: user.email, subject: title, html: notificationEmail({ title, message, link, itinerary }) });
+      const lang = customer?.preferredLanguage || 'en';
+      await sendEmail({ to: user.email, subject: title, html: notificationEmail({ title, message, link, itinerary, lang }) });
     }
 
     return notification;

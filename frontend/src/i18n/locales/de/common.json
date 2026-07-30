@@ -1,0 +1,111 @@
+{
+  "brand": { "name": "Roxaval", "suffix": "Travels" },
+  "nav": {
+    "home": "Startseite",
+    "packages": "Reisepakete",
+    "destinations": "Reiseziele",
+    "activities": "Aktivitäten",
+    "myTours": "Meine Reisen",
+    "explore": "Entdecken",
+    "aboutUs": "Über Uns",
+    "contactUs": "Kontakt",
+    "blog": "Blog",
+    "reviews": "Bewertungen",
+    "terms": "AGB",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "logout": "Abmelden",
+    "loginRegister": "Anmelden / Registrieren",
+    "search": "Suche",
+    "changeLanguage": "Sprache ändern",
+    "toggleMenu": "Menü umschalten"
+  },
+  "language": {
+    "en": "Englisch",
+    "de": "Deutsch",
+    "fr": "Französisch"
+  },
+  "footer": {
+    "newsletterTitle": "Reiseinspiration direkt in Ihr Postfach",
+    "newsletterSubtitle": "Exklusive Sri-Lanka-Angebote, Reiseführer und Geschichten. Kein Spam, garantiert.",
+    "emailPlaceholder": "Ihre E-Mail-Adresse",
+    "subscribe": "Abonnieren",
+    "companyBlurb": "Flügel, um Sri Lanka zu entdecken. Wir gestalten luxuriöse, vollständig individuelle Reisen quer über die Insel – von alten Königreichen bis zu goldenen Stränden.",
+    "quickLinks": "Schnellzugriff",
+    "contactUs": "Kontakt",
+    "exploreMore": "Mehr Entdecken",
+    "privacyPolicy": "Datenschutz",
+    "faq": "FAQ",
+    "whatsapp": "WhatsApp",
+    "tailorMadeTours": "Maßgeschneiderte Reisen",
+    "copyright": "© {{year}} Roxaval Travels. Alle Rechte vorbehalten.",
+    "tagline": "Gestaltet für unvergessliche Reisen ✨"
+  },
+  "buttons": {
+    "back": "Zurück",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "save": "Speichern",
+    "saveChanges": "Änderungen speichern",
+    "submit": "Absenden",
+    "close": "Schließen",
+    "viewAll": "Alle anzeigen",
+    "viewDetails": "Details ansehen",
+    "loadMore": "Mehr laden",
+    "tryAgain": "Erneut versuchen",
+    "clearFilters": "Filter zurücksetzen",
+    "readMore": "Weiterlesen",
+    "bookNow": "Jetzt buchen",
+    "learnMore": "Mehr erfahren",
+    "continue": "Weiter",
+    "goBack": "Zurückgehen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
+  },
+  "pagination": {
+    "previous": "Zurück",
+    "next": "Weiter",
+    "pageOf": "Seite {{page}} von {{total}}",
+    "shownOfTotal": "{{shown}} von {{total}} Ergebnissen angezeigt"
+  },
+  "status": {
+    "loading": "Wird geladen...",
+    "noResults": "Keine Ergebnisse gefunden",
+    "noResultsHint": "Passen Sie Ihre Filter oder Suchbegriffe an.",
+    "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+    "tryAgainMoment": "Bitte versuchen Sie es gleich noch einmal.",
+    "empty": "Hier ist noch nichts vorhanden"
+  },
+  "filter": {
+    "search": "Suchen...",
+    "sortBy": "Sortieren nach",
+    "allOption": "Alle {{label}}",
+    "allCategories": "Alle Kategorien",
+    "category": "Kategorie",
+    "region": "Region",
+    "priceRange": "Preisspanne"
+  },
+  "search": {
+    "breadcrumb": "Suche",
+    "title": "Roxaval Travels Durchsuchen",
+    "placeholder": "Touren, Reiseziele, Aktivitäten, Hotels, Blog durchsuchen…",
+    "submit": "Suchen",
+    "searchForSomething": "Suchen Sie nach etwas",
+    "searchHint": "Versuchen Sie ein Reiseziel, Reisepaket, eine Aktivität oder einen Hotelnamen.",
+    "searchingFor": "Suche nach „{{query}}“…",
+    "noResultsFor": "Wir konnten nichts finden, das zu „{{query}}“ passt. Versuchen Sie einen anderen Suchbegriff.",
+    "resultCount_one": "{{count}} Ergebnis für „{{query}}“",
+    "resultCount_other": "{{count}} Ergebnisse für „{{query}}“",
+    "categoryHotels": "Hotels"
+  },
+  "validation": {
+    "required": "Dieses Feld ist erforderlich",
+    "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "minLength": "Muss mindestens {{count}} Zeichen lang sein",
+    "passwordsDontMatch": "Die Passwörter stimmen nicht überein",
+    "invalidPhone": "Bitte geben Sie eine gültige Telefonnummer ein",
+    "genericError": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+    "savedSuccessfully": "Erfolgreich gespeichert",
+    "submittedSuccessfully": "Erfolgreich übermittelt"
+  }
+}

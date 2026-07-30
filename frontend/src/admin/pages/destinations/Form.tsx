@@ -4,40 +4,41 @@ import { Loader2Icon, PlusIcon, SaveIcon, TrashIcon } from 'lucide-react';
 import { apiDelete, apiGetList, apiGetOne, apiPatch, apiPost, ApiRequestError } from '../../../lib/api';
 import { useToast } from '../../components/ToastProvider';
 import { PageHeader } from '../../components/PageHeader';
-import { TextField, TextAreaField, NumberField, SelectField, CheckboxField, ImageUploader, TagListInput, RefMultiSelect, RepeatSection } from '../../components/fields/Fields';
+import { TextField, NumberField, SelectField, CheckboxField, ImageUploader, TagListInput, RefMultiSelect, RepeatSection } from '../../components/fields/Fields';
+import { TranslatedInput, TranslatedTextarea, TranslatedTagListInput, emptyLocalizedString, type LocalizedString } from '../../components/fields/TranslatedFields';
 
 const REGION_OPTIONS = ['Cultural Triangle', 'Hill Country', 'Tea Country', 'Wildlife', 'South Coast', 'West Coast', 'North', 'East'];
 const CATEGORY_OPTIONS = ['Cultural', 'Wildlife', 'Beach', 'Hill Country', 'City', 'Nature', 'Adventure'];
 
 interface Attraction {
   _id?: string;
-  name: string;
-  description: string;
+  name: LocalizedString;
+  description: LocalizedString;
   images: string[];
   bestVisitingMonths: string[];
   estimatedVisitDuration: string;
   googleMapsLink: string;
-  travelTips: string[];
+  travelTips: LocalizedString[];
   entryFee: number;
 }
 
 interface DestinationDetail {
-  name: string;
+  name: LocalizedString;
   region?: string;
   tag: string;
-  description: string;
+  description: LocalizedString;
   heroImage: string;
   gallery: string[];
   isFeatured: boolean;
   status: string;
   attractions: Attraction[];
-  history: string;
-  whyVisit: string[];
-  popularActivities: string[];
+  history: LocalizedString;
+  whyVisit: LocalizedString[];
+  popularActivities: LocalizedString[];
   bestTimeToVisit: string;
   openingHours: string;
   entranceFee: { amount: number; currency: string; notes: string };
-  travelTips: string[];
+  travelTips: LocalizedString[];
   nearbyDestinations: { _id: string }[];
   mapLocation?: { lat: number; lng: number };
 }
@@ -47,7 +48,7 @@ interface DestinationOption {
   name: string;
 }
 
-const emptyAttraction = (): Attraction => ({ name: '', description: '', images: [], bestVisitingMonths: [], estimatedVisitDuration: '', googleMapsLink: '', travelTips: [], entryFee: 0 });
+const emptyAttraction = (): Attraction => ({ name: emptyLocalizedString(), description: emptyLocalizedString(), images: [], bestVisitingMonths: [], estimatedVisitDuration: '', googleMapsLink: '', travelTips: [], entryFee: 0 });
 
 export function AdminDestinationForm() {
   const { id } = useParams<{id: string;}>();
@@ -58,25 +59,25 @@ export function AdminDestinationForm() {
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState<LocalizedString>(emptyLocalizedString());
   const [region, setRegion] = useState(REGION_OPTIONS[0]);
   const [tag, setTag] = useState(CATEGORY_OPTIONS[0]);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState<LocalizedString>(emptyLocalizedString());
   const [heroImage, setHeroImage] = useState<string[]>([]);
   const [gallery, setGallery] = useState<string[]>([]);
   const [isFeatured, setIsFeatured] = useState(false);
   const [status, setStatus] = useState('draft');
   const [attractions, setAttractions] = useState<Attraction[]>([]);
 
-  const [history, setHistory] = useState('');
-  const [whyVisit, setWhyVisit] = useState<string[]>([]);
-  const [popularActivities, setPopularActivities] = useState<string[]>([]);
+  const [history, setHistory] = useState<LocalizedString>(emptyLocalizedString());
+  const [whyVisit, setWhyVisit] = useState<LocalizedString[]>([]);
+  const [popularActivities, setPopularActivities] = useState<LocalizedString[]>([]);
   const [bestTimeToVisit, setBestTimeToVisit] = useState('');
   const [openingHours, setOpeningHours] = useState('');
   const [entranceFeeAmount, setEntranceFeeAmount] = useState(0);
   const [entranceFeeCurrency, setEntranceFeeCurrency] = useState('USD');
   const [entranceFeeNotes, setEntranceFeeNotes] = useState('');
-  const [travelTips, setTravelTips] = useState<string[]>([]);
+  const [travelTips, setTravelTips] = useState<LocalizedString[]>([]);
   const [nearbyDestinations, setNearbyDestinations] = useState<string[]>([]);
   const [mapLat, setMapLat] = useState(0);
   const [mapLng, setMapLng] = useState(0);
@@ -90,7 +91,7 @@ export function AdminDestinationForm() {
 
   useEffect(() => {
     if (!isEdit) return;
-    apiGetOne<DestinationDetail>(`/destinations/${id}`).
+    apiGetOne<DestinationDetail>(`/destinations/${id}`, { raw: true }).
     then((d) => {
       setName(d.name);
       setRegion(d.region || REGION_OPTIONS[0]);
@@ -189,13 +190,13 @@ export function AdminDestinationForm() {
         <div className="rounded-2xl bg-white p-6 shadow-soft">
           <p className="mb-4 font-display text-sm font-semibold text-forest">Basics</p>
           <div className="grid gap-4 sm:grid-cols-2">
-            <TextField label="Name" value={name} onChange={setName} required />
+            <TranslatedInput label="Name" value={name} onChange={setName} required />
             <SelectField label="Category" value={tag} onChange={setTag} options={CATEGORY_OPTIONS.map((r) => ({ label: r, value: r }))} />
             <SelectField label="Region" value={region} onChange={setRegion} options={REGION_OPTIONS.map((r) => ({ label: r, value: r }))} />
             <SelectField label="Status" value={status} onChange={setStatus} options={[{ label: 'Draft', value: 'draft' }, { label: 'Published', value: 'published' }, { label: 'Archived', value: 'archived' }]} />
           </div>
           <div className="mt-4">
-            <TextAreaField label="Description" value={description} onChange={setDescription} required />
+            <TranslatedTextarea label="Description" value={description} onChange={setDescription} required />
           </div>
           <div className="mt-4">
             <CheckboxField label="Feature on homepage" checked={isFeatured} onChange={setIsFeatured} />
@@ -213,12 +214,12 @@ export function AdminDestinationForm() {
         <div className="rounded-2xl bg-white p-6 shadow-soft">
           <p className="mb-4 font-display text-sm font-semibold text-forest">Detail Page Content</p>
           <div className="grid gap-4">
-            <TextAreaField label="History" value={history} onChange={setHistory} rows={3} />
+            <TranslatedTextarea label="History" value={history} onChange={setHistory} rows={3} />
             <div className="grid gap-4 sm:grid-cols-2">
-              <TagListInput label="Why Visit" value={whyVisit} onChange={setWhyVisit} placeholder="Add a reason and press Enter" />
-              <TagListInput label="Popular Activities" value={popularActivities} onChange={setPopularActivities} placeholder="Add an activity and press Enter" />
+              <TranslatedTagListInput label="Why Visit" value={whyVisit} onChange={setWhyVisit} placeholder="Add a reason and press Enter" />
+              <TranslatedTagListInput label="Popular Activities" value={popularActivities} onChange={setPopularActivities} placeholder="Add an activity and press Enter" />
             </div>
-            <TagListInput label="Travel Tips" value={travelTips} onChange={setTravelTips} placeholder="Add a tip and press Enter" />
+            <TranslatedTagListInput label="Travel Tips" value={travelTips} onChange={setTravelTips} placeholder="Add a tip and press Enter" />
           </div>
         </div>
 
@@ -260,15 +261,15 @@ export function AdminDestinationForm() {
             {attractions.map((a, i) =>
           <div key={a._id || i} className="rounded-xl border border-forest/10 p-4">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <TextField label="Name" value={a.name} onChange={(v) => updateAttraction(i, { name: v })} />
+                  <TranslatedInput label="Name" value={a.name} onChange={(v) => updateAttraction(i, { name: v })} />
                   <TextField label="Google Maps Link" value={a.googleMapsLink} onChange={(v) => updateAttraction(i, { googleMapsLink: v })} />
                   <div className="sm:col-span-2">
-                    <TextAreaField label="Description" value={a.description} onChange={(v) => updateAttraction(i, { description: v })} rows={2} />
+                    <TranslatedTextarea label="Description" value={a.description} onChange={(v) => updateAttraction(i, { description: v })} rows={2} />
                   </div>
                   <TextField label="Estimated Visit Duration" value={a.estimatedVisitDuration} onChange={(v) => updateAttraction(i, { estimatedVisitDuration: v })} placeholder="e.g. 2-3 hours" />
                   <NumberField label="Entry Fee (USD)" value={a.entryFee} onChange={(v) => updateAttraction(i, { entryFee: v })} min={0} />
                   <TagListInput label="Best Visiting Months" value={a.bestVisitingMonths} onChange={(v) => updateAttraction(i, { bestVisitingMonths: v })} />
-                  <TagListInput label="Travel Tips" value={a.travelTips} onChange={(v) => updateAttraction(i, { travelTips: v })} />
+                  <TranslatedTagListInput label="Travel Tips" value={a.travelTips} onChange={(v) => updateAttraction(i, { travelTips: v })} />
                   <div className="sm:col-span-2">
                     <ImageUploader label="Images" value={a.images} onChange={(v) => updateAttraction(i, { images: v })} />
                   </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { EyeIcon, EyeOffIcon, LockIcon, Loader2Icon, MailIcon, PhoneIcon, UserIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ApiRequestError } from '../lib/api';
@@ -11,6 +12,7 @@ type Tab = 'login' | 'register';
 const inputClass = 'w-full rounded-full border border-forest/15 bg-white py-3 pl-11 pr-4 text-sm text-forest outline-none placeholder:text-forest/35 focus:border-emerald';
 
 export function Auth() {
+  const { t } = useTranslation('auth');
   const { login, register } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,7 +46,7 @@ export function Auth() {
       const user = await login(loginEmail, loginPassword);
       redirectAfterAuth(user.role);
     } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : 'Login failed. Please try again.');
+      setError(err instanceof ApiRequestError ? err.message : t('loginFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -58,7 +60,7 @@ export function Auth() {
       const user = await register({ fullName, email: regEmail, password: regPassword, phone: phone || undefined });
       redirectAfterAuth(user.role);
     } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : 'Registration failed. Please try again.');
+      setError(err instanceof ApiRequestError ? err.message : t('registrationFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -80,28 +82,28 @@ export function Auth() {
         <div className="flex flex-col items-center text-center">
           <img src="/roxaval-icon.png" alt="" className="h-12 w-12 object-contain" />
           <h1 className="font-display mt-4 text-2xl font-semibold text-forest">
-            {tab === 'login' ? 'Welcome Back' : 'Create Your Account'}
+            {tab === 'login' ? t('welcomeBack') : t('createAccount')}
           </h1>
           <p className="mt-1.5 text-sm text-forest/55">
-            {tab === 'login' ? 'Sign in to manage your bookings and profile.' : 'Join Roxaval Travels to start planning your trip.'}
+            {tab === 'login' ? t('loginSubtitle') : t('registerSubtitle')}
           </p>
         </div>
 
         {/* Tabs */}
         <div className="relative mt-7 grid grid-cols-2 rounded-full bg-cream p-1">
-          {(['login', 'register'] as Tab[]).map((t) =>
+          {(['login', 'register'] as Tab[]).map((tabKey) =>
           <button
-            key={t}
+            key={tabKey}
             type="button"
             onClick={() => {
-              setTab(t);
+              setTab(tabKey);
               setError(null);
             }}
             className={`relative z-10 rounded-full py-2.5 text-sm font-semibold transition-colors ${
-            tab === t ? 'text-white' : 'text-forest/60 hover:text-forest'}`
+            tab === tabKey ? 'text-white' : 'text-forest/60 hover:text-forest'}`
             }>
 
-              {t === 'login' ? 'Login' : 'Register'}
+              {tabKey === 'login' ? t('login') : t('register')}
             </button>
           )}
           <motion.div
@@ -125,7 +127,7 @@ export function Auth() {
 
               <div className="relative">
                 <MailIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
-                <input type="email" required value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="Email address" className={inputClass} />
+                <input type="email" required value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder={t('emailPlaceholder')} className={inputClass} />
               </div>
               <div className="relative">
                 <LockIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
@@ -134,7 +136,7 @@ export function Auth() {
                 required
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
-                placeholder="Password"
+                placeholder={t('passwordPlaceholder')}
                 className={`${inputClass} pr-11`} />
 
                 <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-forest/35 hover:text-forest">
@@ -143,7 +145,7 @@ export function Auth() {
               </div>
 
               <div className="flex justify-end">
-                <Link to="/auth/forgot-password" className="text-xs font-medium text-emerald hover:underline">Forgot password?</Link>
+                <Link to="/auth/forgot-password" className="text-xs font-medium text-emerald hover:underline">{t('forgotPassword')}</Link>
               </div>
 
               {error && <p className="rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-600">{error}</p>}
@@ -154,7 +156,7 @@ export function Auth() {
               className="flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-[1.02] active:scale-95 disabled:opacity-70">
 
                 {submitting && <Loader2Icon className="h-4 w-4 animate-spin" />}
-                Sign In
+                {t('signIn')}
               </button>
             </motion.form> :
 
@@ -170,15 +172,15 @@ export function Auth() {
 
               <div className="relative">
                 <UserIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
-                <input type="text" required value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Full name" className={inputClass} />
+                <input type="text" required value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder={t('fullNamePlaceholder')} className={inputClass} />
               </div>
               <div className="relative">
                 <MailIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
-                <input type="email" required value={regEmail} onChange={(e) => setRegEmail(e.target.value)} placeholder="Email address" className={inputClass} />
+                <input type="email" required value={regEmail} onChange={(e) => setRegEmail(e.target.value)} placeholder={t('emailPlaceholder')} className={inputClass} />
               </div>
               <div className="relative">
                 <PhoneIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
-                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone (optional)" className={inputClass} />
+                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('phonePlaceholder')} className={inputClass} />
               </div>
               <div className="relative">
                 <LockIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
@@ -188,7 +190,7 @@ export function Auth() {
                 minLength={8}
                 value={regPassword}
                 onChange={(e) => setRegPassword(e.target.value)}
-                placeholder="Password (min. 8 characters)"
+                placeholder={t('passwordMinPlaceholder')}
                 className={`${inputClass} pr-11`} />
 
                 <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-forest/35 hover:text-forest">
@@ -204,7 +206,7 @@ export function Auth() {
               className="flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-[1.02] active:scale-95 disabled:opacity-70">
 
                 {submitting && <Loader2Icon className="h-4 w-4 animate-spin" />}
-                Create Account
+                {t('createAccountButton')}
               </button>
             </motion.form>
           }

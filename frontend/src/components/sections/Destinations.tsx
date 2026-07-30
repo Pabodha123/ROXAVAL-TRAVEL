@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRightIcon, BookmarkIcon, StarIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { destinations } from '../../data/content';
 
 export function Destinations() {
+  const { t } = useTranslation('home');
   const [activeIndex, setActiveIndex] = useState(0);
   const activeDest = destinations[activeIndex];
 
@@ -43,7 +45,7 @@ export function Destinations() {
         <div className="flex w-full flex-col justify-center px-4 pt-32 pb-8 sm:px-6 lg:w-1/2 lg:px-8 lg:py-32">
           <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-gold-light">
             <span className="h-0.5 w-8 bg-gold-light" />
-            Popular Destinations
+            {t('destinations.eyebrow')}
           </div>
 
           <AnimatePresence mode="wait">
@@ -62,7 +64,7 @@ export function Destinations() {
                 {activeDest.description}
               </p>
               <Link to="/destinations" className="group mt-8 inline-flex items-center gap-2 rounded-full bg-emerald px-8 py-4 text-sm font-semibold text-white shadow-lift transition-all hover:scale-105 hover:bg-emerald-light active:scale-95">
-                Explore <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                {t('destinations.explore')} <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </motion.div>
           </AnimatePresence>

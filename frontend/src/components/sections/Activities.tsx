@@ -3,10 +3,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowUpRightIcon, ArrowRightIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { activities } from '../../data/content';
 import { SectionHeading } from '../ui/SectionHeading';
 
 export function Activities() {
+  const { t } = useTranslation('home');
   return (
     <section id="activities" className="relative py-24 bg-forest overflow-hidden">
       <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-emerald/30 blur-3xl" />
@@ -14,10 +16,10 @@ export function Activities() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           light
-          eyebrow="Things to do"
-          title="Thrilling Activities"
-          subtitle="Adventure, wildlife and culture — unforgettable experiences woven into every journey." />
-        
+          eyebrow={t('activities.eyebrow')}
+          title={t('activities.title')}
+          subtitle={t('activities.subtitle')} />
+
 
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {activities.map((a, i) =>
@@ -36,7 +38,7 @@ export function Activities() {
                 <h3 className="font-display text-xl font-semibold text-white">{a.name}</h3>
                 <p className="mt-1.5 text-sm text-cream/80 leading-relaxed line-clamp-2">{a.description}</p>
                 <button className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-full bg-white/15 backdrop-blur px-4 py-2 text-xs font-semibold text-white transition-colors group-hover:bg-gold group-hover:text-forest">
-                  Explore Activity <ArrowUpRightIcon className="h-3.5 w-3.5" />
+                  {t('activities.exploreActivity')} <ArrowUpRightIcon className="h-3.5 w-3.5" />
                 </button>
               </div>
             </motion.article>
@@ -48,7 +50,7 @@ export function Activities() {
             to="/activities"
             className="group inline-flex items-center gap-2 rounded-full border border-white/30 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-forest">
 
-            View All Activities
+            {t('activities.viewAllActivities')}
             <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>

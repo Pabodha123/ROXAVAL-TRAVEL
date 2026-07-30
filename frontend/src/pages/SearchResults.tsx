@@ -2,17 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SearchIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { searchAll, totalResultCount, EMPTY_RESULTS } from '../lib/search';
 import type { SearchResults as SearchResultsData, SearchResultItem, SearchCategory } from '../lib/search';
 import { BreadcrumbBackRow } from '../components/layout/BreadcrumbBackRow';
 import { LoadingState, EmptyState } from '../components/ui/StatusState';
-
-const CATEGORIES: { key: SearchCategory; pick: (r: SearchResultsData) => SearchResultItem[] }[] = [
-{ key: 'Tour Packages', pick: (r) => r.packages },
-{ key: 'Destinations', pick: (r) => r.destinations },
-{ key: 'Activities', pick: (r) => r.activities },
-{ key: 'Hotels', pick: (r) => r.hotels },
-{ key: 'Blog', pick: (r) => r.blog }];
 
 
 function ResultCard({ item }: {item: SearchResultItem;}) {
@@ -40,6 +34,14 @@ function ResultCard({ item }: {item: SearchResultItem;}) {
 }
 
 export function SearchResults() {
+  const { t } = useTranslation();
+  const CATEGORIES: { key: SearchCategory; label: string; pick: (r: SearchResultsData) => SearchResultItem[] }[] = [
+    { key: 'Tour Packages', label: t('nav.packages'), pick: (r) => r.packages },
+    { key: 'Destinations', label: t('nav.destinations'), pick: (r) => r.destinations },
+    { key: 'Activities', label: t('nav.activities'), pick: (r) => r.activities },
+    { key: 'Hotels', label: t('search.categoryHotels'), pick: (r) => r.hotels },
+    { key: 'Blog', label: t('nav.blog'), pick: (r) => r.blog },
+  ];
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const query = searchParams.get('q') || '';
@@ -74,41 +76,41 @@ export function SearchResults() {
     <main className="min-h-screen bg-cream pt-24">
       <section className="bg-forest py-16 text-center text-white">
         <div className="mx-auto mb-8 max-w-7xl px-4 text-left sm:px-6 lg:px-8">
-          <BreadcrumbBackRow breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Search' }]} />
+          <BreadcrumbBackRow breadcrumbs={[{ label: t('nav.home'), href: '/' }, { label: t('search.breadcrumb') }]} />
         </div>
         <div className="mx-auto max-w-2xl px-4">
-          <h1 className="font-display text-3xl font-semibold sm:text-4xl">Search Roxaval Travels</h1>
+          <h1 className="font-display text-3xl font-semibold sm:text-4xl">{t('search.title')}</h1>
           <form onSubmit={submit} className="mt-6 flex items-center gap-2 rounded-full bg-white p-1.5 pl-5 shadow-lift">
             <SearchIcon className="h-5 w-5 shrink-0 text-forest/40" />
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Search tours, destinations, activities, hotels, blog…"
+              placeholder={t('search.placeholder')}
               className="flex-1 bg-transparent px-2 py-2.5 text-sm text-forest outline-none placeholder:text-forest/40" />
 
             <button type="submit" className="rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-forest transition-transform hover:scale-105">
-              Search
+              {t('search.submit')}
             </button>
           </form>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        {!query.trim() && <EmptyState title="Search for something" message="Try a destination, tour package, activity or hotel name." />}
-        {query.trim() && loading && <LoadingState title={`Searching for “${query}”…`} />}
+        {!query.trim() && <EmptyState title={t('search.searchForSomething')} message={t('search.searchHint')} />}
+        {query.trim() && loading && <LoadingState title={t('search.searchingFor', { query })} />}
         {query.trim() && !loading && total === 0 &&
-        <EmptyState title="No results found" message={`We couldn't find anything matching “${query}”. Try a different search term.`} />
+        <EmptyState title={t('status.noResults')} message={t('search.noResultsFor', { query })} />
         }
 
         {query.trim() && !loading && total > 0 &&
         <div className="space-y-14">
-            <p className="text-sm text-forest/60">{total} result{total === 1 ? '' : 's'} for &ldquo;{query}&rdquo;</p>
-            {CATEGORIES.map(({ key, pick }) => {
+            <p className="text-sm text-forest/60">{t('search.resultCount', { count: total, query })}</p>
+            {CATEGORIES.map(({ key, label, pick }) => {
               const items = pick(results);
               if (items.length === 0) return null;
               return (
                 <motion.div key={key} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.5 }}>
-                  <h2 className="font-display text-2xl font-semibold text-forest">{key}</h2>
+                  <h2 className="font-display text-2xl font-semibold text-forest">{label}</h2>
                   <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     {items.map((item) => <ResultCard key={item.id} item={item} />)}
                   </div>

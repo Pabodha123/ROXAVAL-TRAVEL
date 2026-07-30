@@ -3,6 +3,7 @@ const path = require('path');
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
 const env = require('../config/env');
+const { t } = require('../i18n/strings');
 
 const BRAND_COLOR = '#0f766e';
 const GOLD_COLOR = '#c8a24c';
@@ -10,7 +11,7 @@ const TEXT_COLOR = '#1f2937';
 const MUTED_COLOR = '#6b7280';
 const PAGE_WIDTH = 515; // usable width at margin 40 on A4
 
-function drawHeader(doc) {
+function drawHeader(doc, s) {
   const logoPath = path.resolve(process.cwd(), env.COMPANY.logoPath);
   const startY = 40;
 
@@ -27,7 +28,7 @@ function drawHeader(doc) {
     .text(`${env.COMPANY.phone}  |  ${env.COMPANY.email}`, 105, startY + 30)
     .text(env.COMPANY.website, 105, startY + 42);
 
-  doc.fillColor(BRAND_COLOR).font('Helvetica-Bold').fontSize(18).text('HOTEL VOUCHER', 0, startY, { align: 'right' });
+  doc.fillColor(BRAND_COLOR).font('Helvetica-Bold').fontSize(18).text(s.hotelVoucher, 0, startY, { align: 'right' });
 
   doc.moveTo(40, 95).lineTo(555, 95).strokeColor('#e5e7eb').stroke();
   doc.y = 108;
@@ -102,7 +103,8 @@ function drawTable(doc, { x, y, columns, rows }) {
  * Renders a single hotel voucher PDF from a HotelVoucher document (already
  * populated where needed by the caller) and returns the absolute file path.
  */
-async function generateHotelVoucherPdf(voucher, outputFileName) {
+async function generateHotelVoucherPdf(voucher, outputFileName, lang = 'en') {
+  const s = t(lang, 'pdf');
   const outputDir = path.resolve(process.cwd(), env.UPLOADS.documentsDir);
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
   const filePath = path.join(outputDir, outputFileName);
@@ -111,7 +113,7 @@ async function generateHotelVoucherPdf(voucher, outputFileName) {
   const stream = fs.createWriteStream(filePath);
   doc.pipe(stream);
 
-  drawHeader(doc);
+  drawHeader(doc, s);
 
   // Meta bar
   keyValueRow(
@@ -119,10 +121,10 @@ async function generateHotelVoucherPdf(voucher, outputFileName) {
     40,
     doc.y + 6,
     [
-      ['Voucher No', voucher.voucherNumber],
-      ['Booking Ref', voucher.bookingReference],
-      ['Tour Ref', voucher.tourReferenceNumber || '-'],
-      ['Date Issued', new Date().toLocaleDateString()],
+      [s.voucherNo, voucher.voucherNumber],
+      [s.bookingRef, voucher.bookingReference],
+      [s.tourReference, voucher.tourReferenceNumber || '-'],
+      [s.dateIssued, new Date().toLocaleDateString()],
     ],
     PAGE_WIDTH / 4
   );
@@ -138,9 +140,9 @@ async function generateHotelVoucherPdf(voucher, outputFileName) {
     40,
     doc.y,
     [
-      ['Guest Name', voucher.customerName],
-      ['Guests', guestSummary],
-      ['Emergency Contact', voucher.emergencyContact || voucher.customerPhone || '-'],
+      [s.guestName, voucher.customerName],
+      [s.guests, guestSummary],
+      [s.emergencyContact, voucher.emergencyContact || voucher.customerPhone || '-'],
     ],
     PAGE_WIDTH / 3
   );
@@ -151,9 +153,9 @@ async function generateHotelVoucherPdf(voucher, outputFileName) {
     40,
     doc.y,
     [
-      ['Tour Package', voucher.tourPackageName || '-'],
-      ['Tour Start', voucher.tourStartDate ? new Date(voucher.tourStartDate).toDateString() : '-'],
-      ['Tour End', voucher.tourEndDate ? new Date(voucher.tourEndDate).toDateString() : '-'],
+      [s.package, voucher.tourPackageName || '-'],
+      [s.tourStart, voucher.tourStartDate ? new Date(voucher.tourStartDate).toDateString() : '-'],
+      [s.tourEnd, voucher.tourEndDate ? new Date(voucher.tourEndDate).toDateString() : '-'],
     ],
     PAGE_WIDTH / 3
   );
@@ -178,12 +180,12 @@ async function generateHotelVoucherPdf(voucher, outputFileName) {
     x: 40,
     y: doc.y,
     columns: [
-      { key: 'checkIn', label: 'Check-in', width: 75 },
-      { key: 'checkOut', label: 'Check-out', width: 75 },
-      { key: 'nights', label: 'Nights', width: 45 },
-      { key: 'roomType', label: 'Room Type', width: 140 },
+      { key: 'checkIn', label: s.checkIn, width: 75 },
+      { key: 'checkOut', label: s.checkOut, width: 75 },
+      { key: 'nights', label: s.nights, width: 45 },
+      { key: 'roomType', label: s.roomType, width: 140 },
       { key: 'rooms', label: 'Rooms', width: 45 },
-      { key: 'mealPlan', label: 'Meal Plan', width: 65 },
+      { key: 'mealPlan', label: s.mealPlan, width: 65 },
       { key: 'times', label: 'Arr / Dep', width: 70 },
     ],
     rows: [
@@ -191,7 +193,7 @@ async function generateHotelVoucherPdf(voucher, outputFileName) {
         checkIn: new Date(voucher.checkInDate).toDateString(),
         checkOut: new Date(voucher.checkOutDate).toDateString(),
         nights: voucher.nights,
-        roomType: voucher.roomType || 'Standard',
+        roomType: voucher.roomType || s.standard,
         rooms: voucher.numberOfRooms,
         mealPlan: voucher.mealPlan,
         times: `${voucher.arrivalTime || '-'} / ${voucher.departureTime || '-'}`,
@@ -201,21 +203,21 @@ async function generateHotelVoucherPdf(voucher, outputFileName) {
   doc.y = tableY;
 
   if (voucher.specialRequests) {
-    doc.font('Helvetica-Bold').fontSize(9).fillColor(TEXT_COLOR).text('Special Requests', 40, doc.y);
+    doc.font('Helvetica-Bold').fontSize(9).fillColor(TEXT_COLOR).text(s.specialRequests, 40, doc.y);
     doc.font('Helvetica').fontSize(9).fillColor(MUTED_COLOR).text(voucher.specialRequests, 40, doc.y + 12, { width: 515 });
     doc.y += 34;
   }
 
   if (voucher.ratePerNight) {
-    doc.font('Helvetica').fontSize(10).fillColor(TEXT_COLOR).text('Rate Per Night', 350, doc.y, { continued: true, width: 100 });
+    doc.font('Helvetica').fontSize(10).fillColor(TEXT_COLOR).text(s.ratePerNight, 350, doc.y, { continued: true, width: 100 });
     doc.font('Helvetica-Bold').text(`  ${voucher.ratePerNight.toLocaleString()} USD`, { align: 'right' });
-    doc.font('Helvetica-Bold').fontSize(11).fillColor(BRAND_COLOR).text('Grand Total', 350, doc.y + 6, { continued: true, width: 100 });
+    doc.font('Helvetica-Bold').fontSize(11).fillColor(BRAND_COLOR).text(s.grandTotal, 350, doc.y + 6, { continued: true, width: 100 });
     doc.text(`  ${(voucher.totalAmount || 0).toLocaleString()} USD`, { align: 'right' });
     doc.y += 26;
   }
 
   doc.font('Helvetica').fontSize(8.5).fillColor(MUTED_COLOR).text(
-    'Kindly confirm availability and proceed with the reservation. If any rooms are sold out or the rate has changed, please notify us immediately.',
+    s.confirmationNote,
     40,
     doc.y + 6,
     { width: 515 }
@@ -225,11 +227,11 @@ async function generateHotelVoucherPdf(voucher, outputFileName) {
   // Footer: signature + stamp + QR
   const footerY = Math.max(doc.y, doc.page.height - 170);
   doc.moveTo(40, footerY).lineTo(295, footerY).strokeColor('#9ca3af').stroke();
-  doc.font('Helvetica').fontSize(8).fillColor(MUTED_COLOR).text('Authorized Signature', 40, footerY + 4);
+  doc.font('Helvetica').fontSize(8).fillColor(MUTED_COLOR).text(s.authorizedSignature, 40, footerY + 4);
 
   doc.rect(320, footerY - 40, 130, 60).strokeColor('#9ca3af').dash(2, { space: 2 }).stroke();
   doc.undash();
-  doc.font('Helvetica').fontSize(8).fillColor(MUTED_COLOR).text('Hotel Confirmation / Stamp', 320, footerY + 4);
+  doc.font('Helvetica').fontSize(8).fillColor(MUTED_COLOR).text(s.hotelConfirmationStamp, 320, footerY + 4);
 
   const qrText = `Voucher:${voucher.voucherNumber}|Booking:${voucher.bookingReference}|Hotel:${hotel.name}|CheckIn:${new Date(
     voucher.checkInDate
@@ -240,7 +242,7 @@ async function generateHotelVoucherPdf(voucher, outputFileName) {
   doc
     .fontSize(7)
     .fillColor(MUTED_COLOR)
-    .text(`${env.COMPANY.name} • ${env.COMPANY.website} • Generated on ${new Date().toLocaleDateString()}`, 40, doc.page.height - 40, {
+    .text(`${env.COMPANY.name} • ${env.COMPANY.website} • ${s.generatedOn} ${new Date().toLocaleDateString()}`, 40, doc.page.height - 40, {
       align: 'center',
       width: 515,
     });

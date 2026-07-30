@@ -1,0 +1,28 @@
+{
+  "modal": {
+    "bookTitle": "Book {{name}}",
+    "travelDate": "Travel Date",
+    "adults": "Adults",
+    "children": "Children",
+    "infants": "Infants",
+    "specialRequests": "Special Requests (optional)",
+    "estimatedTotal": "Estimated total",
+    "confirmBooking": "Confirm Booking",
+    "selectDateError": "Please select a travel date.",
+    "createError": "Could not create booking. Please try again.",
+    "successToast": "Booking {{reference}} created — proceed to payment in My Tours."
+  },
+  "payment": {
+    "title": "Payment",
+    "method": "Payment Method",
+    "bankTransfer": "Bank Transfer",
+    "whatsapp": "WhatsApp",
+    "card": "Card",
+    "amount": "Amount",
+    "reference": "Reference",
+    "uploadReceipt": "Upload Receipt",
+    "submitPayment": "Submit Payment",
+    "submitError": "Could not submit payment. Please try again.",
+    "successToast": "Payment submitted — we'll confirm shortly."
+  }
+}

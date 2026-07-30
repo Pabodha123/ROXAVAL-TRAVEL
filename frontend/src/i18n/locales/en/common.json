@@ -1,0 +1,111 @@
+{
+  "brand": { "name": "Roxaval", "suffix": "Travels" },
+  "nav": {
+    "home": "Home",
+    "packages": "Tour Packages",
+    "destinations": "Destinations",
+    "activities": "Activities",
+    "myTours": "My Tours",
+    "explore": "Explore",
+    "aboutUs": "About Us",
+    "contactUs": "Contact Us",
+    "blog": "Blog",
+    "reviews": "Reviews",
+    "terms": "Terms & Conditions",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "loginRegister": "Login / Register",
+    "search": "Search",
+    "changeLanguage": "Change language",
+    "toggleMenu": "Toggle menu"
+  },
+  "language": {
+    "en": "English",
+    "de": "German",
+    "fr": "French"
+  },
+  "footer": {
+    "newsletterTitle": "Get travel inspiration in your inbox",
+    "newsletterSubtitle": "Exclusive Sri Lanka deals, guides and stories. No spam, ever.",
+    "emailPlaceholder": "Your email address",
+    "subscribe": "Subscribe",
+    "companyBlurb": "Wings to explore Sri Lanka. We craft luxurious, fully customized journeys across the island — from ancient kingdoms to golden beaches.",
+    "quickLinks": "Quick Links",
+    "contactUs": "Contact Us",
+    "exploreMore": "Explore More",
+    "privacyPolicy": "Privacy Policy",
+    "faq": "FAQ",
+    "whatsapp": "WhatsApp",
+    "tailorMadeTours": "Tailor Made Tours",
+    "copyright": "© {{year}} Roxaval Travels. All rights reserved.",
+    "tagline": "Designed for unforgettable journeys ✨"
+  },
+  "buttons": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "saveChanges": "Save Changes",
+    "submit": "Submit",
+    "close": "Close",
+    "viewAll": "View All",
+    "viewDetails": "View Details",
+    "loadMore": "Load More",
+    "tryAgain": "Try Again",
+    "clearFilters": "Clear Filters",
+    "readMore": "Read More",
+    "bookNow": "Book Now",
+    "learnMore": "Learn More",
+    "continue": "Continue",
+    "goBack": "Go Back",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{page}} of {{total}}",
+    "shownOfTotal": "Showing {{shown}} of {{total}} results"
+  },
+  "status": {
+    "loading": "Loading...",
+    "noResults": "No results found",
+    "noResultsHint": "Try adjusting your filters or search terms.",
+    "error": "Something went wrong. Please try again.",
+    "tryAgainMoment": "Please try again in a moment.",
+    "empty": "Nothing here yet"
+  },
+  "filter": {
+    "search": "Search...",
+    "sortBy": "Sort by",
+    "allOption": "All {{label}}",
+    "allCategories": "All Categories",
+    "category": "Category",
+    "region": "Region",
+    "priceRange": "Price Range"
+  },
+  "search": {
+    "breadcrumb": "Search",
+    "title": "Search Roxaval Travels",
+    "placeholder": "Search tours, destinations, activities, hotels, blog…",
+    "submit": "Search",
+    "searchForSomething": "Search for something",
+    "searchHint": "Try a destination, tour package, activity or hotel name.",
+    "searchingFor": "Searching for \"{{query}}\"…",
+    "noResultsFor": "We couldn't find anything matching \"{{query}}\". Try a different search term.",
+    "resultCount_one": "{{count}} result for \"{{query}}\"",
+    "resultCount_other": "{{count}} results for \"{{query}}\"",
+    "categoryHotels": "Hotels"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "minLength": "Must be at least {{count}} characters",
+    "passwordsDontMatch": "Passwords do not match",
+    "invalidPhone": "Please enter a valid phone number",
+    "genericError": "Something went wrong. Please try again.",
+    "savedSuccessfully": "Saved successfully",
+    "submittedSuccessfully": "Submitted successfully"
+  }
+}

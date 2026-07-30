@@ -23,17 +23,20 @@ const getDashboardStats = async () => {
     }),
   ]);
 
-  const popularDestinations = await Destination.aggregate([
+  const popularDestinationsRaw = await Destination.aggregate([
     { $match: { status: 'published' } },
     { $sort: { isFeatured: -1 } },
     { $limit: 5 },
     { $project: { name: 1, tag: 1, heroImage: 1 } },
   ]);
+  const popularDestinations = popularDestinationsRaw.map((d) => ({ ...d, name: d.name?.en || '' }));
 
-  const popularPackages = await TourPackage.find({ status: 'published' })
+  const popularPackagesRaw = await TourPackage.find({ status: 'published' })
     .sort('-reviewsCount -rating')
     .limit(5)
-    .select('name price rating reviewsCount heroImage');
+    .select('name price rating reviewsCount heroImage')
+    .lean();
+  const popularPackages = popularPackagesRaw.map((p) => ({ ...p, name: p.name?.en || '' }));
 
   return {
     totalBookings,
@@ -45,7 +48,7 @@ const getDashboardStats = async () => {
     recentActivity: recentBookings.map((b) => ({
       bookingReference: b.bookingReference,
       customerName: b.customer?.user?.fullName,
-      packageName: b.tourPackage?.name || 'Customized Tour',
+      packageName: b.tourPackage?.name?.en || 'Customized Tour',
       status: b.status,
       createdAt: b.createdAt,
     })),

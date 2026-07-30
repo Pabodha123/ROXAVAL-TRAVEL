@@ -616,12 +616,29 @@ async function seed() {
   // Destinations
   // Note: findOneAndUpdate bypasses the model's pre('save') slug hook, so the
   // slug is computed here to avoid every upserted doc colliding on slug: null.
+  // Seed content above stays plain-English strings for readability — wrapped
+  // into the {en,de,fr} localized shape here, at insert time, so admins can
+  // fill in German/French translations later without touching this data.
+  const t = (s) => ({ en: s || '', de: '', fr: '' });
+  const tArr = (arr) => (arr || []).map((s) => ({ en: s, de: '', fr: '' }));
+
   const destMap = {};
   for (const d of destinationsSeed) {
-    const slug = slugify(d.name, { lower: true, strict: true });
+    const plainName = d.name;
+    const slug = slugify(plainName, { lower: true, strict: true });
+    const payload = {
+      ...d,
+      slug,
+      name: t(plainName),
+      description: t(d.description),
+      history: t(d.history),
+      whyVisit: tArr(d.whyVisit),
+      popularActivities: tArr(d.popularActivities),
+      travelTips: tArr(d.travelTips),
+    };
     // eslint-disable-next-line no-await-in-loop
-    const doc = await Destination.findOneAndUpdate({ name: d.name }, { ...d, slug }, { upsert: true, new: true });
-    destMap[d.name] = doc._id;
+    const doc = await Destination.findOneAndUpdate({ 'name.en': plainName }, payload, { upsert: true, new: true });
+    destMap[plainName] = doc._id;
   }
   for (const [name, nearbyNames] of Object.entries(nearbyDestinationsByName)) {
     if (!destMap[name]) continue;
@@ -634,11 +651,21 @@ async function seed() {
   // Hotels
   const hotelMap = {};
   for (const h of hotelsSeed) {
-    const { destination, ...rest } = h;
-    const slug = `${slugify(h.name, { lower: true, strict: true })}-hotel`;
+    const { destination, name, address, description, amenities, roomTypes, ...rest } = h;
+    const slug = `${slugify(name, { lower: true, strict: true })}-hotel`;
+    const payload = {
+      ...rest,
+      slug,
+      destination: destMap[destination],
+      name: t(name),
+      address: t(address),
+      description: t(description),
+      amenities: tArr(amenities),
+      roomTypes: (roomTypes || []).map((rt) => ({ ...rt, name: t(rt.name), amenities: tArr(rt.amenities) })),
+    };
     // eslint-disable-next-line no-await-in-loop
-    const doc = await Hotel.findOneAndUpdate({ name: h.name }, { ...rest, slug, destination: destMap[destination] }, { upsert: true, new: true });
-    hotelMap[h.name] = doc._id;
+    const doc = await Hotel.findOneAndUpdate({ 'name.en': name }, payload, { upsert: true, new: true });
+    hotelMap[name] = doc._id;
   }
   console.log(`Seeded ${hotelsSeed.length} hotels.`);
 
@@ -661,29 +688,47 @@ async function seed() {
   // Activities
   const activityMap = {};
   for (const a of activitiesSeed) {
-    const { destinations, ...rest } = a;
-    const slug = slugify(a.name, { lower: true, strict: true });
+    const { destinations, name, description, location, bestSeason, highlights, thingsIncluded, thingsToBring, ...rest } = a;
+    const slug = slugify(name, { lower: true, strict: true });
+    const payload = {
+      ...rest,
+      slug,
+      destinations: (destinations || []).map((n) => destMap[n]).filter(Boolean),
+      name: t(name),
+      description: t(description),
+      location: t(location),
+      bestSeason: t(bestSeason),
+      highlights: tArr(highlights),
+      thingsIncluded: tArr(thingsIncluded),
+      thingsToBring: tArr(thingsToBring),
+    };
     // eslint-disable-next-line no-await-in-loop
-    const doc = await Activity.findOneAndUpdate(
-      { name: a.name },
-      { ...rest, slug, destinations: (destinations || []).map((n) => destMap[n]).filter(Boolean) },
-      { upsert: true, new: true }
-    );
-    activityMap[a.name] = doc._id;
+    const doc = await Activity.findOneAndUpdate({ 'name.en': name }, payload, { upsert: true, new: true });
+    activityMap[name] = doc._id;
   }
   console.log(`Seeded ${activitiesSeed.length} activities.`);
 
   // Tour Packages
   const packagesSeed = buildPackagesSeed(destMap, activityMap, hotelMap);
   for (const p of packagesSeed) {
+    const plainName = p.name;
+    const payload = {
+      ...p,
+      name: t(plainName),
+      description: t(p.description),
+      highlights: tArr(p.highlights),
+      includedServices: tArr(p.includedServices),
+      excludedServices: tArr(p.excludedServices),
+      itinerary: (p.itinerary || []).map((day) => ({ ...day, title: t(day.title), description: t(day.description) })),
+    };
     // eslint-disable-next-line no-await-in-loop
-    const exists = await TourPackage.findOne({ name: p.name });
+    const exists = await TourPackage.findOne({ 'name.en': plainName });
     if (!exists) {
       // eslint-disable-next-line no-await-in-loop
-      await TourPackage.create({ ...p, createdBy: user._id });
+      await TourPackage.create({ ...payload, createdBy: user._id });
     } else {
       // eslint-disable-next-line no-await-in-loop
-      await TourPackage.findByIdAndUpdate(exists._id, p);
+      await TourPackage.findByIdAndUpdate(exists._id, payload);
     }
   }
   console.log(`Seeded ${packagesSeed.length} tour packages.`);

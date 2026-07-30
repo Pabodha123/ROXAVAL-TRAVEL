@@ -1,5 +1,6 @@
 import React from 'react';
 import { SearchIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export interface FilterOption {
   label: string;
@@ -29,7 +30,7 @@ const selectClass = 'rounded-full border border-forest/15 bg-white px-4 py-3 tex
 export function FilterBar({
   search,
   onSearchChange,
-  searchPlaceholder = 'Search…',
+  searchPlaceholder,
   filters,
   values,
   onFilterChange,
@@ -37,6 +38,7 @@ export function FilterBar({
   sort,
   onSortChange
 }: FilterBarProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-4 rounded-3xl bg-white p-5 shadow-soft sm:p-6">
       <div className="relative">
@@ -45,7 +47,7 @@ export function FilterBar({
           type="text"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={searchPlaceholder}
+          placeholder={searchPlaceholder ?? t('filter.search')}
           className="w-full rounded-full border border-forest/15 bg-cream/60 py-3.5 pl-11 pr-4 text-sm text-forest outline-none transition-colors focus:border-emerald focus:bg-white" />
 
       </div>
@@ -58,7 +60,7 @@ export function FilterBar({
           onChange={(e) => onFilterChange(f.key, e.target.value)}
           className={selectClass}>
 
-            <option value="">All {f.label}</option>
+            <option value="">{t('filter.allOption', { label: f.label })}</option>
             {f.options.map((opt) =>
           <option key={opt.value} value={opt.value}>{opt.label}</option>
           )}

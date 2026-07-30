@@ -1,24 +1,27 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CalendarIcon, ArrowRightIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { blogPosts } from '../../data/content';
 import { SectionHeading } from '../ui/SectionHeading';
 
 export function Blog() {
+  const { t } = useTranslation('home');
   return (
     <section id="blog" className="relative py-24 bg-sand">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <SectionHeading
             align="left"
-            eyebrow="From the journal"
-            title="Latest Travel Stories"
-            subtitle="Guides, tips and tales to inspire your next Sri Lankan adventure." />
-          
-          <a href="#" className="hidden md:inline-flex items-center gap-2 rounded-full border border-forest/20 px-5 py-2.5 text-sm font-semibold text-forest transition-colors hover:bg-forest hover:text-white">
-            View all posts <ArrowRightIcon className="h-4 w-4" />
-          </a>
+            eyebrow={t('blog.eyebrow')}
+            title={t('blog.title')}
+            subtitle={t('blog.subtitle')} />
+
+          <Link to="/blog" className="hidden md:inline-flex items-center gap-2 rounded-full border border-forest/20 px-5 py-2.5 text-sm font-semibold text-forest transition-colors hover:bg-forest hover:text-white">
+            {t('blog.viewAllPosts')} <ArrowRightIcon className="h-4 w-4" />
+          </Link>
         </div>
 
         <div className="mt-14 grid gap-8 md:grid-cols-3">
@@ -42,9 +45,9 @@ export function Blog() {
                 </div>
                 <h3 className="font-display mt-2 text-lg font-semibold leading-snug text-forest group-hover:text-emerald transition-colors">{b.title}</h3>
                 <p className="mt-2 flex-1 text-sm leading-relaxed text-forest/65">{b.preview}</p>
-                <a href="#" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald">
-                  Read More <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </a>
+                <Link to="/blog" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald">
+                  {t('blog.readMore')} <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
               </div>
             </motion.article>
           )}

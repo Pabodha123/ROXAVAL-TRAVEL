@@ -5,26 +5,23 @@ import { apiGetList, apiGetOne, apiPatch, apiPost, ApiRequestError } from '../..
 import { useToast } from '../../components/ToastProvider';
 import { PageHeader } from '../../components/PageHeader';
 import {
-  TextField,
-  TextAreaField,
   NumberField,
   SelectField,
   CheckboxField,
-  TagListInput,
   RefMultiSelect,
   ImageUploader,
   RepeatSection,
   FieldWrap } from
 '../../components/fields/Fields';
-import type { TourPackage } from '../../../types/tourPackage';
+import { TranslatedInput, TranslatedTextarea, TranslatedTagListInput, emptyLocalizedString, type LocalizedString } from '../../components/fields/TranslatedFields';
 
 const CATEGORY_OPTIONS = ['Best Seller', 'Scenic', 'Adventure', 'Relax', 'Luxury', 'Signature', 'Honeymoon', 'Family', 'Wildlife'];
 const MEAL_OPTIONS = ['Breakfast', 'Lunch', 'Dinner'];
 
 interface ItineraryDayForm {
   dayNumber: number;
-  title: string;
-  description: string;
+  title: LocalizedString;
+  description: LocalizedString;
   destinations: string[];
   activities: string[];
   hotel: string;
@@ -36,7 +33,42 @@ interface RefOption {
   label: string;
 }
 
-const emptyDay = (n: number): ItineraryDayForm => ({ dayNumber: n, title: '', description: '', destinations: [], activities: [], hotel: '', meals: [] });
+// Admin edits every language at once, so it fetches/saves the raw {en,de,fr}
+// shape (via `?raw=true`) rather than the locale-flattened public shape.
+interface AdminTourPackageRaw {
+  _id: string;
+  name: LocalizedString;
+  category: string;
+  tourType: string;
+  heroImage: string;
+  gallery: string[];
+  destinations: { _id: string }[];
+  activities: { _id: string }[];
+  hotels: { _id: string }[];
+  durationDays: number;
+  durationNights: number;
+  itinerary: {
+    dayNumber: number;
+    title: LocalizedString;
+    description: LocalizedString;
+    destinations?: { _id: string }[];
+    activities?: { _id: string }[];
+    hotel?: { _id: string };
+    meals?: string[];
+  }[];
+  includedServices: LocalizedString[];
+  excludedServices: LocalizedString[];
+  description: LocalizedString;
+  highlights: LocalizedString[];
+  price: number;
+  discountPrice?: number;
+  minTravelers: number;
+  maxTravelers: number;
+  status: string;
+  isFeatured: boolean;
+}
+
+const emptyDay = (n: number): ItineraryDayForm => ({ dayNumber: n, title: emptyLocalizedString(), description: emptyLocalizedString(), destinations: [], activities: [], hotel: '', meals: [] });
 
 export function AdminPackageForm() {
   const { id } = useParams<{id: string;}>();
@@ -50,7 +82,7 @@ export function AdminPackageForm() {
   const [activityOptions, setActivityOptions] = useState<RefOption[]>([]);
   const [hotelOptions, setHotelOptions] = useState<RefOption[]>([]);
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState<LocalizedString>(emptyLocalizedString());
   const [category, setCategory] = useState('Best Seller');
   const [tourType, setTourType] = useState('Private');
   const [heroImage, setHeroImage] = useState<string[]>([]);
@@ -61,10 +93,10 @@ export function AdminPackageForm() {
   const [durationDays, setDurationDays] = useState(1);
   const [durationNights, setDurationNights] = useState(0);
   const [itinerary, setItinerary] = useState<ItineraryDayForm[]>([emptyDay(1)]);
-  const [includedServices, setIncludedServices] = useState<string[]>([]);
-  const [excludedServices, setExcludedServices] = useState<string[]>([]);
-  const [description, setDescription] = useState('');
-  const [highlights, setHighlights] = useState<string[]>([]);
+  const [includedServices, setIncludedServices] = useState<LocalizedString[]>([]);
+  const [excludedServices, setExcludedServices] = useState<LocalizedString[]>([]);
+  const [description, setDescription] = useState<LocalizedString>(emptyLocalizedString());
+  const [highlights, setHighlights] = useState<LocalizedString[]>([]);
   const [price, setPrice] = useState<number>(0);
   const [discountPrice, setDiscountPrice] = useState<number | ''>('');
   const [minTravelers, setMinTravelers] = useState(1);
@@ -86,7 +118,7 @@ export function AdminPackageForm() {
 
   useEffect(() => {
     if (!isEdit) return;
-    apiGetOne<TourPackage>(`/packages/${id}`).
+    apiGetOne<AdminTourPackageRaw>(`/packages/${id}`, { raw: true }).
     then((p) => {
       setName(p.name);
       setCategory(p.category);
@@ -184,7 +216,7 @@ export function AdminPackageForm() {
         <div className="rounded-2xl bg-white p-6 shadow-soft">
           <p className="mb-4 font-display text-sm font-semibold text-forest">Basics</p>
           <div className="grid gap-4 sm:grid-cols-2">
-            <TextField label="Package Name" value={name} onChange={setName} required />
+            <TranslatedInput label="Package Name" value={name} onChange={setName} required />
             <SelectField label="Category" value={category} onChange={setCategory} options={CATEGORY_OPTIONS.map((c) => ({ label: c, value: c }))} />
             <SelectField label="Tour Type" value={tourType} onChange={setTourType} options={[{ label: 'Private', value: 'Private' }, { label: 'Group', value: 'Group' }]} />
             <SelectField label="Status" value={status} onChange={setStatus} options={[{ label: 'Draft', value: 'draft' }, { label: 'Published', value: 'published' }, { label: 'Archived', value: 'archived' }]} />
@@ -192,7 +224,7 @@ export function AdminPackageForm() {
             <NumberField label="Duration (Nights)" value={durationNights} onChange={setDurationNights} min={0} required />
           </div>
           <div className="mt-4">
-            <TextAreaField label="Description" value={description} onChange={setDescription} required />
+            <TranslatedTextarea label="Description" value={description} onChange={setDescription} required />
           </div>
           <div className="mt-4">
             <CheckboxField label="Feature on homepage" checked={isFeatured} onChange={setIsFeatured} />
@@ -227,9 +259,9 @@ export function AdminPackageForm() {
                 }
                 </div>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                  <TextField label="Title" value={day.title} onChange={(v) => updateDay(i, { title: v })} />
+                  <TranslatedInput label="Title" value={day.title} onChange={(v) => updateDay(i, { title: v })} />
                   <div className="sm:col-span-2">
-                    <TextAreaField label="Description" value={day.description} onChange={(v) => updateDay(i, { description: v })} rows={2} />
+                    <TranslatedTextarea label="Description" value={day.description} onChange={(v) => updateDay(i, { description: v })} rows={2} />
                   </div>
                   <RefMultiSelect label="Destinations" options={destOptions} value={day.destinations} onChange={(v) => updateDay(i, { destinations: v })} />
                   <RefMultiSelect label="Activities" options={activityOptions} value={day.activities} onChange={(v) => updateDay(i, { activities: v })} />
@@ -258,9 +290,9 @@ export function AdminPackageForm() {
         <div className="rounded-2xl bg-white p-6 shadow-soft">
           <p className="mb-4 font-display text-sm font-semibold text-forest">Services &amp; Highlights</p>
           <div className="grid gap-4 sm:grid-cols-2">
-            <TagListInput label="Highlights" value={highlights} onChange={setHighlights} />
-            <TagListInput label="Included Services" value={includedServices} onChange={setIncludedServices} />
-            <TagListInput label="Excluded Services" value={excludedServices} onChange={setExcludedServices} />
+            <TranslatedTagListInput label="Highlights" value={highlights} onChange={setHighlights} />
+            <TranslatedTagListInput label="Included Services" value={includedServices} onChange={setIncludedServices} />
+            <TranslatedTagListInput label="Excluded Services" value={excludedServices} onChange={setExcludedServices} />
           </div>
         </div>
 

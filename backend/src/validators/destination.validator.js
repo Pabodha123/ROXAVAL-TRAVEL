@@ -1,4 +1,5 @@
 const { z } = require('zod');
+const { localizedField, localizedFieldArray } = require('./shared/localized');
 
 const entranceFeeSchema = z.object({
   amount: z.number().min(0).optional(),
@@ -12,19 +13,19 @@ const mapLocationSchema = z.object({
 });
 
 const createDestinationSchema = z.object({
-  name: z.string().min(2),
+  name: localizedField(2),
   region: z.enum(['Cultural Triangle', 'Hill Country', 'Tea Country', 'Wildlife', 'South Coast', 'West Coast', 'North', 'East']).optional(),
   tag: z.enum(['Cultural', 'Wildlife', 'Beach', 'Hill Country', 'City', 'Nature', 'Adventure']),
-  description: z.string().min(10),
+  description: localizedField(10),
   heroImage: z.string().url().or(z.string().min(1)),
   gallery: z.array(z.string()).optional(),
-  history: z.string().optional(),
-  whyVisit: z.array(z.string()).optional(),
-  popularActivities: z.array(z.string()).optional(),
+  history: localizedField(0).optional(),
+  whyVisit: localizedFieldArray().optional(),
+  popularActivities: localizedFieldArray().optional(),
   bestTimeToVisit: z.string().optional(),
   openingHours: z.string().optional(),
   entranceFee: entranceFeeSchema.optional(),
-  travelTips: z.array(z.string()).optional(),
+  travelTips: localizedFieldArray().optional(),
   nearbyDestinations: z.array(z.string()).optional(),
   mapLocation: mapLocationSchema.optional(),
   isFeatured: z.boolean().optional(),
@@ -41,13 +42,13 @@ const createDestinationSchema = z.object({
 const updateDestinationSchema = createDestinationSchema.partial();
 
 const attractionSchema = z.object({
-  name: z.string().min(2),
-  description: z.string().min(10),
+  name: localizedField(2),
+  description: localizedField(10),
   images: z.array(z.string()).optional(),
   bestVisitingMonths: z.array(z.string()).optional(),
   estimatedVisitDuration: z.string().optional(),
   googleMapsLink: z.string().optional(),
-  travelTips: z.array(z.string()).optional(),
+  travelTips: localizedFieldArray().optional(),
   entryFee: z.number().min(0).optional(),
 });
 

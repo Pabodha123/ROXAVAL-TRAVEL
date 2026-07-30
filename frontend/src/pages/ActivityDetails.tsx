@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import {
   ClockIcon,
   MapPinIcon,
@@ -18,6 +19,7 @@ import { BreadcrumbBackRow } from '../components/layout/BreadcrumbBackRow';
 import type { Activity } from '../types/activity';
 
 export function ActivityDetails() {
+  const { t } = useTranslation('activities');
   const { id } = useParams<{ id: string }>();
   const [activity, setActivity] = useState<Activity | null>(null);
   const [related, setRelated] = useState<Activity[]>([]);
@@ -48,8 +50,8 @@ export function ActivityDetails() {
     };
   }, [id]);
 
-  if (loading) return <main className="min-h-screen bg-cream pt-24"><LoadingState title="Loading activity…" /></main>;
-  if (error || !activity) return <main className="min-h-screen bg-cream pt-24"><ErrorState title="Activity not found" message={error || undefined} /></main>;
+  if (loading) return <main className="min-h-screen bg-cream pt-24"><LoadingState title={t('detail.loading')} /></main>;
+  if (error || !activity) return <main className="min-h-screen bg-cream pt-24"><ErrorState title={t('detail.notFoundTitle')} message={error || undefined} /></main>;
 
   const relatedDestinations = activity.destinations;
 
@@ -60,7 +62,7 @@ export function ActivityDetails() {
         <img src={activity.image} alt={activity.name} className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-forest via-forest/40 to-forest/10" />
         <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-between px-4 py-6 sm:px-6 lg:px-8">
-          <BreadcrumbBackRow breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Activities', href: '/activities' }, { label: activity.name }]} />
+          <BreadcrumbBackRow breadcrumbs={[{ label: t('breadcrumb.home'), href: '/' }, { label: t('breadcrumb.activities'), href: '/activities' }, { label: activity.name }]} />
           <div className="pb-6">
             <span className="w-fit rounded-full bg-gold px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-forest">{activity.category}</span>
             <motion.h1
@@ -82,36 +84,36 @@ export function ActivityDetails() {
           <div className="grid grid-cols-2 gap-4 rounded-3xl bg-white p-6 shadow-soft sm:grid-cols-4">
             <div className="flex flex-col items-center gap-1.5 text-center">
               <ClockIcon className="h-5 w-5 text-emerald" />
-              <p className="text-xs text-forest/50">Duration</p>
+              <p className="text-xs text-forest/50">{t('detail.duration')}</p>
               <p className="text-sm font-semibold text-forest">{activity.durationHours}h</p>
             </div>
             <div className="flex flex-col items-center gap-1.5 text-center">
               <GaugeIcon className="h-5 w-5 text-emerald" />
-              <p className="text-xs text-forest/50">Difficulty</p>
+              <p className="text-xs text-forest/50">{t('detail.difficulty')}</p>
               <p className="text-sm font-semibold text-forest">{activity.difficultyLevel}</p>
             </div>
             <div className="flex flex-col items-center gap-1.5 text-center">
               <CalendarIcon className="h-5 w-5 text-emerald" />
-              <p className="text-xs text-forest/50">Best Season</p>
-              <p className="text-sm font-semibold text-forest">{activity.bestSeason || 'Year-round'}</p>
+              <p className="text-xs text-forest/50">{t('detail.bestSeason')}</p>
+              <p className="text-sm font-semibold text-forest">{activity.bestSeason || t('detail.yearRound')}</p>
             </div>
             <div className="flex flex-col items-center gap-1.5 text-center">
               <MapPinIcon className="h-5 w-5 text-emerald" />
-              <p className="text-xs text-forest/50">Location</p>
+              <p className="text-xs text-forest/50">{t('detail.location')}</p>
               <p className="text-sm font-semibold text-forest">{activity.location}</p>
             </div>
           </div>
 
           {/* Description */}
           <div className="mt-10">
-            <h2 className="font-display text-2xl font-semibold text-forest">Overview</h2>
+            <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.overview')}</h2>
             <p className="mt-3 leading-relaxed text-forest/70">{activity.description}</p>
           </div>
 
           {/* Gallery */}
           {activity.gallery.length > 0 &&
           <div className="mt-10">
-              <h2 className="font-display text-2xl font-semibold text-forest">Gallery</h2>
+              <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.gallery')}</h2>
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {activity.gallery.map((src, i) =>
               <div key={i} className="aspect-square overflow-hidden rounded-2xl">
@@ -125,7 +127,7 @@ export function ActivityDetails() {
           {/* Highlights */}
           {activity.highlights.length > 0 &&
           <div className="mt-10">
-              <h2 className="font-display text-2xl font-semibold text-forest">Highlights</h2>
+              <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.highlights')}</h2>
               <ul className="mt-4 grid gap-3 sm:grid-cols-2">
                 {activity.highlights.map((h) =>
               <li key={h} className="flex items-start gap-2.5 text-sm text-forest/75">
@@ -143,7 +145,7 @@ export function ActivityDetails() {
           <div className="mt-10 grid gap-6 sm:grid-cols-2">
             {activity.thingsIncluded.length > 0 &&
             <div className="rounded-3xl bg-white p-6 shadow-soft">
-                <h3 className="font-display text-lg font-semibold text-forest">Things Included</h3>
+                <h3 className="font-display text-lg font-semibold text-forest">{t('detail.thingsIncluded')}</h3>
                 <ul className="mt-3 space-y-2">
                   {activity.thingsIncluded.map((t) =>
                 <li key={t} className="flex items-center gap-2 text-sm text-forest/70">
@@ -155,7 +157,7 @@ export function ActivityDetails() {
             }
             {activity.thingsToBring.length > 0 &&
             <div className="rounded-3xl bg-white p-6 shadow-soft">
-                <h3 className="font-display text-lg font-semibold text-forest">Things to Bring</h3>
+                <h3 className="font-display text-lg font-semibold text-forest">{t('detail.thingsToBring')}</h3>
                 <ul className="mt-3 space-y-2">
                   {activity.thingsToBring.map((t) =>
                 <li key={t} className="flex items-center gap-2 text-sm text-forest/70">
@@ -170,7 +172,7 @@ export function ActivityDetails() {
           {/* Map */}
           {activity.mapLocation &&
           <div className="mt-10">
-              <h2 className="font-display text-2xl font-semibold text-forest">Location on Map</h2>
+              <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.locationOnMap')}</h2>
               <div className="mt-4 overflow-hidden rounded-3xl shadow-soft">
                 <iframe
                 title="Activity location"
@@ -187,7 +189,7 @@ export function ActivityDetails() {
           {/* Related destinations */}
           {relatedDestinations.length > 0 &&
           <div className="mt-10">
-              <h2 className="font-display text-2xl font-semibold text-forest">Related Destinations</h2>
+              <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.relatedDestinations')}</h2>
               <div className="mt-4 flex flex-wrap gap-3">
                 {relatedDestinations.map((d) =>
               <span key={d._id} className="rounded-full bg-white px-4 py-2 text-sm font-medium text-forest shadow-soft">
@@ -202,19 +204,19 @@ export function ActivityDetails() {
         {/* Sidebar CTA */}
         <aside>
           <div className="sticky top-28 rounded-3xl bg-forest p-7 text-white shadow-lift">
-            <p className="text-xs uppercase tracking-wide text-cream/60">Starting from</p>
-            <p className="font-display text-3xl font-semibold">${activity.priceFrom}<span className="text-sm font-normal text-cream/60"> / person</span></p>
+            <p className="text-xs uppercase tracking-wide text-cream/60">{t('detail.startingFrom')}</p>
+            <p className="font-display text-3xl font-semibold">${activity.priceFrom}<span className="text-sm font-normal text-cream/60">{t('detail.perPerson')}</span></p>
             <a
               href="mailto:hello@roxavaltravels.com?subject=Plan%20My%20Tour"
               className="mt-6 flex items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-[1.03] active:scale-95">
 
-              Plan My Tour <ArrowRightIcon className="h-4 w-4" />
+              {t('detail.planMyTour')} <ArrowRightIcon className="h-4 w-4" />
             </a>
             <a
               href="https://wa.me/94771234567"
               className="mt-3 flex items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-forest">
 
-              <MessageCircleIcon className="h-4 w-4" /> Talk to an Expert
+              <MessageCircleIcon className="h-4 w-4" /> {t('detail.talkToExpert')}
             </a>
           </div>
         </aside>
@@ -224,8 +226,8 @@ export function ActivityDetails() {
       {related.length > 0 &&
       <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-2xl font-semibold text-forest">Related Activities</h2>
-            <Link to="/activities" className="text-sm font-semibold text-emerald hover:underline">View All</Link>
+            <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.relatedActivities')}</h2>
+            <Link to="/activities" className="text-sm font-semibold text-emerald hover:underline">{t('detail.viewAll')}</Link>
           </div>
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((a, i) => <ActivityCard key={a._id} activity={a} index={i} />)}

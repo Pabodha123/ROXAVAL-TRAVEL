@@ -1,12 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView, animate } from 'framer-motion';
-
-const stats = [
-{ value: '12+', label: 'Years of Experience' },
-{ value: '8k+', label: 'Happy Travelers' },
-{ value: '50+', label: 'Curated Tours' },
-{ value: '5.0', label: 'Average Rating' }];
+import { useTranslation } from 'react-i18next';
 
 
 function parseStatValue(value: string) {
@@ -41,6 +36,13 @@ function AnimatedStat({ value }: { value: string }) {
 }
 
 export function Stats() {
+  const { t } = useTranslation('home');
+  const stats = [
+    { value: '12+', label: t('stats.yearsExperience') },
+    { value: '8k+', label: t('stats.happyTravelers') },
+    { value: '50+', label: t('stats.curatedTours') },
+    { value: '5.0', label: t('stats.averageRating') },
+  ];
   return (
     <section className="relative bg-emerald py-14">
       <motion.div

@@ -10,7 +10,7 @@ const customerSchema = new mongoose.Schema(
     country: { type: String, trim: true },
     dateOfBirth: { type: Date },
     passportNumber: { type: String, trim: true },
-    preferredLanguage: { type: String, default: 'English' },
+    preferredLanguage: { type: String, enum: ['en', 'de', 'fr'], default: 'en' },
     address: { type: String, trim: true },
     marketingOptIn: { type: Boolean, default: false },
     notes: { type: String, default: '' },

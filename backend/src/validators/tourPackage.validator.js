@@ -1,9 +1,10 @@
 const { z } = require('zod');
+const { localizedField, localizedFieldArray } = require('./shared/localized');
 
 const itineraryDaySchema = z.object({
   dayNumber: z.number().int().min(1),
-  title: z.string().min(2),
-  description: z.string().min(5),
+  title: localizedField(2),
+  description: localizedField(5),
   destinations: z.array(z.string()).optional(),
   activities: z.array(z.string()).optional(),
   hotel: z.string().optional(),
@@ -11,7 +12,7 @@ const itineraryDaySchema = z.object({
 });
 
 const createTourPackageSchema = z.object({
-  name: z.string().min(3),
+  name: localizedField(3),
   category: z
     .enum(['Best Seller', 'Scenic', 'Adventure', 'Relax', 'Luxury', 'Signature', 'Honeymoon', 'Family', 'Wildlife'])
     .optional(),
@@ -24,10 +25,10 @@ const createTourPackageSchema = z.object({
   durationDays: z.number().int().min(1),
   durationNights: z.number().int().min(0),
   itinerary: z.array(itineraryDaySchema).optional(),
-  includedServices: z.array(z.string()).optional(),
-  excludedServices: z.array(z.string()).optional(),
-  description: z.string().min(10),
-  highlights: z.array(z.string()).optional(),
+  includedServices: localizedFieldArray().optional(),
+  excludedServices: localizedFieldArray().optional(),
+  description: localizedField(10),
+  highlights: localizedFieldArray().optional(),
   price: z.number().positive(),
   discountPrice: z.number().positive().optional(),
   currency: z.string().optional(),

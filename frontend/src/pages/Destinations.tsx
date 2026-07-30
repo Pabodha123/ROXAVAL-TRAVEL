@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useApiList } from '../hooks/useApiList';
 import { DestinationCapsule } from '../components/destinations/DestinationCapsule';
 import { BreadcrumbBackRow } from '../components/layout/BreadcrumbBackRow';
@@ -9,16 +10,18 @@ import { LoadingState, EmptyState, ErrorState } from '../components/ui/StatusSta
 import type { DestinationListItem } from '../types/destination';
 
 const CATEGORY_OPTIONS = ['Cultural', 'Wildlife', 'Beach', 'Hill Country', 'City', 'Nature', 'Adventure'].map((v) => ({ label: v, value: v }));
-const SORT_OPTIONS = [
-{ label: 'Newest', value: '-createdAt' },
-{ label: 'Name: A to Z', value: 'name' },
-{ label: 'Name: Z to A', value: '-name' }];
-
 
 export function Destinations() {
+  const { t } = useTranslation('destinations');
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [sort, setSort] = useState('-createdAt');
+
+  const SORT_OPTIONS = [
+    { label: t('sort.newest'), value: '-createdAt' },
+    { label: t('sort.nameAZ'), value: 'name' },
+    { label: t('sort.nameZA'), value: '-name' },
+  ];
 
   const { items, meta, loading, error, hasMore, loadMore } = useApiList<DestinationListItem>('/destinations', {
     q: search || undefined,
@@ -37,7 +40,7 @@ export function Destinations() {
 
         <div className="absolute inset-0 bg-gradient-to-t from-forest via-forest/50 to-forest/20" />
         <div className="absolute inset-x-0 top-0 z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <BreadcrumbBackRow breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Destinations' }]} />
+          <BreadcrumbBackRow breadcrumbs={[{ label: t('breadcrumb.home'), href: '/' }, { label: t('breadcrumb.destinations') }]} />
         </div>
         <div className="relative z-10 mx-auto flex h-full max-w-4xl flex-col items-center justify-center px-4 text-center sm:px-6">
           <motion.div
@@ -47,10 +50,10 @@ export function Destinations() {
 
             <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-gold-light">
               <span className="h-px w-8 bg-gold" />
-              Sri Lanka Awaits
+              {t('eyebrow')}
             </span>
-            <h1 className="font-display mt-4 text-4xl font-semibold text-white sm:text-6xl">Discover Sri Lanka</h1>
-            <p className="mt-4 text-base text-cream/85 sm:text-lg">Explore the island's most breathtaking destinations.</p>
+            <h1 className="font-display mt-4 text-4xl font-semibold text-white sm:text-6xl">{t('title')}</h1>
+            <p className="mt-4 text-base text-cream/85 sm:text-lg">{t('subtitle')}</p>
           </motion.div>
         </div>
       </section>
@@ -60,8 +63,8 @@ export function Destinations() {
         <FilterBar
           search={search}
           onSearchChange={setSearch}
-          searchPlaceholder="Search destinations…"
-          filters={[{ key: 'category', label: 'Categories', options: CATEGORY_OPTIONS }]}
+          searchPlaceholder={t('searchPlaceholder')}
+          filters={[{ key: 'category', label: t('filters.categories'), options: CATEGORY_OPTIONS }]}
           values={{ category }}
           onFilterChange={(key, value) => {
             if (key === 'category') setCategory(value);
@@ -71,10 +74,10 @@ export function Destinations() {
           onSortChange={setSort} />
 
 
-        {loading && items.length === 0 && <LoadingState title="Loading destinations…" />}
-        {error && <ErrorState title="Couldn't load destinations" message={error} />}
+        {loading && items.length === 0 && <LoadingState title={t('loading')} />}
+        {error && <ErrorState title={t('loadError')} message={error} />}
         {!loading && !error && items.length === 0 &&
-        <EmptyState title="No destinations found" message="Try a different search term or clear your filters." />
+        <EmptyState title={t('noResults')} message={t('noResultsHint')} />
         }
 
         {items.length > 0 &&

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Loader2Icon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Modal } from '../ui/Modal';
 import { apiPost, ApiRequestError } from '../../lib/api';
 import { useToast } from '../../context/ToastContext';
@@ -22,6 +23,7 @@ interface BookingModalProps {
 }
 
 export function BookingModal({ open, onClose, source, onSuccess }: BookingModalProps) {
+  const { t } = useTranslation('booking');
   const toast = useToast();
   const [travelDate, setTravelDate] = useState('');
   const [adults, setAdults] = useState(source.minTravelers || 2);
@@ -36,7 +38,7 @@ export function BookingModal({ open, onClose, source, onSuccess }: BookingModalP
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!travelDate) {
-      setError('Please select a travel date.');
+      setError(t('modal.selectDateError'));
       return;
     }
     setSubmitting(true);
@@ -51,20 +53,20 @@ export function BookingModal({ open, onClose, source, onSuccess }: BookingModalP
       await apiPost<{ _id: string; bookingReference: string }>('/bookings/from-package', { tourPackage: source.id, ...payload }) :
       await apiPost<{ _id: string; bookingReference: string }>('/bookings/from-itinerary', { itinerary: source.id, ...payload });
 
-      toast(`Booking ${booking.bookingReference} created — proceed to payment in My Tours.`);
+      toast(t('modal.successToast', { reference: booking.bookingReference }));
       onSuccess(booking);
     } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : 'Could not create booking. Please try again.');
+      setError(err instanceof ApiRequestError ? err.message : t('modal.createError'));
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <Modal open={open} onClose={onClose} title={`Book ${source.name}`} maxWidth="max-w-lg">
+    <Modal open={open} onClose={onClose} title={t('modal.bookTitle', { name: source.name })} maxWidth="max-w-lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-forest">Travel Date</label>
+          <label className="mb-1.5 block text-sm font-medium text-forest">{t('modal.travelDate')}</label>
           <input
             type="date"
             required
@@ -76,25 +78,25 @@ export function BookingModal({ open, onClose, source, onSuccess }: BookingModalP
         </div>
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-forest">Adults</label>
+            <label className="mb-1.5 block text-sm font-medium text-forest">{t('modal.adults')}</label>
             <input type="number" min={1} max={source.maxTravelers} value={adults} onChange={(e) => setAdults(Number(e.target.value))} className="w-full rounded-xl border border-forest/15 bg-cream/40 px-3 py-2.5 text-sm outline-none focus:border-emerald" />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-forest">Children</label>
+            <label className="mb-1.5 block text-sm font-medium text-forest">{t('modal.children')}</label>
             <input type="number" min={0} value={children} onChange={(e) => setChildren(Number(e.target.value))} className="w-full rounded-xl border border-forest/15 bg-cream/40 px-3 py-2.5 text-sm outline-none focus:border-emerald" />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-forest">Infants</label>
+            <label className="mb-1.5 block text-sm font-medium text-forest">{t('modal.infants')}</label>
             <input type="number" min={0} value={infants} onChange={(e) => setInfants(Number(e.target.value))} className="w-full rounded-xl border border-forest/15 bg-cream/40 px-3 py-2.5 text-sm outline-none focus:border-emerald" />
           </div>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-forest">Special Requests (optional)</label>
+          <label className="mb-1.5 block text-sm font-medium text-forest">{t('modal.specialRequests')}</label>
           <textarea rows={3} value={specialRequests} onChange={(e) => setSpecialRequests(e.target.value)} className="w-full rounded-xl border border-forest/15 bg-cream/40 px-4 py-2.5 text-sm outline-none focus:border-emerald" />
         </div>
 
         <div className="flex items-center justify-between rounded-xl bg-forest/5 px-4 py-3 text-sm">
-          <span className="text-forest/60">Estimated total</span>
+          <span className="text-forest/60">{t('modal.estimatedTotal')}</span>
           <span className="font-display text-lg font-semibold text-forest">{source.currency} {estimatedTotal.toLocaleString()}</span>
         </div>
 
@@ -102,7 +104,7 @@ export function BookingModal({ open, onClose, source, onSuccess }: BookingModalP
 
         <button type="submit" disabled={submitting} className="flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-[1.02] active:scale-95 disabled:opacity-70">
           {submitting && <Loader2Icon className="h-4 w-4 animate-spin" />}
-          Confirm Booking
+          {t('modal.confirmBooking')}
         </button>
       </form>
     </Modal>);

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeftIcon, CheckCircle2Icon, Loader2Icon, MailIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ApiRequestError } from '../lib/api';
 
 export function ForgotPassword() {
+  const { t } = useTranslation('auth');
   const { forgotPassword } = useAuth();
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
@@ -20,7 +22,7 @@ export function ForgotPassword() {
       await forgotPassword(email);
       setSent(true);
     } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : 'Something went wrong.');
+      setError(err instanceof ApiRequestError ? err.message : t('forgot.failedTryAgain'));
     } finally {
       setSubmitting(false);
     }
@@ -36,16 +38,16 @@ export function ForgotPassword() {
         className="relative z-10 w-full max-w-md rounded-3xl bg-white p-8 shadow-lift sm:p-10">
 
         <Link to="/auth" className="inline-flex items-center gap-1.5 text-xs font-medium text-forest/50 hover:text-forest">
-          <ArrowLeftIcon className="h-3.5 w-3.5" /> Back to sign in
+          <ArrowLeftIcon className="h-3.5 w-3.5" /> {t('forgot.backToSignIn')}
         </Link>
 
-        <h1 className="font-display mt-5 text-2xl font-semibold text-forest">Forgot Password</h1>
-        <p className="mt-1.5 text-sm text-forest/55">Enter your email and we'll send you a reset link.</p>
+        <h1 className="font-display mt-5 text-2xl font-semibold text-forest">{t('forgot.title')}</h1>
+        <p className="mt-1.5 text-sm text-forest/55">{t('forgot.subtitle')}</p>
 
         {sent ?
         <div className="mt-8 flex flex-col items-center gap-3 rounded-2xl bg-cream p-6 text-center">
             <CheckCircle2Icon className="h-8 w-8 text-emerald" />
-            <p className="text-sm text-forest/70">If that email exists, a reset link has been sent. Check your inbox.</p>
+            <p className="text-sm text-forest/70">{t('forgot.checkEmailSubtitle', { email })}</p>
           </div> :
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
@@ -69,7 +71,7 @@ export function ForgotPassword() {
             className="flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-[1.02] active:scale-95 disabled:opacity-70">
 
               {submitting && <Loader2Icon className="h-4 w-4 animate-spin" />}
-              Send Reset Link
+              {t('forgot.sendLink')}
             </button>
           </form>
         }

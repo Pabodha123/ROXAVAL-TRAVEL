@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, ChevronRightIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Crumb {
   label: string;
@@ -21,11 +22,12 @@ interface BreadcrumbBackRowProps {
  */
 export function BreadcrumbBackRow({ breadcrumbs, className = '' }: BreadcrumbBackRowProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className={`flex items-center gap-2 text-xs font-medium text-cream/80 ${className}`}>
       <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-2 backdrop-blur transition-colors hover:bg-white/25">
-        <ArrowLeftIcon className="h-3.5 w-3.5" /> Back
+        <ArrowLeftIcon className="h-3.5 w-3.5" /> {t('buttons.back')}
       </button>
       <nav className="ml-2 flex flex-wrap items-center gap-1.5">
         {breadcrumbs.map((crumb, i) => {

@@ -1,0 +1,15 @@
+{
+  "myTours": {
+    "title": "Mes Voyages",
+    "subtitle": "Suivez vos réservations et demandes de voyage sur mesure au même endroit.",
+    "bookings": "Réservations",
+    "customRequests": "Demandes Sur Mesure"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Tout ce que nous vous avons envoyé, au même endroit.",
+    "markAllRead": "Tout marquer comme lu",
+    "empty": "Aucune notification pour l'instant",
+    "emptyHint": "Nous vous informerons lorsque quelque chose nécessitera votre attention."
+  }
+}

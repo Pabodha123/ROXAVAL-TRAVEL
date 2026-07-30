@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const { localizedString, localizedStringArray } = require('./shared/localizedField');
 
 const itineraryDaySchema = new mongoose.Schema(
   {
     dayNumber: { type: Number, required: true },
-    title: { type: String, required: true },
-    description: { type: String, required: true },
+    title: localizedString('Day title is required'),
+    description: localizedString('Day description is required'),
     destinations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Destination' }],
     activities: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Activity' }],
     hotel: { type: mongoose.Schema.Types.ObjectId, ref: 'Hotel' },
@@ -16,7 +17,7 @@ const itineraryDaySchema = new mongoose.Schema(
 
 const tourPackageSchema = new mongoose.Schema(
   {
-    name: { type: String, required: [true, 'Package name is required'], trim: true },
+    name: localizedString('Package name is required'),
     slug: { type: String, unique: true, index: true },
     category: {
       type: String,
@@ -32,10 +33,10 @@ const tourPackageSchema = new mongoose.Schema(
     durationDays: { type: Number, required: true },
     durationNights: { type: Number, required: true },
     itinerary: { type: [itineraryDaySchema], default: [] },
-    includedServices: { type: [String], default: [] },
-    excludedServices: { type: [String], default: [] },
-    description: { type: String, required: true },
-    highlights: { type: [String], default: [] },
+    includedServices: localizedStringArray(),
+    excludedServices: localizedStringArray(),
+    description: localizedString('Description is required'),
+    highlights: localizedStringArray(),
     price: { type: Number, required: [true, 'Price is required'] },
     discountPrice: { type: Number },
     currency: { type: String, default: 'USD' },
@@ -56,11 +57,11 @@ const tourPackageSchema = new mongoose.Schema(
 );
 
 tourPackageSchema.pre('save', function setSlug(next) {
-  if (this.isModified('name')) this.slug = `${slugify(this.name, { lower: true, strict: true })}-${Date.now().toString().slice(-4)}`;
+  if (this.isModified('name.en')) this.slug = `${slugify(this.name.en, { lower: true, strict: true })}-${Date.now().toString().slice(-4)}`;
   next();
 });
 
-tourPackageSchema.index({ name: 'text', description: 'text' });
+tourPackageSchema.index({ 'name.en': 'text', 'description.en': 'text' });
 tourPackageSchema.index({ status: 1, isFeatured: 1, category: 1 });
 
 module.exports = mongoose.model('TourPackage', tourPackageSchema);

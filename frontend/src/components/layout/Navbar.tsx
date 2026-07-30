@@ -2,39 +2,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import {
   HomeIcon, PackageIcon, MapPinIcon, TargetIcon, BriefcaseIcon,
-  ChevronDownIcon, GlobeIcon, SearchIcon, UserIcon, MenuIcon, XIcon,
+  ChevronDownIcon, SearchIcon, UserIcon, MenuIcon, XIcon,
   UserCircleIcon, SettingsIcon, LogOutIcon } from
 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useUnreadCount } from '../../hooks/useUnreadCount';
 import { NotificationBell } from './NotificationBell';
 import { SearchOverlay } from './SearchOverlay';
-
-const mainLinks = [
-{ label: 'Home', icon: HomeIcon, href: '/' },
-{ label: 'Tour Packages', icon: PackageIcon, href: '/packages' },
-{ label: 'Destinations', icon: MapPinIcon, href: '/destinations' },
-{ label: 'Activities', icon: TargetIcon, href: '/activities' },
-{ label: 'My Tours', icon: BriefcaseIcon, href: '/my-tours' }];
-
-
-const exploreLinks = [
-{ label: 'About Us', href: '/about' },
-{ label: 'Contact Us', href: '/contact' },
-{ label: 'Blog', href: '/blog' },
-{ label: 'Reviews', href: '/reviews' },
-{ label: 'Terms & Conditions', href: '/terms' }];
-
-
-const userMenuLinks = [
-{ label: 'My Tours', href: '/my-tours', icon: BriefcaseIcon },
-{ label: 'Profile', href: '/profile', icon: UserCircleIcon },
-{ label: 'Settings', href: '/account-settings', icon: SettingsIcon }];
-
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export function Navbar() {
+  const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
@@ -44,6 +25,28 @@ export function Navbar() {
   const navigate = useNavigate();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const myToursUnread = useUnreadCount('CustomTourRequest', Boolean(user));
+
+  const mainLinks = [
+    { label: t('nav.home'), icon: HomeIcon, href: '/' },
+    { label: t('nav.packages'), icon: PackageIcon, href: '/packages' },
+    { label: t('nav.destinations'), icon: MapPinIcon, href: '/destinations' },
+    { label: t('nav.activities'), icon: TargetIcon, href: '/activities' },
+    { label: t('nav.myTours'), icon: BriefcaseIcon, href: '/my-tours' },
+  ];
+
+  const exploreLinks = [
+    { label: t('nav.aboutUs'), href: '/about' },
+    { label: t('nav.contactUs'), href: '/contact' },
+    { label: t('nav.blog'), href: '/blog' },
+    { label: t('nav.reviews'), href: '/reviews' },
+    { label: t('nav.terms'), href: '/terms' },
+  ];
+
+  const userMenuLinks = [
+    { label: t('nav.myTours'), href: '/my-tours', icon: BriefcaseIcon },
+    { label: t('nav.profile'), href: '/profile', icon: UserCircleIcon },
+    { label: t('nav.settings'), href: '/account-settings', icon: SettingsIcon },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -122,7 +125,7 @@ export function Navbar() {
             onMouseLeave={() => setExploreOpen(false)}>
             
             <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-cream/90 hover:text-white rounded-full transition-colors">
-              Explore
+              {t('nav.explore')}
               <ChevronDownIcon className={`h-4 w-4 transition-transform ${exploreOpen ? 'rotate-180' : ''}`} />
             </button>
             <AnimatePresence>
@@ -151,10 +154,8 @@ export function Navbar() {
 
         {/* Right actions */}
         <div className="hidden lg:flex items-center gap-2">
-          <button aria-label="Change language" className="p-2.5 rounded-full text-cream/90 hover:bg-white/10 hover:text-white transition-colors">
-            <GlobeIcon className="h-5 w-5" />
-          </button>
-          <button onClick={() => setSearchOpen(true)} aria-label="Search" className="p-2.5 rounded-full text-cream/90 hover:bg-white/10 hover:text-white transition-colors">
+          <LanguageSwitcher variant="dark" />
+          <button onClick={() => setSearchOpen(true)} aria-label={t('nav.search')} className="p-2.5 rounded-full text-cream/90 hover:bg-white/10 hover:text-white transition-colors">
             <SearchIcon className="h-5 w-5" />
           </button>
           {user && <NotificationBell />}
@@ -194,7 +195,7 @@ export function Navbar() {
                   onClick={handleLogout}
                   className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 rounded-xl hover:bg-red-50 transition-colors">
 
-                      <LogOutIcon className="h-4 w-4" /> Logout
+                      <LogOutIcon className="h-4 w-4" /> {t('nav.logout')}
                     </button>
                   </motion.div>
               }
@@ -206,7 +207,7 @@ export function Navbar() {
             className="ml-1 flex items-center gap-2 rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-forest shadow-soft transition-transform hover:scale-[1.04] active:scale-95">
 
               <UserIcon className="h-4 w-4" />
-              Login / Register
+              {t('nav.loginRegister')}
             </Link>
           }
         </div>
@@ -215,7 +216,7 @@ export function Navbar() {
         <button
           className="lg:hidden p-2 rounded-lg text-white"
           onClick={() => setMobileOpen((v) => !v)}
-          aria-label="Toggle menu"
+          aria-label={t('nav.toggleMenu')}
           aria-expanded={mobileOpen}>
           
           {mobileOpen ? <XIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
@@ -256,7 +257,7 @@ export function Navbar() {
 
             })}
               <div className="pt-2 mt-2 border-t border-white/10">
-                <p className="px-4 py-2 text-[11px] uppercase tracking-widest text-cream/50">Explore</p>
+                <p className="px-4 py-2 text-[11px] uppercase tracking-widest text-cream/50">{t('nav.explore')}</p>
                 {exploreLinks.map((l) =>
               <Link key={l.label} to={l.href} onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 text-sm text-cream/80 rounded-xl hover:bg-white/5">
                     {l.label}
@@ -285,7 +286,7 @@ export function Navbar() {
                     </Link>
                 )}
                   <button onClick={handleLogout} className="flex w-full items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-300 hover:bg-white/5">
-                    <LogOutIcon className="h-4 w-4" /> Logout
+                    <LogOutIcon className="h-4 w-4" /> {t('nav.logout')}
                   </button>
                 </div>
               }
@@ -296,11 +297,11 @@ export function Navbar() {
                   onClick={() => setMobileOpen(false)}
                   className="flex-1 flex items-center justify-center gap-2 rounded-full bg-gold px-5 py-3 text-sm font-semibold text-forest">
 
-                    <UserIcon className="h-4 w-4" /> Login / Register
+                    <UserIcon className="h-4 w-4" /> {t('nav.loginRegister')}
                   </Link>
                 }
-                <button onClick={() => { setMobileOpen(false); setSearchOpen(true); }} aria-label="Search" className="p-3 rounded-full bg-white/10 text-white"><SearchIcon className="h-5 w-5" /></button>
-                <button aria-label="Language" className="p-3 rounded-full bg-white/10 text-white"><GlobeIcon className="h-5 w-5" /></button>
+                <button onClick={() => { setMobileOpen(false); setSearchOpen(true); }} aria-label={t('nav.search')} className="p-3 rounded-full bg-white/10 text-white"><SearchIcon className="h-5 w-5" /></button>
+                <LanguageSwitcher variant="dark" className="[&>button]:bg-white/10 [&>button]:p-3" />
               </div>
             </div>
           </motion.div>

@@ -12,6 +12,7 @@ const rateLimit = require('express-rate-limit');
 const env = require('./config/env');
 const requestLogger = require('./middleware/requestLogger');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
+const { locale } = require('./middleware/locale');
 const routes = require('./routes');
 
 const app = express();
@@ -34,6 +35,7 @@ app.use(cookieParser());
 app.use(mongoSanitize());
 app.use(xss());
 app.use(hpp());
+app.use(locale);
 
 // ---------- Rate limiting ----------
 const limiter = rateLimit({

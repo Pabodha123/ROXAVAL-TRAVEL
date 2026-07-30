@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import {
-  ArrowLeftIcon,
   ArrowRightIcon,
   CalendarIcon,
   CheckIcon,
-  ChevronRightIcon,
   ClockIcon,
   CloudSunIcon,
   MapPinIcon,
@@ -17,12 +16,13 @@ import {
 import { apiGetOne, apiGetList } from '../lib/api';
 import { LoadingState, ErrorState } from '../components/ui/StatusState';
 import { PackageCard } from '../components/packages/PackageCard';
+import { BreadcrumbBackRow } from '../components/layout/BreadcrumbBackRow';
 import type { Destination } from '../types/destination';
 import type { TourPackage } from '../types/tourPackage';
 
 export function DestinationDetails() {
+  const { t } = useTranslation('destinations');
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [destination, setDestination] = useState<Destination | null>(null);
   const [packages, setPackages] = useState<TourPackage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,8 +49,8 @@ export function DestinationDetails() {
     };
   }, [id]);
 
-  if (loading) return <main className="min-h-screen bg-cream pt-24"><LoadingState title="Loading destination…" /></main>;
-  if (error || !destination) return <main className="min-h-screen bg-cream pt-24"><ErrorState title="Destination not found" message={error || undefined} /></main>;
+  if (loading) return <main className="min-h-screen bg-cream pt-24"><LoadingState title={t('detail.loading')} /></main>;
+  if (error || !destination) return <main className="min-h-screen bg-cream pt-24"><ErrorState title={t('detail.notFoundTitle')} message={error || undefined} /></main>;
 
   const d = destination;
 
@@ -71,18 +71,7 @@ export function DestinationDetails() {
         <div className="absolute inset-0 bg-gradient-to-t from-forest via-forest/40 to-forest/10" />
 
         <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-between px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 text-xs font-medium text-cream/80">
-            <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-2 backdrop-blur transition-colors hover:bg-white/25">
-              <ArrowLeftIcon className="h-3.5 w-3.5" /> Back
-            </button>
-            <nav className="ml-2 flex items-center gap-1.5">
-              <Link to="/" className="hover:text-white">Home</Link>
-              <ChevronRightIcon className="h-3 w-3" />
-              <Link to="/destinations" className="hover:text-white">Destinations</Link>
-              <ChevronRightIcon className="h-3 w-3" />
-              <span className="text-white">{d.name}</span>
-            </nav>
-          </div>
+          <BreadcrumbBackRow breadcrumbs={[{ label: t('breadcrumb.home'), href: '/' }, { label: t('breadcrumb.destinations'), href: '/destinations' }, { label: d.name }]} />
 
           <div className="pb-4">
             <span className="w-fit rounded-full bg-gold px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-forest">{d.tag}</span>
@@ -106,33 +95,33 @@ export function DestinationDetails() {
           <div className="grid grid-cols-2 gap-4 rounded-3xl bg-white p-6 shadow-soft sm:grid-cols-3">
             <div className="flex flex-col items-center gap-1.5 text-center">
               <CalendarIcon className="h-5 w-5 text-emerald" />
-              <p className="text-xs text-forest/50">Best Time to Visit</p>
-              <p className="text-sm font-semibold text-forest">{d.bestTimeToVisit || 'Year-round'}</p>
+              <p className="text-xs text-forest/50">{t('detail.bestTimeToVisit')}</p>
+              <p className="text-sm font-semibold text-forest">{d.bestTimeToVisit || t('detail.yearRound')}</p>
             </div>
             <div className="flex flex-col items-center gap-1.5 text-center">
               <ClockIcon className="h-5 w-5 text-emerald" />
-              <p className="text-xs text-forest/50">Opening Hours</p>
-              <p className="text-sm font-semibold text-forest">{d.openingHours || 'Always open'}</p>
+              <p className="text-xs text-forest/50">{t('detail.openingHours')}</p>
+              <p className="text-sm font-semibold text-forest">{d.openingHours || t('detail.alwaysOpen')}</p>
             </div>
             <div className="flex flex-col items-center gap-1.5 text-center">
               <TicketIcon className="h-5 w-5 text-emerald" />
-              <p className="text-xs text-forest/50">Entrance Fee</p>
+              <p className="text-xs text-forest/50">{t('detail.entranceFee')}</p>
               <p className="text-sm font-semibold text-forest">
-                {d.entranceFee?.amount ? `${d.entranceFee.currency} ${d.entranceFee.amount}` : 'Free'}
+                {d.entranceFee?.amount ? `${d.entranceFee.currency} ${d.entranceFee.amount}` : t('detail.free')}
               </p>
             </div>
           </div>
 
           {/* Overview */}
           <div className="mt-10">
-            <h2 className="font-display text-2xl font-semibold text-forest">Overview</h2>
+            <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.overview')}</h2>
             <p className="mt-3 leading-relaxed text-forest/70">{d.description}</p>
           </div>
 
           {/* History */}
           {d.history &&
           <div className="mt-10">
-              <h2 className="font-display text-2xl font-semibold text-forest">History</h2>
+              <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.history')}</h2>
               <p className="mt-3 leading-relaxed text-forest/70">{d.history}</p>
             </div>
           }
@@ -140,7 +129,7 @@ export function DestinationDetails() {
           {/* Gallery */}
           {d.gallery.length > 0 &&
           <div className="mt-10">
-              <h2 className="font-display text-2xl font-semibold text-forest">Gallery</h2>
+              <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.gallery')}</h2>
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {d.gallery.map((src, i) =>
               <div key={i} className="aspect-square overflow-hidden rounded-2xl">
@@ -165,7 +154,7 @@ export function DestinationDetails() {
           {/* Why Visit */}
           {d.whyVisit.length > 0 &&
           <div className="mt-10">
-              <h2 className="font-display text-2xl font-semibold text-forest">Why Visit?</h2>
+              <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.whyVisitQuestion')}</h2>
               <ul className="mt-4 grid gap-3 sm:grid-cols-2">
                 {d.whyVisit.map((h) =>
               <li key={h} className="flex items-start gap-2.5 text-sm text-forest/75">
@@ -182,7 +171,7 @@ export function DestinationDetails() {
           {/* Top Attractions */}
           {d.attractions.length > 0 &&
           <div className="mt-10">
-              <h2 className="font-display text-2xl font-semibold text-forest">Top Attractions</h2>
+              <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.attractions')}</h2>
               <div className="mt-4 grid gap-5 sm:grid-cols-2">
                 {d.attractions.map((a) =>
               <div key={a._id} className="overflow-hidden rounded-3xl bg-white shadow-soft">
@@ -204,7 +193,7 @@ export function DestinationDetails() {
           {/* Popular Activities */}
           {d.popularActivities.length > 0 &&
           <div className="mt-10">
-              <h2 className="font-display text-2xl font-semibold text-forest">Popular Activities</h2>
+              <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.popularActivities')}</h2>
               <div className="mt-4 flex flex-wrap gap-3">
                 {d.popularActivities.map((a) =>
               <span key={a} className="flex items-center gap-2 rounded-full bg-emerald/10 px-4 py-2 text-sm font-medium text-emerald">
@@ -218,7 +207,7 @@ export function DestinationDetails() {
           {/* Travel Tips */}
           {d.travelTips.length > 0 &&
           <div className="mt-10 rounded-3xl bg-white p-6 shadow-soft">
-              <h3 className="font-display text-lg font-semibold text-forest">Travel Tips</h3>
+              <h3 className="font-display text-lg font-semibold text-forest">{t('detail.travelTips')}</h3>
               <ul className="mt-3 space-y-2">
                 {d.travelTips.map((t) =>
               <li key={t} className="flex items-start gap-2 text-sm text-forest/70">
@@ -233,19 +222,19 @@ export function DestinationDetails() {
           <div className="mt-10 rounded-3xl border border-dashed border-forest/15 bg-white/60 p-6">
             <div className="flex items-center gap-2.5">
               <CloudSunIcon className="h-5 w-5 text-emerald" />
-              <h3 className="font-display text-lg font-semibold text-forest">Weather</h3>
-              <span className="rounded-full bg-forest/5 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-forest/40">Sample data</span>
+              <h3 className="font-display text-lg font-semibold text-forest">{t('detail.weather')}</h3>
+              <span className="rounded-full bg-forest/5 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-forest/40">{t('detail.sampleData')}</span>
             </div>
             <p className="mt-2 text-sm text-forest/65">
-              {d.name} enjoys a tropical climate typical of Sri Lanka, with warm temperatures year-round.
-              {d.bestTimeToVisit ? ` The best conditions for visiting are usually ${d.bestTimeToVisit}.` : ''} Check a live forecast closer to your travel dates.
+              {t('detail.climateBlurb', { name: d.name })}
+              {d.bestTimeToVisit ? t('detail.bestConditions', { time: d.bestTimeToVisit }) : ''} {t('detail.checkForecast')}
             </p>
           </div>
 
           {/* Map */}
           {d.mapLocation &&
           <div className="mt-10">
-              <h2 className="font-display text-2xl font-semibold text-forest">Location on Map</h2>
+              <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.locationOnMap')}</h2>
               <div className="mt-4 overflow-hidden rounded-3xl shadow-soft">
                 <iframe
                 title={`${d.name} location`}
@@ -262,7 +251,7 @@ export function DestinationDetails() {
           {/* Nearby Attractions */}
           {d.nearbyDestinations.length > 0 &&
           <div className="mt-10">
-              <h2 className="font-display text-2xl font-semibold text-forest">Nearby Attractions</h2>
+              <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.nearbyAttractions')}</h2>
               <div className="mt-4 flex flex-wrap gap-3">
                 {d.nearbyDestinations.map((n) =>
               <Link
@@ -281,21 +270,21 @@ export function DestinationDetails() {
         {/* Sidebar CTA */}
         <aside>
           <div className="sticky top-28 rounded-3xl bg-forest p-7 text-white shadow-lift">
-            <p className="text-xs uppercase tracking-wide text-cream/60">Ready to explore</p>
+            <p className="text-xs uppercase tracking-wide text-cream/60">{t('detail.readyToExplore')}</p>
             <p className="font-display mt-1 text-2xl font-semibold">{d.name}</p>
             <Link
               to="/packages#custom-tour"
               state={{ destinationId: d._id }}
               className="mt-6 flex items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-[1.03] active:scale-95">
 
-              Plan My Tour <ArrowRightIcon className="h-4 w-4" />
+              {t('detail.planMyTour')} <ArrowRightIcon className="h-4 w-4" />
             </Link>
             <Link
               to="/packages#custom-tour"
               state={{ destinationId: d._id }}
               className="mt-3 flex items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-forest">
 
-              <PackageIcon className="h-4 w-4" /> Book This Destination
+              <PackageIcon className="h-4 w-4" /> {t('detail.bookThisDestination')}
             </Link>
           </div>
         </aside>
@@ -305,8 +294,8 @@ export function DestinationDetails() {
       {packages.length > 0 &&
       <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-2xl font-semibold text-forest">Recommended Tour Packages</h2>
-            <Link to="/packages" className="text-sm font-semibold text-emerald hover:underline">View All</Link>
+            <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.recommendedPackages')}</h2>
+            <Link to="/packages" className="text-sm font-semibold text-emerald hover:underline">{t('detail.viewAll')}</Link>
           </div>
           <div className="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {packages.map((p, i) => <PackageCard key={p._id} pkg={p} index={i} />)}

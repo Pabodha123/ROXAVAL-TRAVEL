@@ -1,0 +1,28 @@
+{
+  "modal": {
+    "bookTitle": "Réserver {{name}}",
+    "travelDate": "Date de Voyage",
+    "adults": "Adultes",
+    "children": "Enfants",
+    "infants": "Bébés",
+    "specialRequests": "Demandes Spéciales (facultatif)",
+    "estimatedTotal": "Total estimé",
+    "confirmBooking": "Confirmer la Réservation",
+    "selectDateError": "Veuillez sélectionner une date de voyage.",
+    "createError": "Impossible de créer la réservation. Veuillez réessayer.",
+    "successToast": "Réservation {{reference}} créée — poursuivez le paiement dans Mes Voyages."
+  },
+  "payment": {
+    "title": "Paiement",
+    "method": "Mode de Paiement",
+    "bankTransfer": "Virement Bancaire",
+    "whatsapp": "WhatsApp",
+    "card": "Carte",
+    "amount": "Montant",
+    "reference": "Référence",
+    "uploadReceipt": "Télécharger le Reçu",
+    "submitPayment": "Envoyer le Paiement",
+    "submitError": "Impossible d'envoyer le paiement. Veuillez réessayer.",
+    "successToast": "Paiement envoyé — nous confirmerons sous peu."
+  }
+}

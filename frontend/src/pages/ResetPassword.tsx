@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { LockIcon, Loader2Icon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ApiRequestError } from '../lib/api';
 import { BackButton } from '../components/ui/BackButton';
 
 export function ResetPassword() {
+  const { t } = useTranslation('auth');
   const { token } = useParams<{token: string;}>();
   const { resetPassword } = useAuth();
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ export function ResetPassword() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError(t('reset.passwordsDontMatch'));
       return;
     }
     setSubmitting(true);
@@ -31,7 +33,7 @@ export function ResetPassword() {
         navigate('/', { replace: true });
       }
     } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : 'Reset failed. The link may have expired.');
+      setError(err instanceof ApiRequestError ? err.message : t('reset.failed'));
     } finally {
       setSubmitting(false);
     }
@@ -48,8 +50,8 @@ export function ResetPassword() {
 
         <BackButton className="mb-5" />
 
-        <h1 className="font-display text-2xl font-semibold text-forest">Reset Password</h1>
-        <p className="mt-1.5 text-sm text-forest/55">Choose a new password for your account.</p>
+        <h1 className="font-display text-2xl font-semibold text-forest">{t('reset.title')}</h1>
+        <p className="mt-1.5 text-sm text-forest/55">{t('reset.subtitle')}</p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div className="relative">
@@ -60,7 +62,7 @@ export function ResetPassword() {
               minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="New password"
+              placeholder={t('reset.newPasswordPlaceholder')}
               className="w-full rounded-full border border-forest/15 bg-white py-3 pl-11 pr-4 text-sm text-forest outline-none placeholder:text-forest/35 focus:border-emerald" />
 
           </div>
@@ -72,7 +74,7 @@ export function ResetPassword() {
               minLength={8}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm new password"
+              placeholder={t('reset.confirmPasswordPlaceholder')}
               className="w-full rounded-full border border-forest/15 bg-white py-3 pl-11 pr-4 text-sm text-forest outline-none placeholder:text-forest/35 focus:border-emerald" />
 
           </div>
@@ -85,7 +87,7 @@ export function ResetPassword() {
             className="flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-[1.02] active:scale-95 disabled:opacity-70">
 
             {submitting && <Loader2Icon className="h-4 w-4 animate-spin" />}
-            Reset Password
+            {t('reset.submit')}
           </button>
         </form>
       </motion.div>

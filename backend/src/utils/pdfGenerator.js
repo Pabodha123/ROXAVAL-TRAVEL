@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const PDFDocument = require('pdfkit');
 const env = require('../config/env');
+const { t } = require('../i18n/strings');
 
 const BRAND_COLOR = '#0f766e';
 const TEXT_COLOR = '#1f2937';
@@ -43,13 +44,13 @@ function drawHeader(doc, title) {
   doc.moveDown(3);
 }
 
-function drawFooter(doc) {
+function drawFooter(doc, s) {
   const bottom = doc.page.height - 50;
   doc
     .fontSize(8)
     .fillColor(MUTED_COLOR)
     .text(
-      `${env.COMPANY.name} \u2022 ${env.COMPANY.website} \u2022 Generated on ${new Date().toLocaleDateString()}`,
+      `${env.COMPANY.name} \u2022 ${env.COMPANY.website} \u2022 ${s.generatedOn} ${new Date().toLocaleDateString()}`,
       40,
       bottom,
       { align: 'center', width: 515 }
@@ -103,14 +104,15 @@ function drawTable(doc, { x, y, columns, rows }) {
  * Supported types: itinerary | hotel_voucher | booking_confirmation |
  *                   invoice | payment_receipt | quotation
  */
-async function generatePdfDocument(type, data, outputFileName) {
+async function generatePdfDocument(type, data, outputFileName, lang = 'en') {
+  const s = t(lang, 'pdf');
   const titles = {
-    itinerary: 'Travel Itinerary',
-    hotel_voucher: 'Hotel Voucher',
-    booking_confirmation: 'Booking Confirmation',
-    invoice: 'Invoice',
-    payment_receipt: 'Payment Receipt',
-    quotation: 'Customer Quotation',
+    itinerary: s.itinerary,
+    hotel_voucher: s.hotelVoucher,
+    booking_confirmation: s.bookingConfirmation,
+    invoice: s.invoice,
+    payment_receipt: s.paymentReceipt,
+    quotation: s.quotation,
   };
 
   const outputDir = path.resolve(process.cwd(), env.UPLOADS.documentsDir);
@@ -125,15 +127,15 @@ async function generatePdfDocument(type, data, outputFileName) {
 
   // Customer / booking summary block
   const summaryPairs = [
-    ['Reference No', data.referenceNumber],
-    ['Customer', data.customerName],
-    ['Email', data.customerEmail],
-    ['Phone', data.customerPhone],
-    ['Date Issued', new Date().toLocaleDateString()],
+    [s.referenceNumber, data.referenceNumber],
+    [s.customerName, data.customerName],
+    [s.email, data.customerEmail],
+    [s.phone, data.customerPhone],
+    [s.dateIssued, new Date().toLocaleDateString()],
   ];
-  if (data.packageName) summaryPairs.push(['Package', data.packageName]);
-  if (data.travelDate) summaryPairs.push(['Travel Date', data.travelDate]);
-  if (data.hotelName) summaryPairs.push(['Hotel', data.hotelName]);
+  if (data.packageName) summaryPairs.push([s.package, data.packageName]);
+  if (data.travelDate) summaryPairs.push([s.travelDate, data.travelDate]);
+  if (data.hotelName) summaryPairs.push([s.hotel, data.hotelName]);
 
   let y = drawKeyValueBlock(doc, 40, doc.y, summaryPairs);
   y += 10;
@@ -145,7 +147,7 @@ async function generatePdfDocument(type, data, outputFileName) {
 
   // Free-form notes / terms
   if (data.notes) {
-    doc.font('Helvetica-Bold').fontSize(10).fillColor(TEXT_COLOR).text('Notes', 40, y + 5);
+    doc.font('Helvetica-Bold').fontSize(10).fillColor(TEXT_COLOR).text(s.notes, 40, y + 5);
     doc.font('Helvetica').fontSize(9).fillColor(MUTED_COLOR).text(data.notes, 40, doc.y + 3, { width: 515 });
   }
 
@@ -160,7 +162,7 @@ async function generatePdfDocument(type, data, outputFileName) {
     });
   }
 
-  drawFooter(doc);
+  drawFooter(doc, s);
   doc.end();
 
   await new Promise((resolve, reject) => {

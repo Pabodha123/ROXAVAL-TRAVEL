@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const { localizedString } = require('./shared/localizedField');
 
 const blogSchema = new mongoose.Schema(
   {
-    title: { type: String, required: [true, 'Title is required'], trim: true },
+    title: localizedString('Title is required'),
     slug: { type: String, unique: true, index: true },
-    excerpt: { type: String, required: true },
-    content: { type: String, required: true },
+    excerpt: localizedString('Excerpt is required'),
+    content: localizedString('Content is required'),
     featuredImage: { type: String, required: true },
     gallery: { type: [String], default: [] },
     category: { type: String, required: true, trim: true },
@@ -25,14 +26,14 @@ const blogSchema = new mongoose.Schema(
 );
 
 blogSchema.pre('save', function setSlug(next) {
-  if (this.isModified('title')) this.slug = `${slugify(this.title, { lower: true, strict: true })}-${Date.now().toString().slice(-4)}`;
+  if (this.isModified('title.en')) this.slug = `${slugify(this.title.en, { lower: true, strict: true })}-${Date.now().toString().slice(-4)}`;
   if (this.isModified('status') && this.status === 'published' && !this.publishedAt) {
     this.publishedAt = new Date();
   }
   next();
 });
 
-blogSchema.index({ title: 'text', content: 'text', tags: 'text' });
+blogSchema.index({ 'title.en': 'text', 'content.en': 'text', tags: 'text' });
 blogSchema.index({ status: 1, category: 1 });
 
 module.exports = mongoose.model('Blog', blogSchema);

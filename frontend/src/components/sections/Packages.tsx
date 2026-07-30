@@ -3,18 +3,20 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ClockIcon, StarIcon, ArrowRightIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { packages } from '../../data/content';
 import { SectionHeading } from '../ui/SectionHeading';
 
 export function Packages() {
+  const { t } = useTranslation('home');
   return (
     <section id="packages" className="relative py-24 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Curated journeys"
-          title="Featured Tour Packages"
-          subtitle="Thoughtfully designed itineraries — or the foundation for a trip we tailor entirely around you." />
-        
+          eyebrow={t('packages.eyebrow')}
+          title={t('packages.title')}
+          subtitle={t('packages.subtitle')} />
+
 
         <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {packages.map((p, i) =>
@@ -44,11 +46,11 @@ export function Packages() {
 
                 <div className="mt-5 flex items-end justify-between border-t border-forest/10 pt-4">
                   <div>
-                    <p className="text-[11px] uppercase tracking-wide text-forest/50">From</p>
+                    <p className="text-[11px] uppercase tracking-wide text-forest/50">{t('packages.from')}</p>
                     <p className="font-display text-2xl font-semibold text-forest">${p.price.toLocaleString()}</p>
                   </div>
                   <button className="group/btn inline-flex items-center gap-1.5 rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-emerald">
-                    View Details
+                    {t('packages.viewDetails')}
                     <ArrowRightIcon className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                   </button>
                 </div>
@@ -62,7 +64,7 @@ export function Packages() {
             to="/packages"
             className="group inline-flex items-center gap-2 rounded-full bg-forest px-7 py-3.5 text-sm font-semibold text-cream transition-colors hover:bg-emerald">
 
-            View All Packages
+            {t('packages.viewAllPackages')}
             <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>

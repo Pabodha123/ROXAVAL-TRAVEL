@@ -64,9 +64,9 @@ const generateDraftItinerary = async (preferences) => {
 
   const days = dayCount(travelDates);
   const candidateContext = {
-    destinations: destinations.map((d) => ({ id: d._id.toString(), name: d.name, region: d.region })),
-    activities: activities.map((a) => ({ id: a._id.toString(), name: a.name, category: a.category })),
-    hotels: hotels.map((h) => ({ id: h._id.toString(), name: h.name, category: h.category })),
+    destinations: destinations.map((d) => ({ id: d._id.toString(), name: d.name.en, region: d.region })),
+    activities: activities.map((a) => ({ id: a._id.toString(), name: a.name.en, category: a.category })),
+    hotels: hotels.map((h) => ({ id: h._id.toString(), name: h.name.en, category: h.category })),
   };
 
   const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });

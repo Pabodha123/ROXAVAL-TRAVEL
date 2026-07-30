@@ -4,7 +4,12 @@ const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
 const factory = require('./factory');
 
-const base = factory(Destination, { searchableFields: ['name', 'description', 'tag'], populate: ['nearbyDestinations'] });
+const translatableFields = ['name', 'description', 'history', 'whyVisit', 'popularActivities', 'travelTips', 'attractions.name', 'attractions.description', 'attractions.travelTips'];
+const base = factory(Destination, {
+  searchableFields: ['name', 'description', 'tag'],
+  populate: ['nearbyDestinations'],
+  translatableFields,
+});
 
 // Public listing only shows published destinations unless an admin is asking
 const getAllPublic = catchAsync(async (req, res, next) => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowRightIcon,
   CheckIcon,
@@ -21,6 +22,13 @@ const topDestinations = [
 { name: 'Mirissa', x: 95, y: 370 }];
 
 export function CustomTourCta() {
+  const { t } = useTranslation('home');
+  const benefits = [
+    t('customTourCta.benefit1'),
+    t('customTourCta.benefit2'),
+    t('customTourCta.benefit3'),
+    t('customTourCta.benefit4'),
+  ];
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-emerald via-emerald to-forest py-20 sm:py-24">
       <div className="absolute inset-0 opacity-[0.07]" aria-hidden="true">
@@ -32,17 +40,17 @@ export function CustomTourCta() {
         <Reveal>
           <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-gold-light">
             <span className="h-px w-8 bg-gold" />
-            Made around you
+            {t('customTourCta.eyebrow')}
           </span>
           <h2 className="font-display mt-5 max-w-2xl text-4xl font-semibold leading-[1.1] text-white sm:text-5xl">
-            Can&apos;t Find Your <span className="italic text-gold">Perfect Tour?</span>
+            {t('customTourCta.titleLine1')} <span className="italic text-gold">{t('customTourCta.titleHighlight')}</span>
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-cream/80 sm:text-lg">
-            Design your own Sri Lanka holiday based on your travel preferences. Tell us your requirements, and our travel experts will create a personalized itinerary specially for you.
+            {t('customTourCta.subtitle')}
           </p>
 
           <ul className="mt-7 grid gap-3 sm:grid-cols-2">
-            {['Tailored to your pace', 'Handpicked stays & experiences', 'Local expertise, end to end', 'No obligation to book'].map((benefit) =>
+            {benefits.map((benefit) =>
             <li key={benefit} className="flex items-center gap-2.5 text-sm font-medium text-cream/90">
                 <span className="grid h-5 w-5 place-items-center rounded-full bg-gold text-forest">
                   <CheckIcon className="h-3.5 w-3.5" strokeWidth={3} />
@@ -57,15 +65,15 @@ export function CustomTourCta() {
               to="/packages#custom-tour"
               className="group inline-flex items-center justify-center gap-2 rounded-full bg-gold px-7 py-4 text-sm font-semibold text-forest shadow-lift transition-transform hover:scale-[1.04] active:scale-95">
 
-              Create My Custom Tour
+              {t('customTourCta.createMyCustomTour')}
               <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
             <a
               href="https://wa.me/94771234567"
               className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-7 py-4 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-forest">
-              
+
               <MessageCircleIcon className="h-4 w-4" />
-              Talk to an Expert
+              {t('customTourCta.talkToExpert')}
             </a>
           </div>
         </Reveal>
@@ -84,8 +92,8 @@ export function CustomTourCta() {
                   <MapPinIcon className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-white">Top Destinations</p>
-                  <p className="mt-0.5 text-xs text-cream/60">Explore the island with us</p>
+                  <p className="text-sm font-semibold text-white">{t('customTourCta.cardTitle')}</p>
+                  <p className="mt-0.5 text-xs text-cream/60">{t('customTourCta.cardSubtitle')}</p>
                 </div>
               </div>
               <SparklesIcon className="h-5 w-5 text-gold" />
@@ -150,12 +158,12 @@ export function CustomTourCta() {
                 <SparklesIcon className="h-4 w-4" />
               </span>
               <p className="text-xs leading-relaxed text-cream/75">
-                Share your ideas. We&apos;ll send a one-of-a-kind itinerary within 24 hours.
+                {t('customTourCta.cardNote')}
               </p>
             </div>
           </motion.div>
           <div className="absolute -right-4 -top-5 hidden rounded-full bg-gold px-4 py-2 text-xs font-bold text-forest shadow-lg sm:block">
-            100% your way
+            {t('customTourCta.cardBadge')}
           </div>
         </Reveal>
       </div>

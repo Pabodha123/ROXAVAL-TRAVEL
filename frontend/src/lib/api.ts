@@ -1,3 +1,5 @@
+import { getCurrentLanguage } from '../i18n';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 export const API_ORIGIN = API_BASE_URL.replace(/\/api\/v\d+\/?$/, '');
 
@@ -78,7 +80,10 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<{
     body: formData || (body !== undefined ? JSON.stringify(body) : undefined)
   };
 
-  const url = `${API_BASE_URL}${path}${buildQueryString(params)}`;
+  // Every request carries the active site language so catalog endpoints
+  // (Tour Packages/Destinations/Activities/Hotels/Blog) can return
+  // admin-authored content in the right locale, with no per-call-site changes.
+  const url = `${API_BASE_URL}${path}${buildQueryString({ ...params, lang: getCurrentLanguage() })}`;
   let res = await fetch(url, init);
 
   if (res.status === 401 && !skipRefresh && path !== '/auth/refresh' && path !== '/auth/login') {

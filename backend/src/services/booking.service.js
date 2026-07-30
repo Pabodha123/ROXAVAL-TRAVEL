@@ -44,7 +44,7 @@ const createFromPackage = async (customerUserId, { tourPackage: packageId, trave
     recipient: customerUserId,
     type: 'booking_created',
     title: 'Booking Created',
-    message: `Your booking ${booking.bookingReference} for "${pkg.name}" has been created. Please proceed to payment.`,
+    message: `Your booking ${booking.bookingReference} for "${pkg.name.en}" has been created. Please proceed to payment.`,
     link: `/my-tours/bookings/${booking._id}`,
     relatedModel: 'Booking',
     relatedId: booking._id,

@@ -4,6 +4,12 @@ const ApiError = require('../utils/ApiError');
 const { generatePdfDocument } = require('../utils/pdfGenerator');
 const { notify } = require('./notification.service');
 const generateReference = require('../utils/generateReference');
+const { localizeValue } = require('../utils/localize');
+const { t } = require('../i18n/strings');
+
+// `days` here can come from a TourPackage (title is now `{en,de,fr}`) or a
+// customer Itinerary (title is still a plain string) — normalize both.
+const displayText = (val) => localizeValue(val, 'en') || '';
 
 const loadBookingContext = async (bookingId) => {
   const booking = await Booking.findById(bookingId)
@@ -23,20 +29,22 @@ const loadBookingContext = async (bookingId) => {
 const generateItineraryDocument = async (bookingId, generatedBy) => {
   const booking = await loadBookingContext(bookingId);
   const customerUser = booking.customer.user;
+  const lang = booking.customer.preferredLanguage || 'en';
+  const s = t(lang, 'pdf');
 
   const days = booking.sourceType === 'customized' ? booking.itinerary?.days || [] : booking.tourPackage?.itinerary || [];
 
   const tableColumns = [
-    { key: 'dayNumber', label: 'Day', width: 40 },
-    { key: 'title', label: 'Title', width: 150 },
-    { key: 'meals', label: 'Meals', width: 100 },
-    { key: 'hotel', label: 'Hotel', width: 225 },
+    { key: 'dayNumber', label: s.day, width: 40 },
+    { key: 'title', label: s.title, width: 150 },
+    { key: 'meals', label: s.meals, width: 100 },
+    { key: 'hotel', label: s.hotel, width: 225 },
   ];
   const tableRows = days.map((d) => ({
     dayNumber: d.dayNumber,
-    title: d.title,
+    title: displayText(d.title),
     meals: (d.meals || []).join(', '),
-    hotel: d.hotel?.name || '-',
+    hotel: displayText(d.hotel?.name) || '-',
   }));
 
   const fileName = `itinerary-${booking.bookingReference}-${Date.now()}.pdf`;
@@ -47,13 +55,14 @@ const generateItineraryDocument = async (bookingId, generatedBy) => {
       customerName: customerUser.fullName,
       customerEmail: customerUser.email,
       customerPhone: customerUser.phone,
-      packageName: booking.tourPackage?.name || booking.itinerary?.title,
+      packageName: displayText(booking.tourPackage?.name) || displayText(booking.itinerary?.title),
       travelDate: booking.travelDate.toDateString(),
       tableColumns,
       tableRows,
       notes: 'Itinerary is subject to minor changes due to weather or local conditions.',
     },
-    fileName
+    fileName,
+    lang
   );
 
   return saveDocumentRecord({
@@ -72,6 +81,7 @@ const generateItineraryDocument = async (bookingId, generatedBy) => {
 const generateBookingConfirmation = async (bookingId, generatedBy) => {
   const booking = await loadBookingContext(bookingId);
   const customerUser = booking.customer.user;
+  const lang = booking.customer.preferredLanguage || 'en';
 
   const fileName = `confirmation-${booking.bookingReference}-${Date.now()}.pdf`;
   const filePath = await generatePdfDocument(
@@ -81,7 +91,7 @@ const generateBookingConfirmation = async (bookingId, generatedBy) => {
       customerName: customerUser.fullName,
       customerEmail: customerUser.email,
       customerPhone: customerUser.phone,
-      packageName: booking.tourPackage?.name || booking.itinerary?.title,
+      packageName: displayText(booking.tourPackage?.name) || displayText(booking.itinerary?.title),
       travelDate: booking.travelDate.toDateString(),
       amountSummary: {
         'Total Amount': `${booking.pricing.currency} ${booking.pricing.totalAmount}`,
@@ -90,7 +100,8 @@ const generateBookingConfirmation = async (bookingId, generatedBy) => {
       },
       notes: 'This confirms your booking with Roxaval Travels. Thank you for choosing us!',
     },
-    fileName
+    fileName,
+    lang
   );
 
   return saveDocumentRecord({
@@ -109,6 +120,7 @@ const generateBookingConfirmation = async (bookingId, generatedBy) => {
 const generateInvoice = async (bookingId, generatedBy) => {
   const booking = await loadBookingContext(bookingId);
   const customerUser = booking.customer.user;
+  const lang = booking.customer.preferredLanguage || 'en';
   const invoiceRef = generateReference('INV');
 
   const fileName = `invoice-${invoiceRef}-${Date.now()}.pdf`;
@@ -119,7 +131,7 @@ const generateInvoice = async (bookingId, generatedBy) => {
       customerName: customerUser.fullName,
       customerEmail: customerUser.email,
       customerPhone: customerUser.phone,
-      packageName: booking.tourPackage?.name || booking.itinerary?.title,
+      packageName: displayText(booking.tourPackage?.name) || displayText(booking.itinerary?.title),
       travelDate: booking.travelDate.toDateString(),
       amountSummary: {
         Subtotal: `${booking.pricing.currency} ${booking.pricing.subtotal}`,
@@ -128,7 +140,8 @@ const generateInvoice = async (bookingId, generatedBy) => {
       },
       notes: 'Payment due as per the agreed schedule. Bank details available on request.',
     },
-    fileName
+    fileName,
+    lang
   );
 
   return saveDocumentRecord({
@@ -148,6 +161,7 @@ const generatePaymentReceipt = async (paymentId, generatedBy) => {
     populate: { path: 'user', select: 'fullName email phone' },
   });
   if (!payment) throw ApiError.notFound('Payment not found.');
+  const lang = payment.customer.preferredLanguage || 'en';
 
   const fileName = `receipt-${payment.paymentReference}-${Date.now()}.pdf`;
   const filePath = await generatePdfDocument(
@@ -164,7 +178,8 @@ const generatePaymentReceipt = async (paymentId, generatedBy) => {
       },
       notes: 'Thank you for your payment.',
     },
-    fileName
+    fileName,
+    lang
   );
 
   return saveDocumentRecord({
@@ -185,6 +200,7 @@ const generateQuotation = async (itineraryId, generatedBy) => {
     populate: { path: 'user', select: 'fullName email phone' },
   });
   if (!itinerary) throw ApiError.notFound('Itinerary not found.');
+  const lang = itinerary.customer.preferredLanguage || 'en';
   const quoteRef = generateReference('QUO');
 
   const fileName = `quotation-${quoteRef}-${Date.now()}.pdf`;
@@ -195,7 +211,7 @@ const generateQuotation = async (itineraryId, generatedBy) => {
       customerName: itinerary.customer.user.fullName,
       customerEmail: itinerary.customer.user.email,
       customerPhone: itinerary.customer.user.phone,
-      packageName: itinerary.title,
+      packageName: displayText(itinerary.title),
       amountSummary: {
         'Base Price': `${itinerary.pricing.currency} ${itinerary.pricing.basePrice}`,
         Discount: `${itinerary.pricing.currency} ${itinerary.pricing.discount}`,
@@ -203,7 +219,8 @@ const generateQuotation = async (itineraryId, generatedBy) => {
       },
       notes: itinerary.customerFacingNotes || 'This quotation is valid for 14 days from the date of issue.',
     },
-    fileName
+    fileName,
+    lang
   );
 
   return saveDocumentRecord({

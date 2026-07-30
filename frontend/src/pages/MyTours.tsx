@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   CalendarIcon, UsersIcon, DownloadIcon, Loader2Icon, MapPinIcon,
   BedDoubleIcon, MessageCircleIcon, PackageIcon, SendIcon, CheckIcon,
@@ -656,6 +657,7 @@ function RequestsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
 }
 
 export function MyTours() {
+  const { t } = useTranslation('dashboard');
   const { section, id } = useParams<{section?: string;id?: string;}>();
   const [tab, setTab] = useState<'bookings' | 'requests'>(section === 'requests' ? 'requests' : 'bookings');
   const requestsUnread = useUnreadCount('CustomTourRequest');
@@ -664,15 +666,15 @@ export function MyTours() {
     <main className="min-h-screen bg-cream pt-28 pb-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <BackButton className="mb-6" />
-        <h1 className="font-display text-3xl font-semibold text-forest sm:text-4xl">My Tours</h1>
-        <p className="mt-2 text-forest/60">Track your bookings and custom tour requests in one place.</p>
+        <h1 className="font-display text-3xl font-semibold text-forest sm:text-4xl">{t('myTours.title')}</h1>
+        <p className="mt-2 text-forest/60">{t('myTours.subtitle')}</p>
 
         <div className="mt-8 inline-flex rounded-full bg-white p-1 shadow-soft">
           <button onClick={() => setTab('bookings')} className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-colors ${tab === 'bookings' ? 'bg-forest text-white' : 'text-forest/60 hover:text-forest'}`}>
-            <span className="flex items-center gap-2"><MapPinIcon className="h-4 w-4" /> Bookings</span>
+            <span className="flex items-center gap-2"><MapPinIcon className="h-4 w-4" /> {t('myTours.bookings')}</span>
           </button>
           <button onClick={() => setTab('requests')} className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-colors ${tab === 'requests' ? 'bg-forest text-white' : 'text-forest/60 hover:text-forest'}`}>
-            <span className="flex items-center gap-2"><PackageIcon className="h-4 w-4" /> Custom Requests</span>
+            <span className="flex items-center gap-2"><PackageIcon className="h-4 w-4" /> {t('myTours.customRequests')}</span>
             {requestsUnread > 0 &&
             <span className={`grid h-5 min-w-[1.25rem] place-items-center rounded-full px-1 text-[10px] font-bold ${tab === 'requests' ? 'bg-gold text-forest' : 'bg-gold/90 text-forest'}`}>
                 {requestsUnread > 9 ? '9+' : requestsUnread}
