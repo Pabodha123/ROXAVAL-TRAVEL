@@ -64,13 +64,22 @@ const env = {
   ANTHROPIC_MODEL: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5',
 };
 
-// Fail fast on missing critical secrets in non-test environments
+// Fail fast on missing critical secrets in non-test environments. Under a
+// traditional long-running process (local/Render/Railway) exiting is the
+// right move; under Vercel's serverless runtime process.exit() just kills
+// the invocation with an opaque FUNCTION_INVOCATION_FAILED and no message,
+// so there we throw instead and let the caller (backend/api/index.js)
+// turn it into a readable JSON error.
 const required = ['MONGO_URI', 'JWT_SECRET', 'JWT_REFRESH_SECRET'];
 if (env.NODE_ENV !== 'test') {
   const missing = required.filter((key) => !env[key]);
   if (missing.length) {
+    const message = `Missing required environment variables: ${missing.join(', ')}`;
+    if (process.env.VERCEL) {
+      throw new Error(message);
+    }
     // eslint-disable-next-line no-console
-    console.error(`Missing required environment variables: ${missing.join(', ')}`);
+    console.error(message);
     process.exit(1);
   }
 }

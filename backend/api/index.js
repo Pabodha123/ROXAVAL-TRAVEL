@@ -1,13 +1,31 @@
 const mongoose = require('mongoose');
-const connectDB = require('../src/config/db');
-const app = require('../src/app');
+
+let app;
+let connectDB;
+let bootError;
+try {
+  app = require('../src/app');
+  connectDB = require('../src/config/db');
+} catch (err) {
+  bootError = err;
+}
 
 let connecting;
 
 module.exports = async (req, res) => {
-  if (mongoose.connection.readyState === 0) {
-    connecting = connecting || connectDB();
-    await connecting;
+  if (bootError) {
+    res.status(500).json({ success: false, message: 'Backend failed to start', error: bootError.message });
+    return;
   }
-  return app(req, res);
+
+  try {
+    if (mongoose.connection.readyState === 0) {
+      connecting = connecting || connectDB();
+      await connecting;
+    }
+    return app(req, res);
+  } catch (err) {
+    connecting = undefined;
+    res.status(500).json({ success: false, message: 'Backend request failed', error: err.message });
+  }
 };
