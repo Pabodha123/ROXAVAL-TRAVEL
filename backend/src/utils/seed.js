@@ -747,7 +747,7 @@ async function seed() {
       instagram: 'https://instagram.com/roxavaltravels',
       tiktok: 'https://tiktok.com/@roxavaltravels',
       youtube: 'https://youtube.com/@roxavaltravels',
-      whatsapp: '94771234567',
+      whatsapp: '971542642902',
     },
   });
   await settings.save();

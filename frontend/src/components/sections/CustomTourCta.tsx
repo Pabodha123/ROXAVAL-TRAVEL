@@ -8,6 +8,7 @@ import {
   MessageCircleIcon } from
 'lucide-react';
 import { Reveal } from '../ui/Reveal';
+import { whatsAppLink } from '../../lib/contact';
 
 export function CustomTourCta() {
   const { t } = useTranslation('home');
@@ -57,7 +58,9 @@ export function CustomTourCta() {
               <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
             <a
-              href="https://wa.me/94771234567"
+              href={whatsAppLink()}
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-7 py-4 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-forest">
 
               <MessageCircleIcon className="h-4 w-4" />

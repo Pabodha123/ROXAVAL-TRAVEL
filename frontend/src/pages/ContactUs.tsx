@@ -8,7 +8,7 @@ import {
 import { PageBanner } from '../components/layout/PageBanner';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { apiGetOne, apiPost, ApiRequestError } from '../lib/api';
-import { whatsAppLink } from '../lib/contact';
+import { whatsAppLink, WHATSAPP_NUMBER } from '../lib/contact';
 
 interface Settings {
   companyName: string;
@@ -31,7 +31,7 @@ const DEFAULT_SETTINGS: Settings = {
   address: 'No 221 Ganemulla Road, Kandana, Sri Lanka',
   phone: '+94 11 234 5678',
   email: 'hello@roxavaltravels.com',
-  socialLinks: { facebook: '', instagram: '', tiktok: '', youtube: '', whatsapp: '94771234567' }
+  socialLinks: { facebook: '', instagram: '', tiktok: '', youtube: '', whatsapp: WHATSAPP_NUMBER }
 };
 
 const SOCIAL_ICONS: Record<string, React.ComponentType<{className?: string;}>> = {

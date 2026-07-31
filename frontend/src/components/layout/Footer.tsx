@@ -1,11 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   MapPinIcon, PhoneIcon, MailIcon, MessageCircleIcon,
-  FacebookIcon, InstagramIcon, YoutubeIcon, MusicIcon, SendIcon } from
+  FacebookIcon, InstagramIcon, YoutubeIcon, MusicIcon, SendIcon, CheckIcon } from
 'lucide-react';
+import { apiPost } from '../../lib/api';
+import { WHATSAPP_DISPLAY, whatsAppLink } from '../../lib/contact';
 
 const socials = [
 { icon: FacebookIcon, label: 'Facebook' },
@@ -16,6 +18,20 @@ const socials = [
 
 export function Footer() {
   const { t } = useTranslation();
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'submitted' | 'error'>('idle');
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('submitting');
+    try {
+      await apiPost('/newsletter', { email });
+      setStatus('submitted');
+      setEmail('');
+    } catch (err) {
+      setStatus('error');
+    }
+  };
 
   const quickLinks = [
     { label: t('nav.home'), href: '/' },
@@ -31,8 +47,6 @@ export function Footer() {
     { label: t('footer.tailorMadeTours'), href: '/packages#custom-tour' },
     { label: t('nav.reviews'), href: '/reviews' },
     { label: t('nav.terms'), href: '/terms' },
-    { label: t('footer.privacyPolicy'), href: null },
-    { label: t('footer.faq'), href: null },
   ];
 
   return (
@@ -45,18 +59,32 @@ export function Footer() {
               <h3 className="font-display text-2xl sm:text-3xl font-semibold text-white">{t('footer.newsletterTitle')}</h3>
               <p className="mt-2 text-cream/80 text-sm">{t('footer.newsletterSubtitle')}</p>
             </div>
-            <form className="flex w-full md:w-auto gap-2" onSubmit={(e) => e.preventDefault()}>
+            {status === 'submitted' ?
+            <div className="flex items-center gap-2 rounded-full bg-white/10 px-6 py-3.5 text-sm font-semibold text-white">
+              <CheckIcon className="h-4 w-4 text-gold" /> {t('footer.subscribeSuccess', 'Thanks for subscribing!')}
+            </div> :
+
+            <form className="flex w-full flex-col md:w-auto md:flex-row gap-2" onSubmit={handleSubscribe}>
               <input
                 type="email"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('footer.emailPlaceholder')}
                 className="flex-1 md:w-72 rounded-full bg-white/95 px-5 py-3.5 text-sm text-forest placeholder:text-forest/50 focus:outline-none focus:ring-2 focus:ring-gold" />
 
-              <button className="flex items-center gap-2 rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-105 active:scale-95">
-                {t('footer.subscribe')} <SendIcon className="h-4 w-4" />
+              <button
+                type="submit"
+                disabled={status === 'submitting'}
+                className="flex items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-105 active:scale-95 disabled:opacity-70">
+                {status === 'submitting' ? t('footer.subscribing', 'Subscribing...') : t('footer.subscribe')} <SendIcon className="h-4 w-4" />
               </button>
             </form>
+            }
           </div>
+          {status === 'error' &&
+          <p className="relative mt-3 text-sm text-red-200">{t('footer.subscribeError', 'Something went wrong. Please try again.')}</p>
+          }
         </div>
       </div>
 
@@ -103,7 +131,12 @@ export function Footer() {
             <ul className="mt-4 space-y-3 text-sm text-cream/70">
               <li className="flex gap-3"><MapPinIcon className="h-5 w-5 text-gold shrink-0" /> No 221 Ganemulla Road, Kandana, Sri Lanka</li>
               <li className="flex gap-3"><PhoneIcon className="h-5 w-5 text-gold shrink-0" /> +94 11 234 5678</li>
-              <li className="flex gap-3"><MessageCircleIcon className="h-5 w-5 text-gold shrink-0" /> {t('footer.whatsapp')}: +94 77 123 4567</li>
+              <li className="flex gap-3">
+                <MessageCircleIcon className="h-5 w-5 text-gold shrink-0" />
+                <a href={whatsAppLink()} target="_blank" rel="noreferrer" className="hover:text-gold transition-colors">
+                  {t('footer.whatsapp')}: {WHATSAPP_DISPLAY}
+                </a>
+              </li>
               <li className="flex gap-3"><MailIcon className="h-5 w-5 text-gold shrink-0" /> hello@roxavaltravels.com</li>
             </ul>
           </div>

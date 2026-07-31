@@ -16,6 +16,7 @@ import { apiGetOne, apiGetList } from '../lib/api';
 import { LoadingState, ErrorState } from '../components/ui/StatusState';
 import { ActivityCard } from '../components/activities/ActivityCard';
 import { BreadcrumbBackRow } from '../components/layout/BreadcrumbBackRow';
+import { whatsAppLink } from '../lib/contact';
 import type { Activity } from '../types/activity';
 
 export function ActivityDetails() {
@@ -213,7 +214,9 @@ export function ActivityDetails() {
               {t('detail.planMyTour')} <ArrowRightIcon className="h-4 w-4" />
             </a>
             <a
-              href="https://wa.me/94771234567"
+              href={whatsAppLink()}
+              target="_blank"
+              rel="noreferrer"
               className="mt-3 flex items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-forest">
 
               <MessageCircleIcon className="h-4 w-4" /> {t('detail.talkToExpert')}

@@ -105,4 +105,24 @@ const contactInquiryEmail = ({ name, email, phone, subject, message }) => {
   `;
 };
 
-module.exports = { notificationEmail, hotelVoucherEmail, contactInquiryEmail };
+/**
+ * Sent to the company inbox whenever a visitor subscribes via the "Get
+ * travel inspiration in your inbox" footer form
+ * (backend/src/controllers/newsletter.controller.js).
+ */
+const newsletterSubscriptionEmail = ({ email }) => {
+  return `
+    <div style="font-family: -apple-system, Segoe UI, Arial, sans-serif; max-width: 560px; margin: 0 auto;">
+      <p style="color:#0f3d2e; font-size:18px; font-weight:600; margin-bottom:4px;">${env.COMPANY.name}</p>
+      <h2 style="color:#0f3d2e; margin-top:24px;">New Newsletter Subscription</h2>
+      <p style="color:#333; line-height:1.6;">A visitor subscribed to travel inspiration emails from the website footer.</p>
+      <table style="width:100%; border-collapse:collapse; margin-top:16px; font-size:14px;">
+        <tbody>
+          <tr><td style="padding:6px 0; color:#999; width:90px;">Email</td><td style="padding:6px 0; color:#333; font-weight:600;">${email}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+};
+
+module.exports = { notificationEmail, hotelVoucherEmail, contactInquiryEmail, newsletterSubscriptionEmail };
