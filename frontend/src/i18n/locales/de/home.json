@@ -51,19 +51,9 @@
     "readMore": "Weiterlesen"
   },
   "customTourCta": {
-    "eyebrow": "Ganz nach Ihnen gestaltet",
     "titleLine1": "Ihre Perfekte Reise",
     "titleHighlight": "Nicht Gefunden?",
-    "subtitle": "Gestalten Sie Ihren eigenen Sri-Lanka-Urlaub nach Ihren Reisewünschen. Teilen Sie uns Ihre Anforderungen mit, und unsere Reiseexperten erstellen eine persönliche Reiseroute speziell für Sie.",
-    "benefit1": "Abgestimmt auf Ihr Tempo",
-    "benefit2": "Handverlesene Unterkünfte & Erlebnisse",
-    "benefit3": "Lokale Expertise, durchgängig",
-    "benefit4": "Keine Buchungspflicht",
-    "createMyCustomTour": "Meine Individuelle Reise Erstellen",
-    "talkToExpert": "Mit Einem Experten Sprechen",
-    "cardTitle": "Top-Reiseziele",
-    "cardSubtitle": "Entdecken Sie die Insel mit uns",
-    "cardNote": "Teilen Sie Ihre Ideen. Wir senden Ihnen innerhalb von 24 Stunden eine einzigartige Reiseroute.",
-    "cardBadge": "100% nach Ihren Wünschen"
+    "subtitle": "Erstellen Sie Ihre eigene, persönliche Sri-Lanka-Reiseroute nach Ihren Reisewünschen. Unsere Reiseexperten planen die perfekte Reise für Sie.",
+    "createMyCustomTour": "Meine Individuelle Reise Erstellen"
   }
 }

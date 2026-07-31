@@ -51,19 +51,9 @@
     "readMore": "Read More"
   },
   "customTourCta": {
-    "eyebrow": "Made around you",
     "titleLine1": "Can't Find Your",
     "titleHighlight": "Perfect Tour?",
-    "subtitle": "Design your own Sri Lanka holiday based on your travel preferences. Tell us your requirements, and our travel experts will create a personalized itinerary specially for you.",
-    "benefit1": "Tailored to your pace",
-    "benefit2": "Handpicked stays & experiences",
-    "benefit3": "Local expertise, end to end",
-    "benefit4": "No obligation to book",
-    "createMyCustomTour": "Create My Custom Tour",
-    "talkToExpert": "Talk to an Expert",
-    "cardTitle": "Top Destinations",
-    "cardSubtitle": "Explore the island with us",
-    "cardNote": "Share your ideas. We'll send a one-of-a-kind itinerary within 24 hours.",
-    "cardBadge": "100% your way"
+    "subtitle": "Create your own personalized Sri Lanka itinerary based on your travel preferences. Our travel experts will plan the perfect journey for you.",
+    "createMyCustomTour": "Create My Custom Tour"
   }
 }

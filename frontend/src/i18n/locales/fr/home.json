@@ -51,19 +51,9 @@
     "readMore": "Lire la suite"
   },
   "customTourCta": {
-    "eyebrow": "Conçu autour de vous",
     "titleLine1": "Vous Ne Trouvez Pas Votre",
     "titleHighlight": "Voyage Idéal ?",
-    "subtitle": "Concevez vos propres vacances au Sri Lanka selon vos préférences de voyage. Partagez-nous vos souhaits, et nos experts créeront un itinéraire personnalisé rien que pour vous.",
-    "benefit1": "Adapté à votre rythme",
-    "benefit2": "Hébergements et expériences triés sur le volet",
-    "benefit3": "Expertise locale, de bout en bout",
-    "benefit4": "Aucune obligation de réserver",
-    "createMyCustomTour": "Créer Mon Voyage Sur Mesure",
-    "talkToExpert": "Parler à un Expert",
-    "cardTitle": "Destinations Populaires",
-    "cardSubtitle": "Découvrez l'île avec nous",
-    "cardNote": "Partagez vos idées. Nous vous enverrons un itinéraire unique sous 24 heures.",
-    "cardBadge": "100 % à votre façon"
+    "subtitle": "Créez votre propre itinéraire personnalisé au Sri Lanka selon vos préférences de voyage. Nos experts planifieront le voyage parfait pour vous.",
+    "createMyCustomTour": "Créer Mon Voyage Sur Mesure"
   }
 }
