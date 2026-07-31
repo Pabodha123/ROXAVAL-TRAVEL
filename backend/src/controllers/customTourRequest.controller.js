@@ -5,6 +5,22 @@ const ApiError = require('../utils/ApiError');
 const ApiFeatures = require('../utils/ApiFeatures');
 const customTourService = require('../services/customTour.service');
 const aiService = require('../services/ai.service');
+const { localizeDoc, localizeList } = require('../utils/localize');
+
+// Every populated Destination/Activity/Hotel ref below only selects `name`
+// (a {en,de,fr} field) — none of it is localized by the populate() call
+// itself, so it has to be flattened here or React crashes rendering it.
+const translatableFields = [
+  'preferredDestinations.name',
+  'preferredActivities.name',
+  'itinerary.days.destinations.name',
+  'itinerary.days.activities.name',
+  'itinerary.days.hotel.name',
+  'itinerary.hotels.name',
+  'aiGeneratedItinerary.days.destinations.name',
+  'aiGeneratedItinerary.days.activities.name',
+  'aiGeneratedItinerary.days.hotel.name',
+];
 
 // Deep-populates the day-level refs inside an Itinerary subdocument array —
 // a plain `.populate('itinerary')` only resolves the top-level doc, leaving
@@ -48,7 +64,8 @@ const getMyRequests = catchAsync(async (req, res) => {
     .populate('aiGeneratedItinerary.days.activities', 'name')
     .populate('aiGeneratedItinerary.days.hotel', 'name');
   const meta = await features.getMeta(CustomTourRequest, { customer: customer._id });
-  new ApiResponse(200, docs, 'Your custom tour requests', meta).send(res);
+  const data = localizeList(docs, req.lang || 'en', translatableFields);
+  new ApiResponse(200, data, 'Your custom tour requests', meta).send(res);
 });
 
 const getMyRequestById = catchAsync(async (req, res) => {
@@ -60,7 +77,8 @@ const getMyRequestById = catchAsync(async (req, res) => {
     .populate('aiGeneratedItinerary.days.activities', 'name')
     .populate('aiGeneratedItinerary.days.hotel', 'name');
   if (!request) throw ApiError.notFound('Custom tour request not found');
-  new ApiResponse(200, request, 'Request fetched').send(res);
+  const data = localizeDoc(request, req.lang || 'en', translatableFields);
+  new ApiResponse(200, data, 'Request fetched').send(res);
 });
 
 // Admin: list all requests (appears immediately on Admin Dashboard)
@@ -71,7 +89,8 @@ const getAllRequests = catchAsync(async (req, res) => {
     .populate('preferredDestinations preferredActivities')
     .populate(populateItinerary);
   const meta = await features.getMeta(CustomTourRequest, {});
-  new ApiResponse(200, docs, 'Custom tour requests fetched', meta).send(res);
+  const data = localizeList(docs, req.lang || 'en', translatableFields);
+  new ApiResponse(200, data, 'Custom tour requests fetched', meta).send(res);
 });
 
 const getRequestById = catchAsync(async (req, res) => {
@@ -80,7 +99,8 @@ const getRequestById = catchAsync(async (req, res) => {
     .populate('preferredDestinations preferredActivities')
     .populate(populateItinerary);
   if (!request) throw ApiError.notFound('Custom tour request not found');
-  new ApiResponse(200, request, 'Request fetched').send(res);
+  const data = localizeDoc(request, req.lang || 'en', translatableFields);
+  new ApiResponse(200, data, 'Request fetched').send(res);
 });
 
 // Admin: assign self (or another admin) to review a request

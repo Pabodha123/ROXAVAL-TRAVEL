@@ -3,6 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
 const ApiFeatures = require('../utils/ApiFeatures');
+const { localizeList } = require('../utils/localize');
 
 // Customer: submit a review — only allowed for a booking they own that is
 // already Completed, and only once per booking.
@@ -36,7 +37,8 @@ const getApproved = catchAsync(async (req, res) => {
     .populate({ path: 'customer', populate: { path: 'user', select: 'fullName' } })
     .populate('tourPackage', 'name heroImage');
   const meta = await features.getMeta(Review, { status: 'approved' });
-  new ApiResponse(200, docs, 'Approved reviews fetched', meta).send(res);
+  const data = localizeList(docs, req.lang || 'en', ['tourPackage.name']);
+  new ApiResponse(200, data, 'Approved reviews fetched', meta).send(res);
 });
 
 // Public: overall rating + star breakdown across all approved reviews
@@ -70,7 +72,8 @@ const getMyReviews = catchAsync(async (req, res) => {
   const customer = await Customer.findOne({ user: req.user._id });
   if (!customer) throw ApiError.notFound('Customer profile not found');
   const reviews = await Review.find({ customer: customer._id }).populate('tourPackage', 'name');
-  new ApiResponse(200, reviews, 'Your reviews fetched').send(res);
+  const data = localizeList(reviews, req.lang || 'en', ['tourPackage.name']);
+  new ApiResponse(200, data, 'Your reviews fetched').send(res);
 });
 
 // Admin: full moderation queue
@@ -80,7 +83,8 @@ const getAllForModeration = catchAsync(async (req, res) => {
     .populate({ path: 'customer', populate: { path: 'user', select: 'fullName email' } })
     .populate('tourPackage', 'name');
   const meta = await features.getMeta(Review, {});
-  new ApiResponse(200, docs, 'Reviews fetched', meta).send(res);
+  const data = localizeList(docs, req.lang || 'en', ['tourPackage.name']);
+  new ApiResponse(200, data, 'Reviews fetched', meta).send(res);
 });
 
 const moderate = catchAsync(async (req, res) => {
