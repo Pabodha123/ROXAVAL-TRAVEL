@@ -107,7 +107,7 @@ export const packages: TourPackage[] = [
 {
   id: 'cultural-triangle',
   name: 'Cultural Triangle Odyssey',
-  image: "/8e639092-b4b2-41f6-ad69-0a4e0017609a.jpg",
+  image: "/pkg-cultural-triangle-odyssey.jpg",
   duration: '7 Days / 6 Nights',
   price: 1290,
   rating: 4.9,
@@ -118,7 +118,7 @@ export const packages: TourPackage[] = [
 {
   id: 'hill-country',
   name: 'Misty Hills & Tea Trails',
-  image: "/28226e86-8f8e-4d79-b1fa-e1c155bc045c.jpg",
+  image: "/pkg-misty-hills-tea-trails.jpg",
   duration: '5 Days / 4 Nights',
   price: 980,
   rating: 4.8,
@@ -140,7 +140,7 @@ export const packages: TourPackage[] = [
 {
   id: 'beach-escape',
   name: 'Southern Beach Escape',
-  image: "/09458834-a156-4b05-8dc9-c0c7c2c90a20.jpg",
+  image: "/pkg-southern-beach-escape.jpg",
   duration: '6 Days / 5 Nights',
   price: 1120,
   rating: 4.7,
@@ -151,7 +151,7 @@ export const packages: TourPackage[] = [
 {
   id: 'honeymoon',
   name: 'Romantic Island Honeymoon',
-  image: "/e12be888-4561-43cf-b8a3-fb6d9de4b630.jpg",
+  image: "/package-romantic-escape.jpg",
   duration: '8 Days / 7 Nights',
   price: 1680,
   rating: 5.0,
@@ -162,7 +162,7 @@ export const packages: TourPackage[] = [
 {
   id: 'grand-tour',
   name: 'Grand Sri Lanka Discovery',
-  image: "/f1dc4405-8788-4026-86f6-8dcd6433d54c.jpg",
+  image: "/pkg-grand-sri-lanka-discovery.jpg",
   duration: '12 Days / 11 Nights',
   price: 2350,
   rating: 4.9,
@@ -176,25 +176,25 @@ export const activities: Activity[] = [
 {
   id: 'safari',
   name: 'Wildlife Safari',
-  image: "/1b2aae1b-d37a-47fe-9479-1d17002debd6.jpg",
+  image: "/activity-wildlife-safari.jpg",
   description: 'Spot leopards, elephants and exotic birds in Yala and Udawalawe national parks.'
 },
 {
   id: 'train',
   name: 'Scenic Train Journey',
-  image: "/ded68c06-c3a1-4dfa-a417-e025e5868f60.jpg",
+  image: "/activity-scenic-train.jpg",
   description: 'Ride the world\u2019s most beautiful railway through misty tea-covered hills.'
 },
 {
   id: 'whale',
   name: 'Whale Watching',
-  image: "/13d86629-a667-4693-8520-ac7db2e2c8c7.jpg",
+  image: "/activity-whale-watching.jpg",
   description: 'Sail off Mirissa to witness majestic blue whales and playful dolphins.'
 },
 {
   id: 'tea',
   name: 'Tea Plantation Tours',
-  image: "/470f58a2-b8ec-4c53-b2fe-62c6f0cbb506.jpg",
+  image: "/activity-tea-plantation.jpg",
   description: 'Walk emerald estates, meet pickers and taste Ceylon tea at its source.'
 }];
 
