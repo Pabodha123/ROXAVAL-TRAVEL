@@ -21,6 +21,8 @@ interface RegisterPayload {
   password: string;
   phone?: string;
   country?: string;
+  dateOfBirth?: string;
+  passportNumber?: string;
 }
 
 interface AuthContextValue {

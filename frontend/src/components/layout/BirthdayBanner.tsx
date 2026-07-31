@@ -84,19 +84,25 @@ export function BirthdayBanner() {
             </button>
 
             <div
-            className="relative flex h-56 items-end bg-forest bg-cover bg-center p-6"
-            style={{ backgroundImage: `linear-gradient(180deg, rgba(15,61,46,0.15) 0%, rgba(15,61,46,0.9) 100%), url('${info.backgroundImageUrl}')` }}>
+            className="relative flex flex-col items-center bg-[#0f1210] bg-cover bg-top px-6 pb-8 pt-8 text-center"
+            style={{ backgroundImage: `url('${info.backgroundImageUrl}')` }}>
 
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gold">Roxaval Travels</p>
-                <h2 className="font-display mt-2 text-3xl font-bold leading-tight text-white drop-shadow-lg">
-                  🎉 Happy Birthday,<br />{info.firstName}!
-                </h2>
-              </div>
+              <img src="/roxaval-icon.png" alt="" className="h-9 w-9 object-contain" />
+              <p className="mt-2.5 text-[12px] font-bold uppercase tracking-[0.25em] text-gold">Roxaval Travels</p>
+              <p className="mt-0.5 text-[10px] italic tracking-wide text-gold/80">Designed for unforgettable journeys ✨</p>
+              <h2 className="font-display mt-24 text-4xl italic leading-tight text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.6)]">
+                🎈 Happy Birthday,<br />{info.firstName}! 🎈
+              </h2>
             </div>
 
-            <div className="bg-forest px-7 pb-7 pt-5">
-              <p className="text-sm leading-relaxed text-cream/85">{info.message}</p>
+            <div className="bg-[#0f1210] px-7 pb-7 pt-5">
+              <div className="mx-auto flex w-40 items-center gap-2.5">
+                <span className="h-px flex-1 bg-gold/50" />
+                <span className="text-gold">♥</span>
+                <span className="h-px flex-1 bg-gold/50" />
+              </div>
+
+              <p className="mt-4 text-center text-sm leading-relaxed text-cream/85">{info.message}</p>
 
               {info.coupon &&
             <div className="mt-4 rounded-2xl border border-dashed border-gold/60 p-4 text-center">
@@ -109,7 +115,7 @@ export function BirthdayBanner() {
 
               <button
               onClick={() => setOpen(false)}
-              className="mt-5 w-full rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-[1.02] active:scale-95">
+              className="mt-5 w-full rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-[#0f1210] transition-transform hover:scale-[1.02] active:scale-95">
 
                 Thank You!
               </button>

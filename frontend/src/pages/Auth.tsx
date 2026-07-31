@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { EyeIcon, EyeOffIcon, LockIcon, Loader2Icon, MailIcon, PhoneIcon, UserIcon } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, LockIcon, Loader2Icon, MailIcon, PhoneIcon, UserIcon, CakeIcon, IdCardIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ApiRequestError } from '../lib/api';
 import { BackButton } from '../components/ui/BackButton';
@@ -28,6 +28,8 @@ export function Auth() {
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [phone, setPhone] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [passportNumber, setPassportNumber] = useState('');
 
   const redirectAfterAuth = (role: string) => {
     if (role === 'admin' || role === 'superadmin') {
@@ -57,7 +59,14 @@ export function Auth() {
     setSubmitting(true);
     setError(null);
     try {
-      const user = await register({ fullName, email: regEmail, password: regPassword, phone: phone || undefined });
+      const user = await register({
+        fullName,
+        email: regEmail,
+        password: regPassword,
+        phone: phone || undefined,
+        dateOfBirth: dateOfBirth || undefined,
+        passportNumber: passportNumber || undefined,
+      });
       redirectAfterAuth(user.role);
     } catch (err) {
       setError(err instanceof ApiRequestError ? err.message : t('registrationFailed'));
@@ -182,6 +191,17 @@ export function Auth() {
                 <PhoneIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
                 <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('phonePlaceholder')} className={inputClass} />
               </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="relative">
+                  <CakeIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
+                  <input type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} placeholder={t('dateOfBirthPlaceholder')} className={`${inputClass} text-forest/80`} />
+                </div>
+                <div className="relative">
+                  <IdCardIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
+                  <input type="text" value={passportNumber} onChange={(e) => setPassportNumber(e.target.value)} placeholder={t('passportNumberPlaceholder')} className={inputClass} />
+                </div>
+              </div>
+              <p className="-mt-2 px-1 text-xs text-forest/40">{t('birthdayHint')}</p>
               <div className="relative">
                 <LockIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
                 <input

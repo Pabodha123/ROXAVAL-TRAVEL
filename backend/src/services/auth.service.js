@@ -5,12 +5,12 @@ const { generateAuthTokens, verifyRefreshToken } = require('../utils/token');
 const { sendEmail } = require('../utils/email');
 const env = require('../config/env');
 
-const register = async ({ fullName, email, phone, password, country }) => {
+const register = async ({ fullName, email, phone, password, country, dateOfBirth, passportNumber }) => {
   const existing = await User.findOne({ email });
   if (existing) throw ApiError.conflict('An account with this email already exists.');
 
   const user = await User.create({ fullName, email, phone, password, role: 'customer' });
-  await Customer.create({ user: user._id, country });
+  await Customer.create({ user: user._id, country, dateOfBirth: dateOfBirth || undefined, passportNumber });
 
   const tokens = generateAuthTokens(user);
   return { user, ...tokens };

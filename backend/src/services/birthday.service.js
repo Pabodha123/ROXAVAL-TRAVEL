@@ -3,7 +3,7 @@ const { sendEmail } = require('../utils/email');
 const { birthdayEmail } = require('../utils/emailTemplates');
 const logger = require('../config/logger');
 
-const DEFAULT_BACKGROUND = 'https://roxaval-travel-onju.vercel.app/destination-mirissa.jpg';
+const DEFAULT_BACKGROUND = 'https://roxaval-travel-onju.vercel.app/birthday-card-bg.jpg';
 
 const firstNameOf = (fullName = '') => fullName.trim().split(/\s+/)[0] || 'Traveller';
 

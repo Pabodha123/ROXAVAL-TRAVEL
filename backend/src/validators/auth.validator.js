@@ -6,6 +6,8 @@ const registerSchema = z.object({
   phone: z.string().optional(),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   country: z.string().optional(),
+  dateOfBirth: z.string().optional(),
+  passportNumber: z.string().optional(),
 });
 
 const loginSchema = z.object({

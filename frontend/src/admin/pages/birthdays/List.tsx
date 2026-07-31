@@ -255,7 +255,7 @@ function SettingsPanel() {
           <TextField label="Email Subject" value={config.subjectTemplate} onChange={(v) => update('subjectTemplate', v)} />
           <TextAreaField label="Birthday Message" value={config.messageTemplate} onChange={(v) => update('messageTemplate', v)} rows={5} />
           <ImageUploader label="Card Background Photo" value={background} onChange={setBackground} multiple={false} />
-          <p className="text-xs text-forest/40">Leave empty to use the default Roxaval Travels scenery background.</p>
+          <p className="text-xs text-forest/40">Leave empty to use the default candlelit birthday background.</p>
         </div>
       </div>
 

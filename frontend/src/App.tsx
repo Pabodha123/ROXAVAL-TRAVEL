@@ -25,7 +25,6 @@ import { Blog } from './pages/Blog';
 import { BlogDetails } from './pages/BlogDetails';
 import { Reviews } from './pages/Reviews';
 import { TermsConditions } from './pages/TermsConditions';
-import { Profile } from './pages/Profile';
 
 import { AdminRoot } from './admin/components/AdminRoot';
 import { RequireAdminAuth } from './admin/components/RequireAdminAuth';
@@ -98,7 +97,7 @@ export function App() {
           <Route path="/blog/:slug" element={<BlogDetails />} />
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/terms" element={<TermsConditions />} />
-          <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+          <Route path="/profile" element={<RequireAuth><Placeholder title="Profile" /></RequireAuth>} />
           <Route path="/account-settings" element={<RequireAuth><Placeholder title="Account Settings" /></RequireAuth>} />
         </Route>
 
