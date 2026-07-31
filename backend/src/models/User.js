@@ -30,7 +30,24 @@ const userSchema = new mongoose.Schema(
     passwordResetExpires: { type: Date, select: false },
     lastLoginAt: { type: Date },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    // `select: false` above only stops these fields from being fetched by a
+    // fresh query — it does nothing once a document is already loaded in
+    // memory (e.g. right after User.create(), or after login's explicit
+    // .select('+password') for the comparePassword check). Without this
+    // transform, res.json(user) would serialize the bcrypt hash straight to
+    // the client on every register/login response.
+    toJSON: {
+      transform(doc, ret) {
+        delete ret.password;
+        delete ret.passwordChangedAt;
+        delete ret.passwordResetToken;
+        delete ret.passwordResetExpires;
+        return ret;
+      },
+    },
+  }
 );
 
 userSchema.pre('save', async function hashPassword(next) {
