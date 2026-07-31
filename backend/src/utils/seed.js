@@ -9,7 +9,7 @@ const { User, Admin, Destination, Activity, Hotel, TourGuide, Vehicle, TourPacka
 const destinationsSeed = [
   {
     name: 'Colombo', region: 'West Coast', tag: 'City',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/9/93/Galle_Face%2C_Colombo%2C_Sri_Lanka.jpg',
+    heroImage: '/destination-colombo.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/0/07/Colombo_Skyline_Jan_2022.jpg', 'https://upload.wikimedia.org/wikipedia/commons/f/f0/Colombo_-_Galle_Face.jpg', 'https://upload.wikimedia.org/wikipedia/commons/7/7d/Night_Skyline_Colombo%2C_Sri_Lanka.jpg'],
     description: 'Sri Lanka’s vibrant commercial capital — a buzzing mix of colonial architecture, glittering skyscrapers, seafront promenades and world-class dining.',
     history: 'A trading port for over 2,000 years, Colombo grew under Portuguese, Dutch and British rule into the island’s administrative and commercial hub, and remains its gateway city today.',
@@ -22,7 +22,7 @@ const destinationsSeed = [
   },
   {
     name: 'Pinnawala', region: 'Cultural Triangle', tag: 'Wildlife',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/c/c7/3_elephants%2C_Pinnawala.jpg',
+    heroImage: '/destination-pinnawala.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/c/cb/Elephant_feeding_at_Pinnawela.jpg', 'https://upload.wikimedia.org/wikipedia/commons/b/b5/Asian_Elephants_Walking_together_01.jpg', 'https://upload.wikimedia.org/wikipedia/commons/9/97/An_Elephant_at_the_Pinnawala_Elephant_Orphanage.jpg'],
     description: 'Home to the Pinnawala Elephant Orphanage, where rescued and orphaned elephants roam, bathe in the river and are hand-raised in one of the world’s largest elephant herds.',
     history: 'Established in 1975 by Sri Lanka’s Department of Wildlife Conservation to care for orphaned wild elephants, Pinnawala has since grown into a renowned conservation and breeding centre.',
@@ -35,7 +35,7 @@ const destinationsSeed = [
   },
   {
     name: 'Sigiriya', region: 'Cultural Triangle', tag: 'Cultural',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/e/e6/Ancient_Mountain_Fortress_of_Sigiriya.jpg',
+    heroImage: '/destination-sigiriya.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/e/e5/Aerial_View_from_Sigiriya.jpg', 'https://upload.wikimedia.org/wikipedia/commons/2/21/Entrance_Walkway_to_Sigiriya%2C_the_lion_rock.jpg', 'https://upload.wikimedia.org/wikipedia/commons/d/d9/Climbing_Lion_rock_fortress_%2830551073942%29.jpg'],
     description: 'Climb the legendary Lion Rock fortress rising above emerald jungle, crowned with ancient frescoes and royal gardens.',
     history: 'Built by King Kashyapa in the 5th century AD as a royal citadel and fortress, Sigiriya’s summit palace, mirror wall and frescoes make it one of the best-preserved examples of ancient urban planning in Asia.',
@@ -48,7 +48,7 @@ const destinationsSeed = [
   },
   {
     name: 'Dambulla', region: 'Cultural Triangle', tag: 'Cultural',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/4/4c/Buddha_Dambulla_1.jpg',
+    heroImage: '/destination-dambulla.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/5/56/Buddha_Dambulla_3.jpg', 'https://upload.wikimedia.org/wikipedia/commons/b/b9/Buddhist_Frescoes_in_Caves_of_Dambulla%2C_Sri_Lanka.jpg', 'https://upload.wikimedia.org/wikipedia/commons/5/58/Cavedambulla.jpg'],
     description: 'The largest and best-preserved cave temple complex in Sri Lanka, sheltering over 150 Buddha statues beneath dramatic rock overhangs.',
     history: 'Dating back to the 1st century BC, when King Valagamba sought refuge here, the cave monastery was later adorned with statues and murals by successive kings, becoming a sacred pilgrimage site for over 2,000 years.',
@@ -61,7 +61,7 @@ const destinationsSeed = [
   },
   {
     name: 'Anuradhapura', region: 'Cultural Triangle', tag: 'Cultural',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/035_Ruwanweliseya_Stupa%2C_Anuradhapura%2C_Sri_Lanka.jpg',
+    heroImage: '/destination-anuradhapura.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/c/c4/Anuradhapura_01.jpg', 'https://upload.wikimedia.org/wikipedia/commons/d/d9/Anuradhapura_02.jpg', 'https://upload.wikimedia.org/wikipedia/commons/a/a3/Anuradhapura_2019.jpg'],
     description: 'Sri Lanka’s first ancient capital, a sprawling sacred city of towering dagobas, monastery ruins and the world’s oldest recorded tree.',
     history: 'Founded in the 4th century BC, Anuradhapura was the island’s political and religious centre for over 1,300 years, and remains one of the most important Buddhist pilgrimage sites in the world.',
@@ -74,7 +74,7 @@ const destinationsSeed = [
   },
   {
     name: 'Polonnaruwa', region: 'Cultural Triangle', tag: 'Cultural',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/6/69/Ancient_City_of_Polonnaruwa_045.jpg',
+    heroImage: '/destination-polonnaruwa.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/1/16/Ancient_City_of_Polonnaruwa%2C_Sri_Lanka_%281%29.jpg', 'https://upload.wikimedia.org/wikipedia/commons/8/87/Ancient_City_of_Polonnaruwa%2C_Sri_Lanka_%282%29.jpg', 'https://upload.wikimedia.org/wikipedia/commons/5/51/Atadage_Polonnaruwa.jpg'],
     description: 'Sri Lanka’s medieval capital, an exceptionally well-preserved complex of royal palaces, temples and giant rock-carved Buddha statues.',
     history: 'Polonnaruwa succeeded Anuradhapura as the island’s capital in the 11th century, reaching its peak under King Parakramabahu I, whose irrigation works and monuments still stand today.',
@@ -87,7 +87,7 @@ const destinationsSeed = [
   },
   {
     name: 'Minneriya', region: 'Wildlife', tag: 'Nature',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/a/ad/Minneriya_national_park_safari.jpg',
+    heroImage: '/destination-minneriya.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/e/e5/Minneriya_National_Park%2C_Sri_Lanka.jpg', 'https://upload.wikimedia.org/wikipedia/commons/6/62/Dusk_at_Minneriya.jpg', 'https://upload.wikimedia.org/wikipedia/commons/f/fe/Minneriya_Lake_%287568702526%29.jpg'],
     description: 'A wetland national park famed for "The Gathering" — the largest seasonal congregation of wild Asian elephants anywhere in the world.',
     history: 'Built around an ancient reservoir constructed by King Mahasena in the 3rd century, Minneriya’s grasslands and lake have drawn elephant herds for centuries, later protected as a national park in 1997.',
@@ -100,7 +100,7 @@ const destinationsSeed = [
   },
   {
     name: 'Kandy', region: 'Hill Country', tag: 'Cultural',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/c/cd/Dalada_Maaligawa_Sri_Lanka.jpg',
+    heroImage: '/destination-kandy.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/1/15/The_Kandy_Lake_at_dawn.jpg', 'https://upload.wikimedia.org/wikipedia/commons/f/f0/Kandy_Lake-Sri_Lanka_%285%29.jpg', 'https://upload.wikimedia.org/wikipedia/commons/e/e8/Daladamaligawa.jpg'],
     description: 'The hill capital wrapped around a serene lake, home to the sacred Temple of the Tooth and lush botanical gardens.',
     history: 'The last capital of the Sinhalese kings until British annexation in 1815, Kandy remained the seat of Buddhist religious life and today safeguards the country’s most sacred relic, the tooth of the Buddha.',
@@ -113,7 +113,7 @@ const destinationsSeed = [
   },
   {
     name: 'Nuwara Eliya', region: 'Tea Country', tag: 'Hill Country',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Sri_Lanka%2C_Tea_plantations%2C_Nuwara_Eliya.jpg',
+    heroImage: '/destination-nuwara-eliya.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/b/b3/Sri_Lanka%2C_Tea_plantations%2C_Nuwara_Eliya%2C_Picking_tea_leaves.jpg', 'https://upload.wikimedia.org/wikipedia/commons/1/1a/By_the_Gregory_Lake.jpg', 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Tea-plantation_Nuwara_Eliya-2567.jpg'],
     description: 'Little England amid endless tea plantations, colonial charm and cool, fragrant mountain air.',
     history: 'Developed by British colonists in the 19th century as a hill-station retreat from the tropical heat, Nuwara Eliya retains its Tudor-style cottages, manicured gardens and racecourse to this day.',
@@ -126,7 +126,7 @@ const destinationsSeed = [
   },
   {
     name: 'Ella', region: 'Hill Country', tag: 'Hill Country',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/d/db/Nine_Arch_Bridge_in_Ella.jpg',
+    heroImage: '/destination-ella.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/a/a7/SL_Ella_asv2020-01_img08_Little_Adams_Peak.jpg', 'https://upload.wikimedia.org/wikipedia/commons/e/ed/Ella_Gap_%28Valley%29%2C_Sri_Lanka.jpg', 'https://upload.wikimedia.org/wikipedia/commons/5/55/Ella_rock_sri_lanka.jpg'],
     description: 'A misty mountain village famed for the Nine Arch Bridge, tea trails and sweeping valley sunrises.',
     history: 'Once a quiet colonial-era tea-estate outpost, Ella grew into one of Sri Lanka’s most beloved hill-country retreats thanks to the iconic railway that winds through its valleys.',
@@ -139,7 +139,7 @@ const destinationsSeed = [
   },
   {
     name: 'Yala', region: 'Wildlife', tag: 'Wildlife',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/b/b3/Lankan_leopard_Yala_National_Park.jpg',
+    heroImage: '/destination-yala.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/3/32/Sri_Lankan_Leopard_-_Yala_National_Park.jpg', 'https://upload.wikimedia.org/wikipedia/commons/3/33/A_road_in_Yala_National_Park_2023-03-11-1.jpg', 'https://upload.wikimedia.org/wikipedia/commons/8/87/Beauty_within_Yala_National_park_04.jpg'],
     description: 'The island’s wildest frontier, where leopards, elephants and painted savannas make every safari unforgettable.',
     history: 'Designated a wildlife sanctuary in 1900 and a national park in 1938, Yala is Sri Lanka’s oldest and most visited park, renowned for having one of the highest densities of leopards anywhere on Earth.',
@@ -152,7 +152,7 @@ const destinationsSeed = [
   },
   {
     name: 'Mirissa', region: 'South Coast', tag: 'Beach',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Mirissa_Beach_Sri_Lanka.jpg',
+    heroImage: '/destination-mirissa.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/5/54/Whale_watching_in_Mirissa.jpg', 'https://upload.wikimedia.org/wikipedia/commons/a/a3/Parrot_Rock_Bridge_in_Mirissa_Sri_Lanka.jpg', 'https://upload.wikimedia.org/wikipedia/commons/0/0f/Mirissa%2C_whale_watching%2C_blue_whale_%286917912897%29.jpg'],
     description: 'A palm-fringed crescent bay for whale watching, golden sunsets and laid-back tropical bliss.',
     history: 'Once a sleepy fishing village, Mirissa rose to prominence over the past two decades as one of the world’s best spots to see blue whales, alongside its growing reputation as a boutique beach escape.',
@@ -165,7 +165,7 @@ const destinationsSeed = [
   },
   {
     name: 'Bentota', region: 'West Coast', tag: 'Beach',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/9/94/Bentota_Beach_-_panoramio.jpg',
+    heroImage: '/destination-bentota.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/b/b0/Bentota_Beach_-_panoramio_%281%29.jpg', 'https://upload.wikimedia.org/wikipedia/commons/4/41/Sri_Lanka%2C_Bentota%2C_beach_%281%29.JPG', 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Bentota_beach_in_evening.jpg'],
     description: 'Golden beaches, river safaris and luxury resorts make this the perfect gateway to the west coast.',
     history: 'One of Sri Lanka’s first purpose-built resort destinations, developed from the 1960s onward around the meeting point of the Bentota River and the Indian Ocean.',
@@ -178,7 +178,7 @@ const destinationsSeed = [
   },
   {
     name: 'Galle', region: 'South Coast', tag: 'Cultural',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Lighthouse_Galle%2C_Sri_Lanka.jpg',
+    heroImage: '/destination-galle.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/8/82/Fort_galle_2017-10-28_%2813%29.jpg', 'https://upload.wikimedia.org/wikipedia/commons/1/17/Festung_Galle_%2825608031820%29.jpg', 'https://upload.wikimedia.org/wikipedia/commons/b/bb/Galle_Lighthouse-1.JPG'],
     description: 'A UNESCO fort city of cobbled lanes, colonial ramparts and ocean sunsets steeped in centuries of history.',
     history: 'Fortified first by the Portuguese and then extensively rebuilt by the Dutch in the 17th century, Galle Fort remains the best-preserved example of a European fortified city in South Asia.',
@@ -191,7 +191,7 @@ const destinationsSeed = [
   },
   {
     name: 'Trincomalee', region: 'East', tag: 'Beach',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/6/6e/Koneswaram_Temple_-_Sri_Lanka.jpg',
+    heroImage: '/destination-trincomalee.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/4/47/Trincomalee_beach.jpg', 'https://upload.wikimedia.org/wikipedia/commons/8/88/Uppveli_Beach_in_Trincomalee%2C_Sri_Lanka.jpg', 'https://upload.wikimedia.org/wikipedia/commons/d/d7/Marble_beach_Trincomalee.jpg'],
     description: 'A natural deep-water harbour city on the east coast, famed for pristine beaches, ancient temples and world-class diving.',
     history: 'Home to one of the world’s finest natural harbours, Trincomalee has been fought over by Portuguese, Dutch, French and British colonial powers for centuries, and remains crowned by the clifftop Koneswaram Temple.',
@@ -204,7 +204,7 @@ const destinationsSeed = [
   },
   {
     name: 'Arugam Bay', region: 'East', tag: 'Adventure',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Beach_of_Arugam_Bay.jpg',
+    heroImage: '/destination-arugam-bay.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/0/0c/Arugam_bay_beach.jpg', 'https://upload.wikimedia.org/wikipedia/commons/0/03/Arugam_Bay%2C_Sri_Lanka_-_panoramio.jpg', 'https://upload.wikimedia.org/wikipedia/commons/d/d0/Whiskey_Point_2.jpg'],
     description: 'Sri Lanka’s premier surf town, a laid-back bay ringed by world-class breaks, lagoons and a thriving backpacker scene.',
     history: 'Discovered by traveling surfers in the 1970s for its perfect right-hand point break, Arugam Bay has grown into one of Asia’s top surf destinations while keeping its relaxed, bohemian character.',
@@ -217,7 +217,7 @@ const destinationsSeed = [
   },
   {
     name: 'Jaffna', region: 'North', tag: 'Cultural',
-    heroImage: 'https://upload.wikimedia.org/wikipedia/commons/1/14/Nallur_Kandaswamy_Temple_-_Jaffna.jpg',
+    heroImage: '/destination-jaffna.jpg',
     gallery: ['https://upload.wikimedia.org/wikipedia/commons/3/3b/Kandaswamy_koil-2-nallur-jaffna-Sri_Lanka.jpg', 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Jaffna_Library_%28Jaffna%2C_Sri_Lanka%29.jpg', 'https://upload.wikimedia.org/wikipedia/commons/b/be/Jaffna_sea.jpg'],
     description: 'The cultural heart of Sri Lanka’s Tamil north — ornate Hindu temples, colonial forts and a distinct cuisine and heritage found nowhere else on the island.',
     history: 'Capital of the historic Jaffna Kingdom for centuries, the peninsula’s Tamil, Portuguese, Dutch and British layers of history are visible in its temples, the rebuilt Jaffna Library and the Dutch-era fort.',
