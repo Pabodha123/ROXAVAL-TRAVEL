@@ -125,4 +125,45 @@ const newsletterSubscriptionEmail = ({ email }) => {
   `;
 };
 
-module.exports = { notificationEmail, hotelVoucherEmail, contactInquiryEmail, newsletterSubscriptionEmail };
+/**
+ * The birthday "card" — a premium HTML card (not a flat composited image,
+ * since the backend has no raster/canvas library and Vercel serverless
+ * disk is ephemeral) styled in the site's forest-green/gold theme with a
+ * Sri Lankan scenery banner. `backgroundImageUrl` is either the admin's
+ * uploaded background or the bundled default; `message`/`subject` already
+ * have {{firstName}} substituted by birthday.service.js.
+ */
+const birthdayEmail = ({ firstName, subject, message, backgroundImageUrl, coupon }) => {
+  return `
+    <div style="font-family: -apple-system, Segoe UI, Arial, sans-serif; max-width: 560px; margin: 0 auto;">
+      <div style="border-radius: 24px; overflow: hidden; border: 1px solid #e8dfc8; box-shadow: 0 8px 24px rgba(15,61,46,0.12);">
+        <div style="position: relative; height: 220px; background: #0f3d2e url('${backgroundImageUrl}') center/cover no-repeat;">
+          <div style="width:100%; height:100%; background: linear-gradient(180deg, rgba(15,61,46,0.15) 0%, rgba(15,61,46,0.85) 100%); padding: 24px; box-sizing: border-box;">
+            <p style="margin:0; color:#c8a24c; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase;">${env.COMPANY.name}</p>
+            <h1 style="margin:60px 0 0; color:#ffffff; font-size:30px; font-weight:700; text-shadow: 0 2px 8px rgba(0,0,0,0.4);">🎉 Happy Birthday,<br/>${firstName}!</h1>
+          </div>
+        </div>
+        <div style="background:#0f3d2e; padding: 28px 28px 8px;">
+          <p style="color:#f3ede1; font-size:15px; line-height:1.7; margin:0;">${message}</p>
+        </div>
+        ${
+          coupon ?
+          `<div style="background:#0f3d2e; padding: 4px 28px 24px;">
+            <div style="border: 1.5px dashed #c8a24c; border-radius: 14px; padding: 16px; text-align:center;">
+              <p style="margin:0; color:#c8a24c; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;">Birthday Gift · ${coupon.discountPercent}% Off</p>
+              <p style="margin:6px 0 0; color:#ffffff; font-size:22px; font-weight:700; letter-spacing:2px;">${coupon.code}</p>
+              <p style="margin:6px 0 0; color:#f3ede1; font-size:12px;">Valid on your next booking until ${coupon.expiresOn}</p>
+            </div>
+          </div>` :
+          ''
+        }
+        <div style="background:#0f3d2e; padding: 8px 28px 32px; text-align:center;">
+          <a href="${env.CLIENT_URL}/packages" style="background:#c8a24c; color:#0f3d2e; padding:13px 32px; border-radius:999px; text-decoration:none; font-weight:700; font-size:14px; display:inline-block;">Plan Your Next Adventure</a>
+        </div>
+      </div>
+      <p style="color:#999; font-size:12px; text-align:center; margin-top:20px;">${env.COMPANY.name}${env.COMPANY.phone ? ` &middot; ${env.COMPANY.phone}` : ''}${env.COMPANY.email ? ` &middot; ${env.COMPANY.email}` : ''}</p>
+    </div>
+  `;
+};
+
+module.exports = { notificationEmail, hotelVoucherEmail, contactInquiryEmail, newsletterSubscriptionEmail, birthdayEmail };

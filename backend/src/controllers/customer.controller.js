@@ -52,6 +52,19 @@ const updateNotes = catchAsync(async (req, res) => {
   new ApiResponse(200, customer, 'Customer notes updated').send(res);
 });
 
+// Admin: edit profile details captured from a passport or other ID (e.g.
+// during booking) rather than the customer's own self-service update.
+const updateProfile = catchAsync(async (req, res) => {
+  const { dateOfBirth, passportNumber, country, address } = req.body;
+  const customer = await Customer.findByIdAndUpdate(
+    req.params.id,
+    { dateOfBirth, passportNumber, country, address },
+    { new: true, runValidators: true }
+  ).populate('user', '-password');
+  if (!customer) throw ApiError.notFound('Customer not found');
+  new ApiResponse(200, customer, 'Customer profile updated').send(res);
+});
+
 module.exports = {
   getMyProfile,
   updateMyProfile,
@@ -59,4 +72,5 @@ module.exports = {
   getCustomerById,
   setCustomerActive,
   updateNotes,
+  updateProfile,
 };

@@ -25,6 +25,7 @@ import { Blog } from './pages/Blog';
 import { BlogDetails } from './pages/BlogDetails';
 import { Reviews } from './pages/Reviews';
 import { TermsConditions } from './pages/TermsConditions';
+import { Profile } from './pages/Profile';
 
 import { AdminRoot } from './admin/components/AdminRoot';
 import { RequireAdminAuth } from './admin/components/RequireAdminAuth';
@@ -60,6 +61,7 @@ import { AdminCustomRequestDetail } from './admin/pages/custom-requests/Detail';
 import { AdminDocumentsList } from './admin/pages/documents/List';
 import { AdminNotifications } from './admin/pages/notifications/Notifications';
 import { AdminContactList } from './admin/pages/contact/List';
+import { AdminBirthdaysList } from './admin/pages/birthdays/List';
 
 // Placeholders for other pages to ensure routing works
 const Placeholder = ({ title }: {title: string;}) =>
@@ -96,7 +98,7 @@ export function App() {
           <Route path="/blog/:slug" element={<BlogDetails />} />
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/terms" element={<TermsConditions />} />
-          <Route path="/profile" element={<RequireAuth><Placeholder title="Profile" /></RequireAuth>} />
+          <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
           <Route path="/account-settings" element={<RequireAuth><Placeholder title="Account Settings" /></RequireAuth>} />
         </Route>
 
@@ -156,6 +158,8 @@ export function App() {
             <Route path="documents" element={<AdminDocumentsList />} />
 
             <Route path="contact" element={<AdminContactList />} />
+
+            <Route path="birthdays" element={<AdminBirthdaysList />} />
 
             <Route path="notifications" element={<AdminNotifications />} />
           </Route>

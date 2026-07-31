@@ -60,6 +60,10 @@ const env = {
 
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
 
+  // Shared secret Vercel Cron sends as `Authorization: Bearer <value>` when
+  // it calls /birthdays/run-daily-cron. Set in the Vercel project env vars.
+  CRON_SECRET: process.env.CRON_SECRET,
+
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
   ANTHROPIC_MODEL: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5',
 };

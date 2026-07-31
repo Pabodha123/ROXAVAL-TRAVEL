@@ -20,4 +20,6 @@ module.exports = {
   Report: require('./Report'),
   Settings: require('./Settings'),
   Contact: require('./Contact'),
+  BirthdayConfig: require('./BirthdayConfig'),
+  BirthdayLog: require('./BirthdayLog'),
 };

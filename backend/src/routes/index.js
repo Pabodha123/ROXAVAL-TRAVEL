@@ -20,6 +20,7 @@ router.use('/settings', require('./settings.routes'));
 router.use('/customers', require('./customer.routes'));
 router.use('/contact', require('./contact.routes'));
 router.use('/newsletter', require('./newsletter.routes'));
+router.use('/birthdays', require('./birthday.routes'));
 router.use('/admins', require('./admin.routes'));
 router.use('/uploads', require('./upload.routes'));
 

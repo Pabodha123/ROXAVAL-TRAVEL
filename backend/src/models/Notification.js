@@ -23,6 +23,7 @@ const notificationSchema = new mongoose.Schema(
         'payment_verified',
         'document_ready',
         'review_moderated',
+        'birthday',
         'general',
       ],
       required: true,

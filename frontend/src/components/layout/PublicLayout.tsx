@@ -4,6 +4,7 @@ import { Loader } from '../ui/Loader';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { FloatingWhatsApp } from './FloatingWhatsApp';
+import { BirthdayBanner } from './BirthdayBanner';
 
 export function PublicLayout() {
   return (
@@ -15,6 +16,7 @@ export function PublicLayout() {
       </div>
       <Footer />
       <FloatingWhatsApp />
+      <BirthdayBanner />
     </div>);
 
 }

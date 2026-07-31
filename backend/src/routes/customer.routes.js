@@ -13,5 +13,6 @@ router.get('/', restrictTo('admin', 'superadmin'), controller.getAllCustomers);
 router.get('/:id', restrictTo('admin', 'superadmin'), controller.getCustomerById);
 router.patch('/:id/active', restrictTo('admin', 'superadmin'), controller.setCustomerActive);
 router.patch('/:id/notes', restrictTo('admin', 'superadmin'), controller.updateNotes);
+router.patch('/:id/profile', restrictTo('admin', 'superadmin'), controller.updateProfile);
 
 module.exports = router;

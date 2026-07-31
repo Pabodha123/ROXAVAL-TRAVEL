@@ -5,7 +5,7 @@ import { apiGetList, apiGetOne, apiPatch, ApiRequestError } from '../../../lib/a
 import { useToast } from '../../components/ToastProvider';
 import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
-import { TextAreaField } from '../../components/fields/Fields';
+import { TextAreaField, TextField } from '../../components/fields/Fields';
 
 interface CustomerDetail {
   _id: string;
@@ -13,6 +13,7 @@ interface CustomerDetail {
   country?: string;
   address?: string;
   dateOfBirth?: string;
+  passportNumber?: string;
   preferredLanguage?: string;
   totalBookings: number;
   totalSpend: number;
@@ -35,8 +36,11 @@ export function AdminCustomerDetail() {
   const [customer, setCustomer] = useState<CustomerDetail | null>(null);
   const [bookings, setBookings] = useState<CustomerBooking[]>([]);
   const [notes, setNotes] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [passportNumber, setPassportNumber] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -47,6 +51,8 @@ export function AdminCustomerDetail() {
     then(([c, b]) => {
       setCustomer(c);
       setNotes(c.notes || '');
+      setDateOfBirth(c.dateOfBirth ? c.dateOfBirth.slice(0, 10) : '');
+      setPassportNumber(c.passportNumber || '');
       setBookings(b.data);
     }).
     finally(() => setLoading(false));
@@ -61,6 +67,24 @@ export function AdminCustomerDetail() {
       toast(err instanceof ApiRequestError ? err.message : 'Failed to save notes.', 'error');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const saveProfile = async () => {
+    setSavingProfile(true);
+    try {
+      const updated = await apiPatch<CustomerDetail>(`/customers/${id}/profile`, {
+        dateOfBirth: dateOfBirth || null,
+        passportNumber,
+        country: customer?.country || '',
+        address: customer?.address || '',
+      });
+      setCustomer(updated);
+      toast('Profile details saved.');
+    } catch (err) {
+      toast(err instanceof ApiRequestError ? err.message : 'Failed to save profile details.', 'error');
+    } finally {
+      setSavingProfile(false);
     }
   };
 
@@ -111,6 +135,18 @@ export function AdminCustomerDetail() {
               <p><span className="text-forest/50">Address:</span> {customer.address || '—'}</p>
               <p><span className="text-forest/50">Language:</span> {customer.preferredLanguage || '—'}</p>
             </div>
+          </div>
+          <div className="rounded-2xl bg-white p-6 shadow-soft">
+            <p className="font-display text-sm font-semibold text-forest">Passport &amp; Birthday</p>
+            <p className="mt-1 text-xs text-forest/45">Captured from a passport scan or booking form — powers the Birthday Wishes system.</p>
+            <div className="mt-3 space-y-3">
+              <TextField label="Date of Birth" type="date" value={dateOfBirth} onChange={setDateOfBirth} />
+              <TextField label="Passport Number" value={passportNumber} onChange={setPassportNumber} />
+            </div>
+            <button onClick={saveProfile} disabled={savingProfile} className="mt-3 flex items-center gap-2 rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-cream hover:bg-emerald disabled:opacity-70">
+              {savingProfile ? <Loader2Icon className="h-4 w-4 animate-spin" /> : <SaveIcon className="h-4 w-4" />}
+              Save Details
+            </button>
           </div>
           <div className="rounded-2xl bg-white p-6 shadow-soft">
             <p className="font-display text-sm font-semibold text-forest">Stats</p>

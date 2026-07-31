@@ -18,6 +18,7 @@ import {
   UserIcon,
   CarIcon,
   MailIcon,
+  CakeIcon,
   XIcon } from
 'lucide-react';
 
@@ -45,7 +46,8 @@ const navGroups = [
   { to: '/admin/customers', label: 'Customers', icon: UsersIcon },
   { to: '/admin/custom-requests', label: 'Custom Tour Inquiries', icon: CompassIcon },
   { to: '/admin/documents', label: 'Documents', icon: FileTextIcon },
-  { to: '/admin/contact', label: 'Contact Inquiries', icon: MailIcon }]
+  { to: '/admin/contact', label: 'Contact Inquiries', icon: MailIcon },
+  { to: '/admin/birthdays', label: 'Birthday Wishes', icon: CakeIcon }]
 
 },
 {
