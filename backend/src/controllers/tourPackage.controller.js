@@ -6,7 +6,27 @@ const factory = require('./factory');
 const { localizeDoc } = require('../utils/localize');
 
 const populate = ['destinations', 'activities', 'hotels', 'itinerary.destinations', 'itinerary.activities', 'itinerary.hotel'];
-const translatableFields = ['name', 'description', 'highlights', 'includedServices', 'excludedServices', 'itinerary.title', 'itinerary.description'];
+const translatableFields = [
+  'name',
+  'description',
+  'highlights',
+  'includedServices',
+  'excludedServices',
+  'itinerary.title',
+  'itinerary.description',
+  // Populated refs — these are full Destination/Activity/Hotel docs, whose
+  // own name/description fields are still the raw {en,de,fr} shape unless
+  // localized here too (otherwise React crashes trying to render the object).
+  'destinations.name',
+  'destinations.description',
+  'activities.name',
+  'activities.description',
+  'hotels.name',
+  'hotels.address',
+  'itinerary.destinations.name',
+  'itinerary.activities.name',
+  'itinerary.hotel.name',
+];
 const base = factory(TourPackage, { searchableFields: ['name', 'description'], populate, translatableFields });
 
 const create = catchAsync(async (req, res) => {

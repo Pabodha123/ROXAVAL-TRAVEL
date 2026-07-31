@@ -4,7 +4,21 @@ const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
 const factory = require('./factory');
 
-const translatableFields = ['name', 'description', 'history', 'whyVisit', 'popularActivities', 'travelTips', 'attractions.name', 'attractions.description', 'attractions.travelTips'];
+const translatableFields = [
+  'name',
+  'description',
+  'history',
+  'whyVisit',
+  'popularActivities',
+  'travelTips',
+  'attractions.name',
+  'attractions.description',
+  'attractions.travelTips',
+  // Populated ref — a full Destination doc, whose own name/description are
+  // still the raw {en,de,fr} shape unless localized here too.
+  'nearbyDestinations.name',
+  'nearbyDestinations.description',
+];
 const base = factory(Destination, {
   searchableFields: ['name', 'description', 'tag'],
   populate: ['nearbyDestinations'],
