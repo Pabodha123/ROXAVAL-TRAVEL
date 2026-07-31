@@ -3,10 +3,16 @@ const catchAsync = require('../utils/catchAsync');
 const ApiResponse = require('../utils/ApiResponse');
 const authService = require('../services/auth.service');
 
+// Frontend and backend are deployed on different Vercel subdomains, which
+// browsers treat as different sites — SameSite=Lax cookies are silently
+// dropped on cross-site fetch/XHR calls (only sent on top-level navigation),
+// so a successful login's cookie never reaches later API calls like booking.
+// SameSite=None (requires Secure) fixes cross-site delivery in production;
+// local dev keeps Lax since localhost:5173/5000 are same-site.
 const cookieOptions = {
   httpOnly: true,
   secure: env.NODE_ENV === 'production',
-  sameSite: 'lax',
+  sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax',
   maxAge: env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
 };
 
