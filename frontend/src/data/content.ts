@@ -7,18 +7,6 @@ export interface Destination {
   tag: string;
 }
 
-export interface TourPackage {
-  id: string;
-  name: string;
-  image: string;
-  duration: string;
-  price: number;
-  rating: number;
-  reviews: number;
-  description: string;
-  tag: string;
-}
-
 export interface Activity {
   id: string;
   name: string;
@@ -100,75 +88,6 @@ export const destinations: Destination[] = [
   image: "/09458834-a156-4b05-8dc9-c0c7c2c90a20.jpg",
   description: 'Golden beaches, river safaris and luxury resorts make this the perfect gateway to the west coast.',
   tag: 'West Coast'
-}];
-
-
-export const packages: TourPackage[] = [
-{
-  id: 'cultural-triangle',
-  name: 'Cultural Triangle Odyssey',
-  image: "/pkg-cultural-triangle-odyssey.jpg",
-  duration: '7 Days / 6 Nights',
-  price: 1290,
-  rating: 4.9,
-  reviews: 214,
-  description: 'Ancient cities, sacred temples and the majestic climb of Sigiriya through Sri Lanka\u2019s cultural heartland.',
-  tag: 'Best Seller'
-},
-{
-  id: 'hill-country',
-  name: 'Misty Hills & Tea Trails',
-  image: "/pkg-misty-hills-tea-trails.jpg",
-  duration: '5 Days / 4 Nights',
-  price: 980,
-  rating: 4.8,
-  reviews: 176,
-  description: 'Ride the scenic railway through emerald tea estates, waterfalls and cool mountain villages.',
-  tag: 'Scenic'
-},
-{
-  id: 'wildlife-safari',
-  name: 'Wild Sri Lanka Safari',
-  image: "/60b4c194-d3e8-44d7-8a8c-b9d58a908c56.jpg",
-  duration: '4 Days / 3 Nights',
-  price: 860,
-  rating: 4.9,
-  reviews: 148,
-  description: 'Track leopards and elephants across Yala and Udawalawe on immersive small-group safaris.',
-  tag: 'Adventure'
-},
-{
-  id: 'beach-escape',
-  name: 'Southern Beach Escape',
-  image: "/pkg-southern-beach-escape.jpg",
-  duration: '6 Days / 5 Nights',
-  price: 1120,
-  rating: 4.7,
-  reviews: 132,
-  description: 'Sun-drenched beaches, whale watching in Mirissa and the historic charm of Galle Fort.',
-  tag: 'Relax'
-},
-{
-  id: 'honeymoon',
-  name: 'Romantic Island Honeymoon',
-  image: "/package-romantic-escape.jpg",
-  duration: '8 Days / 7 Nights',
-  price: 1680,
-  rating: 5.0,
-  reviews: 98,
-  description: 'Private candle-lit dinners, luxury retreats and unforgettable sunsets crafted for two.',
-  tag: 'Luxury'
-},
-{
-  id: 'grand-tour',
-  name: 'Grand Sri Lanka Discovery',
-  image: "/pkg-grand-sri-lanka-discovery.jpg",
-  duration: '12 Days / 11 Nights',
-  price: 2350,
-  rating: 4.9,
-  reviews: 87,
-  description: 'The complete island journey \u2014 culture, wildlife, tea country and pristine beaches in one epic tour.',
-  tag: 'Signature'
 }];
 
 
