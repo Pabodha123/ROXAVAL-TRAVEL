@@ -82,7 +82,7 @@ export function Destinations() {
 
         {items.length > 0 &&
         <>
-            <div className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {items.map((d, i) => <DestinationCapsule key={d._id} destination={d} index={i} />)}
             </div>
             <Pagination meta={meta} shown={items.length} hasMore={hasMore} loading={loading} onLoadMore={loadMore} />

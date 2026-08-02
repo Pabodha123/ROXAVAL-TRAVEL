@@ -23,8 +23,10 @@ export function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const myToursUnread = useUnreadCount('CustomTourRequest', Boolean(user));
+  const isHome = location.pathname === '/';
 
   const mainLinks = [
     { label: t('nav.home'), icon: HomeIcon, href: '/' },
@@ -70,7 +72,7 @@ export function Navbar() {
     navigate('/');
   };
 
-  const solid = scrolled || mobileOpen;
+  const solid = !isHome || scrolled || mobileOpen;
 
   return (
     <motion.header
@@ -94,7 +96,6 @@ export function Navbar() {
         {/* Desktop links */}
         <div className="hidden lg:flex items-center gap-1">
           {mainLinks.map((link) => {
-            const location = useLocation();
             const isActive = location.pathname === link.href || link.href !== '/' && location.pathname.startsWith(link.href);
 
             return (
@@ -235,7 +236,6 @@ export function Navbar() {
           
             <div className="px-4 sm:px-6 py-4 space-y-1">
               {mainLinks.map((link) => {
-              const location = useLocation();
               const isActive = location.pathname === link.href || link.href !== '/' && location.pathname.startsWith(link.href);
               return (
                 <Link
