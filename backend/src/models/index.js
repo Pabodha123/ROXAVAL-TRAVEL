@@ -10,6 +10,7 @@ module.exports = {
   TourPackage: require('./TourPackage'),
   CustomTourRequest: require('./CustomTourRequest'),
   Itinerary: require('./Itinerary'),
+  Message: require('./Message'),
   Booking: require('./Booking'),
   Payment: require('./Payment'),
   Review: require('./Review'),

@@ -13,12 +13,11 @@ import type { HotelRef } from '../../types/tourPackage';
 import type { TourPackage } from '../../types/tourPackage';
 
 const steps = [
-'Travel Info',
+'Travel Details',
 'Destinations',
 'Activities',
 'Accommodation',
-'Budget & Style',
-'Special Requests',
+'Transport',
 'Review & Submit'];
 
 const HOTEL_CATEGORIES = ['Budget', 'Standard', 'Deluxe', 'Boutique', 'Luxury', 'Resort'];
@@ -39,7 +38,9 @@ interface FormData {
   customActivities: string[];
   hotelCategory: string;
   mealPreferences: string[];
+  roomTypePreference: string;
   transportPreference: string;
+  guideRequired: boolean;
   budget: string;
   perPerson: boolean;
   travelStyle: string;
@@ -50,7 +51,8 @@ const initialFormData: FormData = {
   arrivalDate: '', days: '7', adults: 2, children: 0, infants: 0, isFlexible: false,
   selectedDestinations: [], selectedActivities: [],
   customDestinations: [], customActivities: [],
-  hotelCategory: 'Standard', mealPreferences: [], transportPreference: 'No Preference',
+  hotelCategory: 'Standard', mealPreferences: [], roomTypePreference: '',
+  transportPreference: 'No Preference', guideRequired: false,
   budget: '', perPerson: true, travelStyle: 'Relaxed',
   specialRequests: ''
 };
@@ -151,8 +153,10 @@ export function CustomTourWizard() {
       customActivities: formData.customActivities,
       hotelCategory: formData.hotelCategory,
       mealPreferences: formData.mealPreferences.length ? formData.mealPreferences : ['No Preference'],
+      roomTypePreference: formData.roomTypePreference,
       travelStyle: formData.travelStyle,
       transportPreference: formData.transportPreference,
+      guideRequired: formData.guideRequired,
       estimatedBudget: { amount: Number(formData.budget), currency: 'USD', perPerson: formData.perPerson },
       specialRequests: formData.specialRequests
     };
@@ -172,7 +176,7 @@ export function CustomTourWizard() {
   };
 
   useEffect(() => {
-    if (step === 6 && !aiDraft && !aiLoading && formData.arrivalDate && formData.days && formData.budget) {
+    if (step === 5 && !aiDraft && !aiLoading && formData.arrivalDate && formData.days && formData.budget) {
       generateDraft();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -398,18 +402,9 @@ export function CustomTourWizard() {
                   </div>
                 </div>
                 <div>
-                  <label className="mb-3 block font-semibold text-forest">Transport Preference</label>
-                  <div className="flex flex-wrap gap-3">
-                    {TRANSPORT_OPTIONS.map((opt) =>
-                  <button type="button" key={opt} onClick={() => setFormData({ ...formData, transportPreference: opt })} className={`rounded-full px-6 py-2.5 text-sm font-medium transition-colors ${formData.transportPreference === opt ? 'bg-emerald text-white' : 'bg-cream text-forest hover:bg-emerald/10'}`}>{opt}</button>
-                  )}
-                  </div>
+                  <label className="mb-2 block text-sm font-medium text-forest">Room Type</label>
+                  <input type="text" value={formData.roomTypePreference} onChange={(e) => setFormData({ ...formData, roomTypePreference: e.target.value })} placeholder="e.g. Double, Twin, Suite, No preference" className="w-full max-w-sm rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" />
                 </div>
-              </div>
-            }
-
-            {step === 4 &&
-            <div className="space-y-8">
                 <div>
                   <label className="mb-3 block font-semibold text-forest">Estimated Budget (USD)</label>
                   <input type="number" min={1} value={formData.budget} onChange={(e) => setFormData({ ...formData, budget: e.target.value })} placeholder="e.g. 2000" className="w-full max-w-xs rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" />
@@ -429,15 +424,28 @@ export function CustomTourWizard() {
               </div>
             }
 
-            {step === 5 &&
-            <div>
-                <label className="mb-3 block font-semibold text-forest">Special Requests & Notes</label>
-                <p className="mb-4 text-sm text-forest/60">Dietary requirements, special occasions, wheelchair access, or any specific places you want to ensure are included.</p>
-                <textarea rows={6} value={formData.specialRequests} onChange={(e) => setFormData({ ...formData, specialRequests: e.target.value })} className="w-full rounded-2xl border border-forest/10 bg-cream/50 p-4 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" placeholder="Tell us more about your dream trip..."></textarea>
+            {step === 4 &&
+            <div className="space-y-8">
+                <div>
+                  <label className="mb-3 block font-semibold text-forest">Vehicle Type</label>
+                  <div className="flex flex-wrap gap-3">
+                    {TRANSPORT_OPTIONS.map((opt) =>
+                  <button type="button" key={opt} onClick={() => setFormData({ ...formData, transportPreference: opt })} className={`rounded-full px-6 py-2.5 text-sm font-medium transition-colors ${formData.transportPreference === opt ? 'bg-emerald text-white' : 'bg-cream text-forest hover:bg-emerald/10'}`}>{opt}</button>
+                  )}
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-3 block font-semibold text-forest">Guide Required?</label>
+                  <div className="flex flex-wrap gap-3">
+                    {[{ label: 'Yes', value: true }, { label: 'No', value: false }].map((opt) =>
+                  <button type="button" key={opt.label} onClick={() => setFormData({ ...formData, guideRequired: opt.value })} className={`rounded-full px-6 py-2.5 text-sm font-medium transition-colors ${formData.guideRequired === opt.value ? 'bg-emerald text-white' : 'bg-cream text-forest hover:bg-emerald/10'}`}>{opt.label}</button>
+                  )}
+                  </div>
+                </div>
               </div>
             }
 
-            {step === 6 &&
+            {step === 5 &&
             <div className="space-y-5">
                 <div className="rounded-2xl bg-cream/60 p-5">
                   <p className="text-xs font-semibold uppercase tracking-widest text-forest/40">Submitting as</p>
@@ -450,9 +458,18 @@ export function CustomTourWizard() {
                   <div><dt className="text-forest/50">Destinations</dt><dd className="font-medium text-forest">{formData.selectedDestinations.length + formData.customDestinations.length} selected</dd></div>
                   <div><dt className="text-forest/50">Activities</dt><dd className="font-medium text-forest">{formData.selectedActivities.length + formData.customActivities.length} selected</dd></div>
                   <div><dt className="text-forest/50">Hotel Category</dt><dd className="font-medium text-forest">{formData.hotelCategory}</dd></div>
+                  <div><dt className="text-forest/50">Room Type</dt><dd className="font-medium text-forest">{formData.roomTypePreference || '—'}</dd></div>
                   <div><dt className="text-forest/50">Travel Style</dt><dd className="font-medium text-forest">{formData.travelStyle}</dd></div>
+                  <div><dt className="text-forest/50">Vehicle Type</dt><dd className="font-medium text-forest">{formData.transportPreference}</dd></div>
+                  <div><dt className="text-forest/50">Guide Required</dt><dd className="font-medium text-forest">{formData.guideRequired ? 'Yes' : 'No'}</dd></div>
                   <div><dt className="text-forest/50">Budget</dt><dd className="font-medium text-forest">{formData.budget ? `$${formData.budget} ${formData.perPerson ? 'per person' : 'total'}` : '—'}</dd></div>
                 </dl>
+
+                <div>
+                  <label className="mb-3 block font-semibold text-forest">Special Requests & Notes</label>
+                  <p className="mb-4 text-sm text-forest/60">Dietary requirements, special occasions, wheelchair access, or any specific places you want to ensure are included.</p>
+                  <textarea rows={4} value={formData.specialRequests} onChange={(e) => setFormData({ ...formData, specialRequests: e.target.value })} className="w-full rounded-2xl border border-forest/10 bg-cream/50 p-4 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" placeholder="Tell us more about your dream trip..."></textarea>
+                </div>
 
                 <div className="rounded-2xl border border-emerald/20 bg-emerald/5 p-5">
                   <div className="flex items-center justify-between">

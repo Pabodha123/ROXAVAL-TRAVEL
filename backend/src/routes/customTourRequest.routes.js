@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const controller = require('../controllers/customTourRequest.controller');
+const messageController = require('../controllers/message.controller');
 const { protect, restrictTo } = require('../middleware/auth');
 const validate = require('../middleware/validate');
 const {
@@ -8,9 +9,14 @@ const {
   requestChangesSchema,
   cannotModifySchema,
   updatePrioritySchema,
+  sendMessageSchema,
 } = require('../validators/customTourRequest.validator');
 
 router.use(protect);
+
+// Conversation thread — shared between customer and admin
+router.get('/:id/messages', restrictTo('customer', 'admin', 'superadmin'), messageController.listMessages);
+router.post('/:id/messages', restrictTo('customer', 'admin', 'superadmin'), validate({ body: sendMessageSchema }), messageController.sendMessage);
 
 // Customer
 router.post('/generate-itinerary', restrictTo('customer'), validate({ body: createCustomTourRequestSchema.omit({ aiGeneratedItinerary: true }) }), controller.generateItinerary);

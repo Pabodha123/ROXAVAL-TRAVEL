@@ -22,6 +22,8 @@ const createCustomTourRequestSchema = z.object({
     .enum(['Relaxed', 'Adventure', 'Cultural', 'Luxury', 'Family', 'Honeymoon', 'Backpacking'])
     .optional(),
   transportPreference: z.enum(['Private Car', 'Van', 'SUV', 'Minibus', 'No Preference']).optional(),
+  roomTypePreference: z.string().optional(),
+  guideRequired: z.boolean().optional(),
   estimatedBudget: z.object({
     amount: z.number().positive(),
     currency: z.string().optional(),
@@ -99,10 +101,15 @@ const updatePrioritySchema = z.object({
   priority: z.enum(['Low', 'Medium', 'High']),
 });
 
+const sendMessageSchema = z.object({
+  text: z.string().min(1, 'Message cannot be empty').max(2000),
+});
+
 module.exports = {
   createCustomTourRequestSchema,
   buildItinerarySchema,
   requestChangesSchema,
   cannotModifySchema,
   updatePrioritySchema,
+  sendMessageSchema,
 };

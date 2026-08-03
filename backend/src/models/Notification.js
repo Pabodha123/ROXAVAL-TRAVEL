@@ -24,6 +24,7 @@ const notificationSchema = new mongoose.Schema(
         'document_ready',
         'review_moderated',
         'birthday',
+        'message_received',
         'general',
       ],
       required: true,

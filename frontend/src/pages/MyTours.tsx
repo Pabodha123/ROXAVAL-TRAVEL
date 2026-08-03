@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   CalendarIcon, UsersIcon, DownloadIcon, Loader2Icon, MapPinIcon,
   BedDoubleIcon, MessageCircleIcon, PackageIcon, SendIcon, CheckIcon,
-  XCircleIcon, SparklesIcon, StarIcon } from
+  XCircleIcon, SparklesIcon, StarIcon, CompassIcon, ChevronDownIcon } from
 'lucide-react';
 import { useAdminList } from '../admin/hooks/useAdminList';
 import { StatusBadge } from '../admin/components/StatusBadge';
@@ -13,6 +13,12 @@ import { useToast } from '../context/ToastContext';
 import { useUnreadCount } from '../hooks/useUnreadCount';
 import { BookingModal, BookingSource } from '../components/booking/BookingModal';
 import { BackButton } from '../components/ui/BackButton';
+import { Timeline } from '../components/ui/Timeline';
+import { resolveRequestStage, resolveFullStage } from '../lib/tourTimeline';
+import { MessagingPanel } from '../components/messaging/MessagingPanel';
+import { CustomerDashboardSummary } from '../components/dashboard/CustomerDashboardSummary';
+import { CountdownWidget } from '../components/dashboard/CountdownWidget';
+import { RecentActivityFeed } from '../components/dashboard/RecentActivityFeed';
 import type { Review } from '../types/review';
 
 interface BookingItem {
@@ -313,6 +319,7 @@ function BookingsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
   const { items, loading, error, refetch } = useAdminList<BookingItem>('/bookings/my-bookings', {}, 20);
   const [selectedId, setSelectedId] = useState<string | null>(initialSelectedId || null);
   const [myReviews, setMyReviews] = useState<Review[]>([]);
+  const [showRawHistory, setShowRawHistory] = useState(false);
 
   useEffect(() => {
     if (!selectedId && items.length > 0) setSelectedId(items[0]._id);
@@ -370,15 +377,27 @@ function BookingsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
           </div>
 
           <div className="rounded-2xl bg-white p-6 shadow-soft">
-            <p className="font-display text-sm font-semibold text-forest">Status History</p>
+            <p className="font-display text-sm font-semibold text-forest">Tour Progress</p>
+            {/* Once a Booking exists, its parent CustomTourRequest is always 'Booking Confirmed'
+                (see booking.service.js) — package-sourced bookings never have a request at all —
+                so the pre-booking stages are always treated as already passed here. */}
+            <Timeline
+              className="mt-4"
+              {...resolveFullStage({ requestStatus: 'Booking Confirmed', bookingStatus: selected.status })} />
+
+            <button onClick={() => setShowRawHistory((v) => !v)} className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-forest/50 hover:text-forest">
+              <ChevronDownIcon className={`h-3.5 w-3.5 transition-transform ${showRawHistory ? 'rotate-180' : ''}`} /> {showRawHistory ? 'Hide' : 'Show'} full status log
+            </button>
+            {showRawHistory &&
             <div className="mt-3 space-y-2.5">
-              {selected.statusHistory.map((h, i) =>
-            <div key={i} className="flex items-center justify-between border-b border-forest/5 pb-2 last:border-0">
-                  <StatusBadge status={h.status} />
-                  <span className="text-xs text-forest/40">{new Date(h.at).toLocaleDateString()}</span>
-                </div>
-            )}
-            </div>
+                {selected.statusHistory.map((h, i) =>
+              <div key={i} className="flex items-center justify-between border-b border-forest/5 pb-2 last:border-0">
+                    <StatusBadge status={h.status} />
+                    <span className="text-xs text-forest/40">{new Date(h.at).toLocaleDateString()}</span>
+                  </div>
+              )}
+              </div>
+            }
           </div>
 
           {selected.status === 'Payment Pending' &&
@@ -409,6 +428,8 @@ function RequestsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
   const [acting, setActing] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
+  const [requestChangesOpen, setRequestChangesOpen] = useState(false);
+  const messagingRef = useRef<HTMLDivElement>(null);
   const toast = useToast();
 
   useEffect(() => {
@@ -438,6 +459,7 @@ function RequestsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
       await apiPatch(`/custom-tours/${selected._id}/request-changes`, { note });
       toast('Change request sent to our travel experts.');
       setNote('');
+      setRequestChangesOpen(false);
       refetch();
     } catch (err) {
       toast(err instanceof ApiRequestError ? err.message : 'Failed to send change request.', 'error');
@@ -498,7 +520,11 @@ function RequestsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
               <p className="font-display text-lg font-semibold text-forest">Request {selected.referenceNumber}</p>
               <StatusBadge status={selected.status} />
             </div>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 text-sm">
+            <Timeline
+              className="mt-5"
+              {...resolveRequestStage({ requestStatus: selected.status, itineraryStatus: itin?.status })} />
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 text-sm">
               <p className="flex items-center gap-1.5 text-forest/70"><CalendarIcon className="h-4 w-4" /> {new Date(selected.travelDates.startDate).toLocaleDateString()} – {new Date(selected.travelDates.endDate).toLocaleDateString()}</p>
               <p className="flex items-center gap-1.5 text-forest/70"><UsersIcon className="h-4 w-4" /> {selected.travelers.adults} Adults, {selected.travelers.children} Children</p>
               <p className="text-forest/70">Hotel: {selected.hotelCategory}</p>
@@ -558,20 +584,33 @@ function RequestsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
 
               {itin.status === 'Sent' &&
           <div className="mt-5 space-y-3">
-                  <div className="flex gap-2">
-                    <button onClick={accept} disabled={acting} className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-forest disabled:opacity-60">
-                      <CheckIcon className="h-4 w-4" /> Accept Itinerary
+                  <div className="grid grid-cols-2 gap-3">
+                    <button onClick={accept} disabled={acting} className="flex items-center justify-center gap-2 rounded-2xl bg-gold px-5 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-[1.02] disabled:opacity-60">
+                      <CheckIcon className="h-4 w-4" /> Accept Tour
                     </button>
-                    <button onClick={reject} disabled={acting} className="flex items-center gap-2 rounded-full border border-red-200 px-5 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-60">
-                      <XCircleIcon className="h-4 w-4" /> Reject
-                    </button>
-                  </div>
-                  <div className="flex gap-2">
-                    <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="What would you like changed?" className="flex-1 rounded-full border border-forest/15 px-4 py-2.5 text-sm outline-none focus:border-emerald" />
-                    <button onClick={requestChanges} disabled={acting || !note.trim()} className="flex items-center gap-2 rounded-full border border-forest/20 px-5 py-2.5 text-sm font-semibold text-forest disabled:opacity-60">
+                    <button onClick={() => setRequestChangesOpen((v) => !v)} className="flex items-center justify-center gap-2 rounded-2xl border border-forest/15 px-5 py-3.5 text-sm font-semibold text-forest transition-colors hover:bg-cream">
                       <SendIcon className="h-4 w-4" /> Request Changes
                     </button>
+                    <Link to="/packages#custom-tour" className="flex items-center justify-center gap-2 rounded-2xl border border-forest/15 px-5 py-3.5 text-sm font-semibold text-forest transition-colors hover:bg-cream">
+                      <CompassIcon className="h-4 w-4" /> Plan Another Tour
+                    </Link>
+                    <button onClick={() => messagingRef.current?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center justify-center gap-2 rounded-2xl border border-forest/15 px-5 py-3.5 text-sm font-semibold text-forest transition-colors hover:bg-cream">
+                      <MessageCircleIcon className="h-4 w-4" /> Contact Roxaval
+                    </button>
                   </div>
+
+                  {requestChangesOpen &&
+              <div className="flex gap-2">
+                      <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="What would you like changed?" className="flex-1 rounded-full border border-forest/15 px-4 py-2.5 text-sm outline-none focus:border-emerald" autoFocus />
+                      <button onClick={requestChanges} disabled={acting || !note.trim()} className="flex items-center gap-2 rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+                        <SendIcon className="h-4 w-4" /> Send
+                      </button>
+                    </div>
+              }
+
+                  <button onClick={reject} disabled={acting} className="flex items-center gap-1.5 text-xs font-semibold text-red-600 hover:underline disabled:opacity-60">
+                    <XCircleIcon className="h-3.5 w-3.5" /> Reject Itinerary
+                  </button>
                 </div>
           }
 
@@ -638,6 +677,10 @@ function RequestsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
           }
             </div>
         }
+
+          <div ref={messagingRef}>
+            <MessagingPanel requestId={selected._id} />
+          </div>
         </div>
       }
 
@@ -668,6 +711,10 @@ export function MyTours() {
         <BackButton className="mb-6" />
         <h1 className="font-display text-3xl font-semibold text-forest sm:text-4xl">{t('myTours.title')}</h1>
         <p className="mt-2 text-forest/60">{t('myTours.subtitle')}</p>
+
+        <div className="mt-8"><CustomerDashboardSummary /></div>
+        <CountdownWidget />
+        <RecentActivityFeed />
 
         <div className="mt-8 inline-flex rounded-full bg-white p-1 shadow-soft">
           <button onClick={() => setTab('bookings')} className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-colors ${tab === 'bookings' ? 'bg-forest text-white' : 'text-forest/60 hover:text-forest'}`}>

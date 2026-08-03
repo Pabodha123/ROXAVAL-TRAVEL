@@ -4,9 +4,11 @@ import { useApiList } from '../../hooks/useApiList';
 import { apiPatch } from '../../lib/api';
 import { Pagination } from '../ui/Pagination';
 import { LoadingState, EmptyState, ErrorState } from '../ui/StatusState';
+import { notificationTypeMeta } from '../../lib/notificationTypes';
 
 interface NotificationItem {
   _id: string;
+  type: string;
   title: string;
   message: string;
   link: string;
@@ -49,14 +51,19 @@ export function NotificationsPanel() {
       }
       <div className="space-y-3">
         {items.map((n) => {
+          const meta = notificationTypeMeta(n.type);
+          const Icon = meta.icon;
           const content = (
-            <div className={`rounded-2xl border p-5 shadow-soft transition-colors ${isRead(n) ? 'border-forest/10 bg-white' : 'border-emerald/30 bg-emerald/5'}`}>
-              <div className="flex items-start justify-between gap-3">
+            <div className={`flex gap-3 rounded-2xl border p-5 shadow-soft transition-colors ${isRead(n) ? 'border-forest/10 bg-white' : 'border-emerald/30 bg-emerald/5'}`}>
+              <span className="relative mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-cream text-forest/60">
+                <Icon className="h-4 w-4" />
+                {!isRead(n) && <span className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-white ${meta.dot}`} />}
+              </span>
+              <div className="min-w-0 flex-1">
                 <p className="font-display text-sm font-semibold text-forest">{n.title}</p>
-                {!isRead(n) && <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald" />}
+                <p className="mt-1.5 text-sm text-forest/60">{n.message}</p>
+                <p className="mt-2 text-xs text-forest/40">{new Date(n.createdAt).toLocaleString()}</p>
               </div>
-              <p className="mt-1.5 text-sm text-forest/60">{n.message}</p>
-              <p className="mt-2 text-xs text-forest/40">{new Date(n.createdAt).toLocaleString()}</p>
             </div>);
 
           return n.link ?

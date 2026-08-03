@@ -19,6 +19,8 @@ const STATUS_STYLES: Record<string, string> = {
   'booking confirmed': 'bg-emerald/10 text-emerald',
   generated: 'bg-emerald/10 text-emerald',
   sent: 'bg-emerald/10 text-emerald',
+  'changes requested': 'bg-gold/15 text-gold',
+  accepted: 'bg-emerald/10 text-emerald',
   superseded: 'bg-forest/8 text-forest/50',
   'payment pending': 'bg-gold/15 text-gold',
   'payment verification': 'bg-gold/15 text-gold',

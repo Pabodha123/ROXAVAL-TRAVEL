@@ -63,6 +63,8 @@ const customTourRequestSchema = new mongoose.Schema(
       enum: ['Private Car', 'Van', 'SUV', 'Minibus', 'No Preference'],
       default: 'No Preference',
     },
+    roomTypePreference: { type: String, default: '' },
+    guideRequired: { type: Boolean, default: false },
 
     // Step 3: Budget & requests
     estimatedBudget: {

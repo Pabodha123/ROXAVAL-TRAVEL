@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, Loader2Icon, SendIcon, TrashIcon, UserCheckIcon } from 'lucide-react';
+import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, Loader2Icon, SendIcon, TrashIcon, UserCheckIcon, WandSparklesIcon } from 'lucide-react';
 import { apiGetList, apiGetOne, apiPatch, apiPost, ApiRequestError } from '../../../lib/api';
 import { useToast } from '../../components/ToastProvider';
 import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
 import { PriorityBadge } from '../../components/PriorityBadge';
+import { Timeline } from '../../../components/ui/Timeline';
+import { resolveRequestStage } from '../../../lib/tourTimeline';
+import { MessagingPanel } from '../../../components/messaging/MessagingPanel';
 import {
   TextField,
   TextAreaField,
@@ -82,7 +85,10 @@ interface RequestDetail {
   customActivities: string[];
   hotelCategory: string;
   mealPreferences: string[];
+  roomTypePreference?: string;
   travelStyle: string;
+  transportPreference?: string;
+  guideRequired?: boolean;
   estimatedBudget: { amount: number; currency: string; perPerson: boolean };
   specialRequests: string;
   status: string;
@@ -126,6 +132,7 @@ export function AdminCustomRequestDetail() {
   const [adminNotes, setAdminNotes] = useState('');
   const [customerFacingNotes, setCustomerFacingNotes] = useState('');
 
+  const [recommendedGuide, setRecommendedGuide] = useState('');
   const [savingPriority, setSavingPriority] = useState(false);
   const [cannotModifyOpen, setCannotModifyOpen] = useState(false);
   const [cannotModifyNote, setCannotModifyNote] = useState('');
@@ -195,6 +202,9 @@ export function AdminCustomRequestDetail() {
       setTitle(`Custom Itinerary for ${request.referenceNumber}`);
       setBasePrice(request.estimatedBudget.amount);
       setTotalPrice(request.estimatedBudget.amount);
+      if (request.roomTypePreference) {
+        setDays([{ ...emptyDay(1), roomType: request.roomTypePreference }]);
+      }
     }
   }, [request]);
 
@@ -203,6 +213,10 @@ export function AdminCustomRequestDetail() {
   };
   const addDay = () => setDays((prev) => [...prev, emptyDay(prev.length + 1)]);
   const removeDay = (index: number) => setDays((prev) => prev.filter((_, i) => i !== index).map((d, i) => ({ ...d, dayNumber: i + 1 })));
+  const applyGuideToAllDays = () => {
+    if (!recommendedGuide) return;
+    setDays((prev) => prev.map((d) => ({ ...d, tourGuide: recommendedGuide })));
+  };
   const moveDay = (index: number, dir: -1 | 1) => {
     setDays((prev) => {
       const target = index + dir;
@@ -296,11 +310,19 @@ export function AdminCustomRequestDetail() {
               <p className="font-display text-sm font-semibold text-forest">Request Details</p>
               <StatusBadge status={request.status} />
             </div>
-            <dl className="mt-4 space-y-2.5 text-sm">
+            <Timeline className="mt-4" {...resolveRequestStage({ requestStatus: request.status, itineraryStatus: request.itinerary?.status })} />
+            <dl className="mt-5 space-y-2.5 text-sm">
               <div className="flex justify-between"><dt className="text-forest/50">Travel Dates</dt><dd className="text-forest">{new Date(request.travelDates.startDate).toLocaleDateString()} – {new Date(request.travelDates.endDate).toLocaleDateString()}</dd></div>
               <div className="flex justify-between"><dt className="text-forest/50">Travelers</dt><dd className="text-forest">{request.travelers.adults} Adults, {request.travelers.children} Children</dd></div>
               <div className="flex justify-between"><dt className="text-forest/50">Hotel Category</dt><dd className="text-forest">{request.hotelCategory}</dd></div>
+              {request.roomTypePreference &&
+              <div className="flex justify-between"><dt className="text-forest/50">Room Type Preference</dt><dd className="text-forest">{request.roomTypePreference}</dd></div>
+              }
               <div className="flex justify-between"><dt className="text-forest/50">Travel Style</dt><dd className="text-forest">{request.travelStyle}</dd></div>
+              {request.transportPreference &&
+              <div className="flex justify-between"><dt className="text-forest/50">Vehicle Type</dt><dd className="text-forest">{request.transportPreference}</dd></div>
+              }
+              <div className="flex justify-between"><dt className="text-forest/50">Guide Required</dt><dd className="text-forest">{request.guideRequired ? 'Yes' : 'No'}</dd></div>
               <div className="flex justify-between"><dt className="text-forest/50">Budget</dt><dd className="text-forest">{request.estimatedBudget.currency} {request.estimatedBudget.amount.toLocaleString()}</dd></div>
               <div className="flex items-center justify-between">
                 <dt className="text-forest/50">Priority</dt>
@@ -399,6 +421,8 @@ export function AdminCustomRequestDetail() {
             }
             </div>
           }
+
+          <MessagingPanel requestId={request._id} />
         </div>
 
         <div>
@@ -487,6 +511,21 @@ export function AdminCustomRequestDetail() {
                   <TextAreaField label="Summary" value={summary} onChange={setSummary} rows={2} />
                 </div>
               </div>
+
+              {request.guideRequired &&
+              <div className="rounded-2xl border border-emerald/20 bg-emerald/5 p-6">
+                  <p className="flex items-center gap-2 font-display text-sm font-semibold text-forest">
+                    <WandSparklesIcon className="h-4 w-4 text-emerald" /> Guide Required
+                  </p>
+                  <p className="mt-1 text-xs text-forest/60">The customer asked for a tour guide. Pick one below and apply it to every day at once.</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <SelectField label="Recommended Guide" value={recommendedGuide} onChange={setRecommendedGuide} options={[{ label: 'Select a guide…', value: '' }, ...guideOptions]} />
+                    <button type="button" onClick={applyGuideToAllDays} disabled={!recommendedGuide} className="mt-6 rounded-full bg-emerald px-4 py-2 text-xs font-semibold text-white disabled:opacity-50">
+                      Apply to all days
+                    </button>
+                  </div>
+                </div>
+              }
 
               <div className="rounded-2xl bg-white p-6 shadow-soft">
                 <RepeatSection label="Day-by-Day Plan" onAdd={addDay} addLabel="Add Day">
