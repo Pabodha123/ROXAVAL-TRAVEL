@@ -3,11 +3,14 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  MapPinIcon, PhoneIcon, MailIcon, MessageCircleIcon,
+  MapPinIcon, MailIcon, MessageCircleIcon, GlobeIcon,
   FacebookIcon, InstagramIcon, YoutubeIcon, MusicIcon, SendIcon, CheckIcon } from
 'lucide-react';
 import { apiPost } from '../../lib/api';
-import { WHATSAPP_DISPLAY, whatsAppLink } from '../../lib/contact';
+import {
+  WHATSAPP_DISPLAY, WHATSAPP_NUMBER_SL, WHATSAPP_DISPLAY_SL, whatsAppLink,
+  CONTACT_EMAIL, WEBSITE_DISPLAY, WEBSITE_URL, ADDRESS_SRI_LANKA, ADDRESS_UAE } from
+'../../lib/contact';
 
 const socials = [
 { icon: FacebookIcon, label: 'Facebook' },
@@ -129,15 +132,25 @@ export function Footer() {
           <div>
             <h4 className="font-display text-lg font-semibold text-white">{t('footer.contactUs')}</h4>
             <ul className="mt-4 space-y-3 text-sm text-cream/70">
-              <li className="flex gap-3"><MapPinIcon className="h-5 w-5 text-gold shrink-0" /> No 221 Ganemulla Road, Kandana, Sri Lanka</li>
-              <li className="flex gap-3"><PhoneIcon className="h-5 w-5 text-gold shrink-0" /> +94 11 234 5678</li>
+              <li className="flex gap-3"><MapPinIcon className="h-5 w-5 text-gold shrink-0" /> {ADDRESS_SRI_LANKA}</li>
+              <li className="flex gap-3"><MapPinIcon className="h-5 w-5 text-gold shrink-0" /> {ADDRESS_UAE}</li>
+              <li className="flex gap-3">
+                <MessageCircleIcon className="h-5 w-5 text-gold shrink-0" />
+                <a href={whatsAppLink(undefined, WHATSAPP_NUMBER_SL)} target="_blank" rel="noreferrer" className="hover:text-gold transition-colors">
+                  {t('footer.whatsapp')} (Sri Lanka): {WHATSAPP_DISPLAY_SL}
+                </a>
+              </li>
               <li className="flex gap-3">
                 <MessageCircleIcon className="h-5 w-5 text-gold shrink-0" />
                 <a href={whatsAppLink()} target="_blank" rel="noreferrer" className="hover:text-gold transition-colors">
-                  {t('footer.whatsapp')}: {WHATSAPP_DISPLAY}
+                  {t('footer.whatsapp')} (UAE): {WHATSAPP_DISPLAY}
                 </a>
               </li>
-              <li className="flex gap-3"><MailIcon className="h-5 w-5 text-gold shrink-0" /> hello@roxavaltravels.com</li>
+              <li className="flex gap-3"><MailIcon className="h-5 w-5 text-gold shrink-0" /> {CONTACT_EMAIL}</li>
+              <li className="flex gap-3">
+                <GlobeIcon className="h-5 w-5 text-gold shrink-0" />
+                <a href={WEBSITE_URL} target="_blank" rel="noreferrer" className="hover:text-gold transition-colors">{WEBSITE_DISPLAY}</a>
+              </li>
             </ul>
           </div>
 

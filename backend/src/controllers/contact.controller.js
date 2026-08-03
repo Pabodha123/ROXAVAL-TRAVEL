@@ -15,7 +15,7 @@ const create = catchAsync(async (req, res) => {
   const contact = await Contact.create(req.body);
 
   await sendEmail({
-    to: env.COMPANY.email || 'hello@roxavaltravels.com',
+    to: env.COMPANY.email || 'info@roxavaltravels.com',
     subject: `New Contact Inquiry: ${contact.subject}`,
     html: contactInquiryEmail(contact),
   });

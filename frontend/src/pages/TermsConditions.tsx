@@ -95,7 +95,7 @@ const SECTIONS: Section[] = [
 {
   id: 'contact-information',
   title: 'Contact Information',
-  body: <p>For any questions regarding these Terms & Conditions, please reach out via our <a href="/contact" className="text-emerald underline">Contact Us</a> page, email us at hello@roxavaltravels.com, or call +94 11 234 5678.</p>
+  body: <p>For any questions regarding these Terms & Conditions, please reach out via our <a href="/contact" className="text-emerald underline">Contact Us</a> page, email us at info@roxavaltravels.com, or call +94 77 880 3522.</p>
 }];
 
 

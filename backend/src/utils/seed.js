@@ -738,10 +738,13 @@ async function seed() {
   const settings = await Settings.getSingleton();
   Object.assign(settings, {
     companyName: 'Roxaval Travels',
+    // Primary (Sri Lanka) office address — the UAE office (Sharjah Publishing
+    // City Free Zone, Sharjah, UAE) is shown alongside this on the frontend,
+    // since the schema only has room for one address.
     address: 'No 221 Ganemulla Road, Kandana, Sri Lanka',
-    phone: '+94 11 234 5678',
-    email: 'hello@roxavaltravels.com',
-    website: 'https://roxavaltravels.com',
+    phone: '+94 77 880 3522',
+    email: 'info@roxavaltravels.com',
+    website: 'https://www.roxavaltravels.com',
     socialLinks: {
       facebook: 'https://facebook.com/roxavaltravels',
       instagram: 'https://instagram.com/roxavaltravels',

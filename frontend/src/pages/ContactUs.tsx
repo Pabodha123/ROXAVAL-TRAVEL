@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  MapPinIcon, PhoneIcon, MailIcon, MessageCircleIcon, ClockIcon,
+  MapPinIcon, MailIcon, MessageCircleIcon, ClockIcon, GlobeIcon,
   FacebookIcon, InstagramIcon, YoutubeIcon, MusicIcon, SendIcon,
   Loader2Icon, CheckIcon, ChevronDownIcon, ShieldAlertIcon } from
 'lucide-react';
 import { PageBanner } from '../components/layout/PageBanner';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { apiGetOne, apiPost, ApiRequestError } from '../lib/api';
-import { whatsAppLink, WHATSAPP_NUMBER } from '../lib/contact';
+import {
+  whatsAppLink, WHATSAPP_NUMBER, WHATSAPP_DISPLAY, WHATSAPP_NUMBER_SL, WHATSAPP_DISPLAY_SL,
+  CONTACT_EMAIL, WEBSITE_DISPLAY, WEBSITE_URL, ADDRESS_SRI_LANKA, ADDRESS_UAE } from
+'../lib/contact';
 
 interface Settings {
   companyName: string;
@@ -28,9 +31,9 @@ const FAQS = [
 
 const DEFAULT_SETTINGS: Settings = {
   companyName: 'Roxaval Travels',
-  address: 'No 221 Ganemulla Road, Kandana, Sri Lanka',
-  phone: '+94 11 234 5678',
-  email: 'hello@roxavaltravels.com',
+  address: ADDRESS_SRI_LANKA,
+  phone: WHATSAPP_DISPLAY_SL,
+  email: CONTACT_EMAIL,
   socialLinks: { facebook: '', instagram: '', tiktok: '', youtube: '', whatsapp: WHATSAPP_NUMBER }
 };
 
@@ -138,14 +141,20 @@ export function ContactUs() {
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.6 }} className="rounded-3xl bg-forest p-7 text-white shadow-lift">
             <ul className="space-y-4 text-sm">
               <li className="flex gap-3"><MapPinIcon className="h-5 w-5 shrink-0 text-gold" /> {settings.address}</li>
-              <li className="flex gap-3"><PhoneIcon className="h-5 w-5 shrink-0 text-gold" /> {settings.phone}</li>
+              <li className="flex gap-3"><MapPinIcon className="h-5 w-5 shrink-0 text-gold" /> {ADDRESS_UAE}</li>
+              <li className="flex gap-3"><MessageCircleIcon className="h-5 w-5 shrink-0 text-gold" /> WhatsApp (Sri Lanka): {WHATSAPP_DISPLAY_SL}</li>
+              <li className="flex gap-3"><MessageCircleIcon className="h-5 w-5 shrink-0 text-gold" /> WhatsApp (UAE): {WHATSAPP_DISPLAY}</li>
               <li className="flex gap-3"><MailIcon className="h-5 w-5 shrink-0 text-gold" /> {settings.email}</li>
+              <li className="flex gap-3"><GlobeIcon className="h-5 w-5 shrink-0 text-gold" /> <a href={WEBSITE_URL} target="_blank" rel="noreferrer" className="hover:text-gold transition-colors">{WEBSITE_DISPLAY}</a></li>
               <li className="flex gap-3"><ClockIcon className="h-5 w-5 shrink-0 text-gold" /> Mon–Sat: 8:30 AM – 6:30 PM &middot; Sun: By appointment</li>
-              <li className="flex gap-3"><ShieldAlertIcon className="h-5 w-5 shrink-0 text-gold" /> Emergency (24/7): {settings.phone}</li>
+              <li className="flex gap-3"><ShieldAlertIcon className="h-5 w-5 shrink-0 text-gold" /> Emergency (24/7): {WHATSAPP_DISPLAY_SL}</li>
             </ul>
             <div className="mt-6 flex flex-wrap gap-3">
+              <a href={whatsAppLink('Hi Roxaval Travels, I have a question!', WHATSAPP_NUMBER_SL)} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-full bg-emerald px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-105">
+                <MessageCircleIcon className="h-4 w-4" /> WhatsApp (Sri Lanka)
+              </a>
               <a href={whatsAppLink('Hi Roxaval Travels, I have a question!')} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-full bg-emerald px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-105">
-                <MessageCircleIcon className="h-4 w-4" /> WhatsApp Us
+                <MessageCircleIcon className="h-4 w-4" /> WhatsApp (UAE)
               </a>
               {Object.entries(settings.socialLinks).filter(([k]) => k !== 'whatsapp').map(([key, url]) => {
                 const Icon = SOCIAL_ICONS[key];

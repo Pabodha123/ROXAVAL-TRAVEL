@@ -208,7 +208,7 @@ export function ActivityDetails() {
             <p className="text-xs uppercase tracking-wide text-cream/60">{t('detail.startingFrom')}</p>
             <p className="font-display text-3xl font-semibold">${activity.priceFrom}<span className="text-sm font-normal text-cream/60">{t('detail.perPerson')}</span></p>
             <a
-              href="mailto:hello@roxavaltravels.com?subject=Plan%20My%20Tour"
+              href="mailto:info@roxavaltravels.com?subject=Plan%20My%20Tour"
               className="mt-6 flex items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-[1.03] active:scale-95">
 
               {t('detail.planMyTour')} <ArrowRightIcon className="h-4 w-4" />
