@@ -1,5 +1,7 @@
 {
   "rewrites": [
+    { "source": "/api/:path*", "destination": "https://roxaval-travel.vercel.app/api/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://roxaval-travel.vercel.app/uploads/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
