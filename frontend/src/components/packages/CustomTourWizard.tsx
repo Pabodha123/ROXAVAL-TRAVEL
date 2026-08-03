@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckIcon, ChevronRightIcon, ChevronLeftIcon, MapPinIcon, TargetIcon, SendIcon, LockIcon, Loader2Icon, SparklesIcon, RefreshCwIcon, XIcon } from 'lucide-react';
@@ -81,6 +81,7 @@ export function CustomTourWizard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [step, setStep] = useState(0);
+  const wizardRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -182,8 +183,15 @@ export function CustomTourWizard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
-  const nextStep = () => setStep((s) => Math.min(s + 1, steps.length - 1));
-  const prevStep = () => setStep((s) => Math.max(s - 1, 0));
+  const scrollToTop = () => wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const nextStep = () => {
+    setStep((s) => Math.min(s + 1, steps.length - 1));
+    scrollToTop();
+  };
+  const prevStep = () => {
+    setStep((s) => Math.max(s - 1, 0));
+    scrollToTop();
+  };
 
   const toggleSelection = (field: 'selectedDestinations' | 'selectedActivities', id: string) => {
     setFormData((prev) => {
@@ -254,7 +262,7 @@ export function CustomTourWizard() {
   }
 
   return (
-    <div className="rounded-3xl bg-white shadow-lift overflow-hidden max-w-5xl mx-auto">
+    <div ref={wizardRef} className="rounded-3xl bg-white shadow-lift overflow-hidden max-w-5xl mx-auto">
       {/* Progress Header */}
       <div className="bg-forest px-8 py-6 text-white">
         <h2 className="font-display text-2xl font-semibold">Design Your Dream Tour</h2>
