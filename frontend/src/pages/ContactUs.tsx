@@ -142,8 +142,8 @@ export function ContactUs() {
             <ul className="space-y-4 text-sm">
               <li className="flex gap-3"><MapPinIcon className="h-5 w-5 shrink-0 text-gold" /> {settings.address}</li>
               <li className="flex gap-3"><MapPinIcon className="h-5 w-5 shrink-0 text-gold" /> {ADDRESS_UAE}</li>
-              <li className="flex gap-3"><MessageCircleIcon className="h-5 w-5 shrink-0 text-gold" /> WhatsApp (Sri Lanka): {WHATSAPP_DISPLAY_SL}</li>
-              <li className="flex gap-3"><MessageCircleIcon className="h-5 w-5 shrink-0 text-gold" /> WhatsApp (UAE): {WHATSAPP_DISPLAY}</li>
+              <li className="flex gap-3"><MessageCircleIcon className="h-5 w-5 shrink-0 text-gold" /> WhatsApp : {WHATSAPP_DISPLAY_SL}</li>
+              <li className="flex gap-3"><MessageCircleIcon className="h-5 w-5 shrink-0 text-gold" /> WhatsApp : {WHATSAPP_DISPLAY}</li>
               <li className="flex gap-3"><MailIcon className="h-5 w-5 shrink-0 text-gold" /> {settings.email}</li>
               <li className="flex gap-3"><GlobeIcon className="h-5 w-5 shrink-0 text-gold" /> <a href={WEBSITE_URL} target="_blank" rel="noreferrer" className="hover:text-gold transition-colors">{WEBSITE_DISPLAY}</a></li>
               <li className="flex gap-3"><ClockIcon className="h-5 w-5 shrink-0 text-gold" /> Mon–Sat: 8:30 AM – 6:30 PM &middot; Sun: By appointment</li>
