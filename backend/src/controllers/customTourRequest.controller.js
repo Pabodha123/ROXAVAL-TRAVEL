@@ -31,9 +31,9 @@ const populateItinerary = {
     { path: 'days.destinations', select: 'name' },
     { path: 'days.activities', select: 'name' },
     { path: 'days.hotel', select: 'name category starRating' },
-    { path: 'days.tourGuide', select: 'name' },
-    { path: 'days.vehicle', select: 'name type' },
     { path: 'hotels', select: 'name category starRating' },
+    { path: 'tourGuide', select: 'name' },
+    { path: 'vehicle', select: 'name type' },
     { path: 'versionHistory.changedBy', populate: { path: 'user', select: 'fullName' } },
   ],
 };

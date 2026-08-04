@@ -67,8 +67,6 @@ const buildItinerarySchema = z.object({
       hotel: z.string().optional().transform((v) => (v ? v : undefined)),
       roomType: z.string().optional(),
       numberOfRooms: z.number().int().min(1).optional(),
-      tourGuide: z.string().optional().transform((v) => (v ? v : undefined)),
-      vehicle: z.string().optional().transform((v) => (v ? v : undefined)),
       meals: z.array(z.enum(['Breakfast', 'Lunch', 'Dinner'])).optional(),
       transport: z.string().optional(),
       arrivalTime: z.string().optional(),
@@ -78,6 +76,8 @@ const buildItinerarySchema = z.object({
     })
   ),
   hotels: z.array(z.string()).optional(),
+  tourGuide: z.string().optional().transform((v) => (v ? v : undefined)),
+  vehicle: z.string().optional().transform((v) => (v ? v : undefined)),
   pricing: z.object({
     basePrice: z.number().positive(),
     discount: z.number().min(0).optional(),

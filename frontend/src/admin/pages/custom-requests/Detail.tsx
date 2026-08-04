@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, Loader2Icon, SendIcon, TrashIcon, UserCheckIcon, WandSparklesIcon } from 'lucide-react';
-import { apiGetList, apiGetOne, apiPatch, apiPost, ApiRequestError } from '../../../lib/api';
+import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, DownloadIcon, Loader2Icon, PlusIcon, SendIcon, TrashIcon, UserCheckIcon, WandSparklesIcon, XIcon } from 'lucide-react';
+import { apiGetList, apiGetOne, apiPatch, apiPost, ApiRequestError, API_ORIGIN } from '../../../lib/api';
 import { useToast } from '../../components/ToastProvider';
 import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
@@ -18,6 +18,7 @@ import {
   RefMultiSelect,
   OrderedRefList,
   RepeatSection,
+  CollapsibleRow,
   TagListInput,
   FieldWrap } from
 '../../components/fields/Fields';
@@ -32,7 +33,9 @@ interface RefOption {
 }
 
 interface ItineraryDayForm {
+  _key: string;
   dayNumber: number;
+  date: string;
   title: string;
   schedule: string;
   destinations: string[];
@@ -42,14 +45,21 @@ interface ItineraryDayForm {
   hotel: string;
   roomType: string;
   numberOfRooms: number;
-  tourGuide: string;
-  vehicle: string;
   meals: string[];
   transport: string;
   arrivalTime: string;
   departureTime: string;
   travelTime: string;
   notes: string;
+}
+
+interface RouteLeg {
+  id: string;
+  departure: string;
+  arrival: string;
+  fromDate: string;
+  toDate: string;
+  nights: number;
 }
 
 interface ItineraryVersion {
@@ -63,8 +73,10 @@ interface ItineraryDetail {
   _id: string;
   title: string;
   summary: string;
-  days: { dayNumber: number; title: string; schedule: string; destinations?: { _id: string; name: string }[]; activities?: { _id: string; name: string }[]; customDestinations?: string[]; customActivities?: string[]; hotel?: { _id: string; name: string }; roomType?: string; numberOfRooms?: number; tourGuide?: { _id: string; name: string }; vehicle?: { _id: string; name: string }; meals: string[]; transport: string; arrivalTime?: string; departureTime?: string; travelTime?: string; notes: string }[];
+  days: { dayNumber: number; date?: string; title: string; schedule: string; destinations?: { _id: string; name: string }[]; activities?: { _id: string; name: string }[]; customDestinations?: string[]; customActivities?: string[]; hotel?: { _id: string; name: string }; roomType?: string; numberOfRooms?: number; meals: string[]; transport: string; arrivalTime?: string; departureTime?: string; travelTime?: string; notes: string }[];
   hotels: { _id: string; name: string }[];
+  tourGuide?: { _id: string; name: string };
+  vehicle?: { _id: string; name: string };
   pricing: { basePrice: number; discount: number; totalPrice: number; currency: string; pricePerPerson: boolean };
   adminNotes: string;
   customerFacingNotes: string;
@@ -98,9 +110,11 @@ interface RequestDetail {
   revisionHistory: { action: string; note: string; at: string }[];
 }
 
+const makeKey = () => Math.random().toString(36).slice(2);
+
 const emptyDay = (n: number): ItineraryDayForm => ({
-  dayNumber: n, title: '', schedule: '', destinations: [], activities: [], customDestinations: [], customActivities: [],
-  hotel: '', roomType: '', numberOfRooms: 1, tourGuide: '', vehicle: '', meals: [], transport: '',
+  _key: makeKey(), dayNumber: n, date: '', title: '', schedule: '', destinations: [], activities: [], customDestinations: [], customActivities: [],
+  hotel: '', roomType: '', numberOfRooms: 1, meals: [], transport: '',
   arrivalTime: '', departureTime: '', travelTime: '', notes: ''
 });
 
@@ -124,6 +138,8 @@ export function AdminCustomRequestDetail() {
   const [summary, setSummary] = useState('');
   const [days, setDays] = useState<ItineraryDayForm[]>([emptyDay(1)]);
   const [hotels, setHotels] = useState<string[]>([]);
+  const [tourGuide, setTourGuide] = useState('');
+  const [vehicle, setVehicle] = useState('');
   const [basePrice, setBasePrice] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -132,7 +148,14 @@ export function AdminCustomRequestDetail() {
   const [adminNotes, setAdminNotes] = useState('');
   const [customerFacingNotes, setCustomerFacingNotes] = useState('');
 
-  const [recommendedGuide, setRecommendedGuide] = useState('');
+  const [routeLegs, setRouteLegs] = useState<RouteLeg[]>([]);
+  const [legDeparture, setLegDeparture] = useState('');
+  const [legArrival, setLegArrival] = useState('');
+  const [legFromDate, setLegFromDate] = useState('');
+  const [legToDate, setLegToDate] = useState('');
+  const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
+  const [generatingQuotation, setGeneratingQuotation] = useState(false);
+
   const [savingPriority, setSavingPriority] = useState(false);
   const [cannotModifyOpen, setCannotModifyOpen] = useState(false);
   const [cannotModifyNote, setCannotModifyNote] = useState('');
@@ -171,7 +194,9 @@ export function AdminCustomRequestDetail() {
       setTitle(itin.title);
       setSummary(itin.summary);
       setDays(itin.days.map((d) => ({
+        _key: makeKey(),
         dayNumber: d.dayNumber,
+        date: d.date ? d.date.slice(0, 10) : '',
         title: d.title,
         schedule: d.schedule,
         destinations: (d.destinations || []).map((x) => x._id),
@@ -181,8 +206,6 @@ export function AdminCustomRequestDetail() {
         hotel: d.hotel?._id || '',
         roomType: d.roomType || '',
         numberOfRooms: d.numberOfRooms || 1,
-        tourGuide: d.tourGuide?._id || '',
-        vehicle: d.vehicle?._id || '',
         meals: d.meals || [],
         transport: d.transport || '',
         arrivalTime: d.arrivalTime || '',
@@ -191,6 +214,8 @@ export function AdminCustomRequestDetail() {
         notes: d.notes || ''
       })));
       setHotels(itin.hotels.map((h) => h._id));
+      setTourGuide(itin.tourGuide?._id || '');
+      setVehicle(itin.vehicle?._id || '');
       setBasePrice(itin.pricing.basePrice);
       setDiscount(itin.pricing.discount);
       setTotalPrice(itin.pricing.totalPrice);
@@ -198,10 +223,15 @@ export function AdminCustomRequestDetail() {
       setPricePerPerson(itin.pricing.pricePerPerson);
       setAdminNotes(itin.adminNotes);
       setCustomerFacingNotes(itin.customerFacingNotes);
+      setRouteLegs([]);
+      setExpandedDays(new Set());
     } else {
       setTitle(`Custom Itinerary for ${request.referenceNumber}`);
       setBasePrice(request.estimatedBudget.amount);
       setTotalPrice(request.estimatedBudget.amount);
+      setTourGuide('');
+      setVehicle('');
+      setRouteLegs([]);
       if (request.roomTypePreference) {
         setDays([{ ...emptyDay(1), roomType: request.roomTypePreference }]);
       }
@@ -211,12 +241,14 @@ export function AdminCustomRequestDetail() {
   const updateDay = (index: number, patch: Partial<ItineraryDayForm>) => {
     setDays((prev) => prev.map((d, i) => i === index ? { ...d, ...patch } : d));
   };
-  const addDay = () => setDays((prev) => [...prev, emptyDay(prev.length + 1)]);
-  const removeDay = (index: number) => setDays((prev) => prev.filter((_, i) => i !== index).map((d, i) => ({ ...d, dayNumber: i + 1 })));
-  const applyGuideToAllDays = () => {
-    if (!recommendedGuide) return;
-    setDays((prev) => prev.map((d) => ({ ...d, tourGuide: recommendedGuide })));
+  const addDay = () => {
+    setDays((prev) => {
+      const newDay = emptyDay(prev.length + 1);
+      setExpandedDays((exp) => new Set(exp).add(newDay._key));
+      return [...prev, newDay];
+    });
   };
+  const removeDay = (index: number) => setDays((prev) => prev.filter((_, i) => i !== index).map((d, i) => ({ ...d, dayNumber: i + 1 })));
   const moveDay = (index: number, dir: -1 | 1) => {
     setDays((prev) => {
       const target = index + dir;
@@ -226,6 +258,46 @@ export function AdminCustomRequestDetail() {
       return next.map((d, i) => ({ ...d, dayNumber: i + 1 }));
     });
   };
+  const toggleDayExpanded = (key: string) => {
+    setExpandedDays((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  };
+
+  const addRouteLeg = () => {
+    if (!legDeparture.trim() || !legArrival.trim() || !legFromDate || !legToDate) {
+      toast('Please fill in departure, arrival and both dates.', 'error');
+      return;
+    }
+    if (legToDate < legFromDate) {
+      toast('To Date must be on or after From Date.', 'error');
+      return;
+    }
+    const nights = Math.round((new Date(legToDate).getTime() - new Date(legFromDate).getTime()) / 86400000);
+    const dayCount = Math.max(nights, 1);
+    setDays((prev) => {
+      const newDays: ItineraryDayForm[] = [];
+      for (let i = 0; i < dayCount; i += 1) {
+        const dayNumber = prev.length + newDays.length + 1;
+        const date = new Date(legFromDate);
+        date.setDate(date.getDate() + i);
+        newDays.push({
+          ...emptyDay(dayNumber),
+          title: i === 0 ? `${legDeparture} → ${legArrival}` : `${legArrival} – Day ${i + 1}`,
+          date: date.toISOString().slice(0, 10)
+        });
+      }
+      return [...prev, ...newDays];
+    });
+    setRouteLegs((prev) => [...prev, { id: makeKey(), departure: legDeparture, arrival: legArrival, fromDate: legFromDate, toDate: legToDate, nights }]);
+    setLegDeparture('');
+    setLegArrival('');
+    setLegFromDate(legToDate);
+    setLegToDate('');
+  };
+  const removeRouteLeg = (legId: string) => setRouteLegs((prev) => prev.filter((l) => l.id !== legId));
 
   const assignToMe = async () => {
     setAssigning(true);
@@ -276,8 +348,10 @@ export function AdminCustomRequestDetail() {
       await apiPost(`/custom-tours/${id}/itinerary`, {
         title,
         summary,
-        days,
+        days: days.map(({ _key, ...d }) => ({ ...d, date: d.date || undefined })),
         hotels,
+        tourGuide: tourGuide || undefined,
+        vehicle: vehicle || undefined,
         pricing: { basePrice, discount, totalPrice, currency, pricePerPerson },
         adminNotes,
         customerFacingNotes
@@ -288,6 +362,23 @@ export function AdminCustomRequestDetail() {
       toast(err instanceof ApiRequestError ? err.message : 'Failed to send itinerary.', 'error');
     } finally {
       setSending(false);
+    }
+  };
+
+  const generateQuotation = async () => {
+    const itinId = request?.itinerary?._id;
+    if (!itinId) return;
+    setGeneratingQuotation(true);
+    try {
+      const result = await apiPost<{ fileUrl: string }>(`/documents/itineraries/${itinId}/quotation`);
+      if (result?.fileUrl) {
+        window.open(`${API_ORIGIN}${result.fileUrl}`, '_blank');
+        toast('Quotation generated.');
+      }
+    } catch (err) {
+      toast(err instanceof ApiRequestError ? err.message : 'Failed to generate quotation.', 'error');
+    } finally {
+      setGeneratingQuotation(false);
     }
   };
 
@@ -430,19 +521,28 @@ export function AdminCustomRequestDetail() {
           <div className="rounded-2xl bg-white p-6 shadow-soft">
               <div className="flex items-center justify-between">
                 <p className="font-display text-lg font-semibold text-forest">{request.itinerary.title}</p>
-                <StatusBadge status={request.itinerary.status} />
+                <div className="flex items-center gap-2">
+                  <button type="button" onClick={generateQuotation} disabled={generatingQuotation} className="flex items-center gap-1.5 rounded-full border border-forest/15 px-3.5 py-1.5 text-xs font-semibold text-forest hover:bg-cream disabled:opacity-60">
+                    {generatingQuotation ? <Loader2Icon className="h-3.5 w-3.5 animate-spin" /> : <DownloadIcon className="h-3.5 w-3.5" />} Generate Quotation
+                  </button>
+                  <StatusBadge status={request.itinerary.status} />
+                </div>
               </div>
               {request.itinerary.summary && <p className="mt-2 text-sm text-forest/60">{request.itinerary.summary}</p>}
+              {(request.itinerary.tourGuide || request.itinerary.vehicle) &&
+            <p className="mt-2 text-xs text-forest/60">
+                  {request.itinerary.tourGuide && <span>Guide: {request.itinerary.tourGuide.name}</span>}
+                  {request.itinerary.vehicle && <span>{request.itinerary.tourGuide ? ' · ' : ''}Vehicle: {request.itinerary.vehicle.name}</span>}
+                </p>
+            }
               <div className="mt-4 space-y-3">
                 {request.itinerary.days.map((d) =>
               <div key={d.dayNumber} className="rounded-xl bg-cream/50 p-4">
-                    <p className="text-sm font-semibold text-forest">Day {d.dayNumber}: {d.title}</p>
+                    <p className="text-sm font-semibold text-forest">Day {d.dayNumber}{d.date ? ` · ${new Date(d.date).toLocaleDateString()}` : ''}: {d.title}</p>
                     <p className="mt-1 text-xs text-forest/60">{d.schedule}</p>
-                    <p className="mt-1.5 text-xs text-forest/50">
-                      {d.hotel && <span>{d.hotel.name}{d.roomType ? ` (${d.roomType})` : ''}</span>}
-                      {d.tourGuide && <span>{d.hotel ? ' · ' : ''}Guide: {d.tourGuide.name}</span>}
-                      {d.vehicle && <span>{d.hotel || d.tourGuide ? ' · ' : ''}{d.vehicle.name}</span>}
-                    </p>
+                    {d.hotel &&
+                <p className="mt-1.5 text-xs text-forest/50">{d.hotel.name}{d.roomType ? ` (${d.roomType})` : ''}</p>
+                }
                     {(d.arrivalTime || d.departureTime || d.travelTime) &&
                 <p className="mt-1 text-xs text-forest/50">
                         {d.arrivalTime && <span>Arrive {d.arrivalTime}</span>}
@@ -502,7 +602,14 @@ export function AdminCustomRequestDetail() {
             }
 
               <div className="rounded-2xl bg-white p-6 shadow-soft">
-                <p className="mb-4 font-display text-sm font-semibold text-forest">Itinerary Builder</p>
+                <div className="mb-4 flex items-center justify-between">
+                  <p className="font-display text-sm font-semibold text-forest">Itinerary Builder</p>
+                  {request.itinerary?._id &&
+                <button type="button" onClick={generateQuotation} disabled={generatingQuotation} className="flex items-center gap-1.5 rounded-full border border-forest/15 px-3.5 py-1.5 text-xs font-semibold text-forest hover:bg-cream disabled:opacity-60">
+                      {generatingQuotation ? <Loader2Icon className="h-3.5 w-3.5 animate-spin" /> : <DownloadIcon className="h-3.5 w-3.5" />} Generate Quotation
+                    </button>
+                }
+                </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <TextField label="Title" value={title} onChange={setTitle} required minLength={3} />
                   <RefMultiSelect label="Hotels Used" options={hotelOptions} value={hotels} onChange={setHotels} />
@@ -512,42 +619,79 @@ export function AdminCustomRequestDetail() {
                 </div>
               </div>
 
-              {request.guideRequired &&
-              <div className="rounded-2xl border border-emerald/20 bg-emerald/5 p-6">
-                  <p className="flex items-center gap-2 font-display text-sm font-semibold text-forest">
-                    <WandSparklesIcon className="h-4 w-4 text-emerald" /> Guide Required
-                  </p>
-                  <p className="mt-1 text-xs text-forest/60">The customer asked for a tour guide. Pick one below and apply it to every day at once.</p>
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <SelectField label="Recommended Guide" value={recommendedGuide} onChange={setRecommendedGuide} options={[{ label: 'Select a guide…', value: '' }, ...guideOptions]} />
-                    <button type="button" onClick={applyGuideToAllDays} disabled={!recommendedGuide} className="mt-6 rounded-full bg-emerald px-4 py-2 text-xs font-semibold text-white disabled:opacity-50">
-                      Apply to all days
-                    </button>
-                  </div>
+              <div className="rounded-2xl bg-white p-6 shadow-soft">
+                <p className="mb-1 font-display text-sm font-semibold text-forest">Route Builder</p>
+                <p className="mb-4 text-xs text-forest/50">Quickly lay out the day-by-day route — each leg you add creates the matching day cards below, ready to fill in one by one.</p>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end">
+                  <TextField label="Departure Destination" value={legDeparture} onChange={setLegDeparture} placeholder="e.g. Colombo Airport" />
+                  <TextField label="Arrival Destination" value={legArrival} onChange={setLegArrival} placeholder="e.g. Sigiriya" />
+                  <TextField label="From Date" type="date" value={legFromDate} onChange={setLegFromDate} />
+                  <TextField label="To Date" type="date" value={legToDate} onChange={setLegToDate} />
+                  <button type="button" onClick={addRouteLeg} className="flex items-center justify-center gap-1.5 rounded-xl bg-emerald px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-light">
+                    <PlusIcon className="h-4 w-4" /> Add
+                  </button>
                 </div>
+                {routeLegs.length > 0 &&
+              <div className="mt-4 overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                      <thead>
+                        <tr className="text-xs uppercase text-forest/40">
+                          <th className="pb-2 pr-3 font-semibold">Departure</th>
+                          <th className="pb-2 pr-3 font-semibold">Arrival</th>
+                          <th className="pb-2 pr-3 font-semibold">From</th>
+                          <th className="pb-2 pr-3 font-semibold">To</th>
+                          <th className="pb-2 pr-3 font-semibold">Nights</th>
+                          <th className="pb-2 font-semibold" />
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {routeLegs.map((leg) =>
+                    <tr key={leg.id} className="border-t border-forest/5">
+                            <td className="py-2 pr-3 text-forest">{leg.departure}</td>
+                            <td className="py-2 pr-3 text-forest">{leg.arrival}</td>
+                            <td className="py-2 pr-3 text-forest/70">{new Date(leg.fromDate).toLocaleDateString()}</td>
+                            <td className="py-2 pr-3 text-forest/70">{new Date(leg.toDate).toLocaleDateString()}</td>
+                            <td className="py-2 pr-3 text-forest/70">{leg.nights}</td>
+                            <td className="py-2 text-right">
+                              <button type="button" onClick={() => removeRouteLeg(leg.id)} className="text-forest/30 hover:text-red-500"><XIcon className="h-4 w-4" /></button>
+                            </td>
+                          </tr>
+                    )}
+                      </tbody>
+                    </table>
+                  </div>
               }
+              </div>
 
               <div className="rounded-2xl bg-white p-6 shadow-soft">
                 <RepeatSection label="Day-by-Day Plan" onAdd={addDay} addLabel="Add Day">
                   {days.map((day, i) =>
-                <div key={i} className="rounded-xl border border-forest/10 p-4">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-semibold text-forest">Day {day.dayNumber}</p>
-                        <div className="flex items-center gap-1">
-                          <button type="button" disabled={i === 0} onClick={() => moveDay(i, -1)} className="text-forest/40 hover:text-forest disabled:opacity-20"><ChevronUpIcon className="h-4 w-4" /></button>
-                          <button type="button" disabled={i === days.length - 1} onClick={() => moveDay(i, 1)} className="text-forest/40 hover:text-forest disabled:opacity-20"><ChevronDownIcon className="h-4 w-4" /></button>
-                          {days.length > 1 &&
-                      <button type="button" onClick={() => removeDay(i)} className="ml-1 text-red-500 hover:text-red-700"><TrashIcon className="h-4 w-4" /></button>
-                      }
-                        </div>
-                      </div>
-                      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                <CollapsibleRow
+                  key={day._key}
+                  isOpen={expandedDays.has(day._key)}
+                  onToggle={() => toggleDayExpanded(day._key)}
+                  summary={
+                  <>
+                        Day {day.dayNumber}{day.date ? ` · ${new Date(day.date).toLocaleDateString()}` : ''} · {day.title || '(untitled)'}
+                        {day.hotel ? ` · ${hotelOptions.find((h) => h.value === day.hotel)?.label || ''}` : ''}
+                      </>}
+
+                  actions={
+                  <>
+                        <button type="button" disabled={i === 0} onClick={() => moveDay(i, -1)} className="text-forest/40 hover:text-forest disabled:opacity-20"><ChevronUpIcon className="h-4 w-4" /></button>
+                        <button type="button" disabled={i === days.length - 1} onClick={() => moveDay(i, 1)} className="text-forest/40 hover:text-forest disabled:opacity-20"><ChevronDownIcon className="h-4 w-4" /></button>
+                        {days.length > 1 &&
+                    <button type="button" onClick={() => removeDay(i)} className="ml-1 text-red-500 hover:text-red-700"><TrashIcon className="h-4 w-4" /></button>
+                    }
+                      </>}>
+
+
+                      <div className="grid gap-3 sm:grid-cols-2">
                         <TextField label="Title" value={day.title} onChange={(v) => updateDay(i, { title: v })} required minLength={2} />
+                        <TextField label="Date" type="date" value={day.date} onChange={(v) => updateDay(i, { date: v })} />
                         <SelectField label="Hotel" value={day.hotel} onChange={(v) => updateDay(i, { hotel: v })} options={[{ label: 'None', value: '' }, ...hotelOptions]} />
                         <TextField label="Room Type" value={day.roomType} onChange={(v) => updateDay(i, { roomType: v })} placeholder="e.g. Deluxe Double" />
                         <NumberField label="Number of Rooms" value={day.numberOfRooms} onChange={(v) => updateDay(i, { numberOfRooms: v })} min={1} />
-                        <SelectField label="Tour Guide" value={day.tourGuide} onChange={(v) => updateDay(i, { tourGuide: v })} options={[{ label: 'None', value: '' }, ...guideOptions]} />
-                        <SelectField label="Vehicle" value={day.vehicle} onChange={(v) => updateDay(i, { vehicle: v })} options={[{ label: 'None', value: '' }, ...vehicleOptions]} />
                         <div className="sm:col-span-2">
                           <TextAreaField label="Schedule" value={day.schedule} onChange={(v) => updateDay(i, { schedule: v })} rows={2} required minLength={5} />
                         </div>
@@ -578,9 +722,20 @@ export function AdminCustomRequestDetail() {
                           <TextAreaField label="Notes" value={day.notes} onChange={(v) => updateDay(i, { notes: v })} rows={2} />
                         </div>
                       </div>
-                    </div>
+                    </CollapsibleRow>
                 )}
                 </RepeatSection>
+              </div>
+
+              <div className={`rounded-2xl p-6 shadow-soft ${request.guideRequired ? 'border border-emerald/20 bg-emerald/5' : 'bg-white'}`}>
+                <p className="flex items-center gap-2 font-display text-sm font-semibold text-forest">
+                  {request.guideRequired && <WandSparklesIcon className="h-4 w-4 text-emerald" />} Tour Guide & Vehicle
+                </p>
+                {request.guideRequired && <p className="mt-1 text-xs text-forest/60">The customer asked for a tour guide for this trip.</p>}
+                <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                  <SelectField label="Tour Guide" value={tourGuide} onChange={setTourGuide} options={[{ label: 'None', value: '' }, ...guideOptions]} />
+                  <SelectField label="Vehicle" value={vehicle} onChange={setVehicle} options={[{ label: 'None', value: '' }, ...vehicleOptions]} />
+                </div>
               </div>
 
               <div className="rounded-2xl bg-white p-6 shadow-soft">

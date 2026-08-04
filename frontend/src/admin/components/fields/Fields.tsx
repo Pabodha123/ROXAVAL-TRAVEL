@@ -313,6 +313,29 @@ export function ImageUploader({ label, value, onChange, multiple = true }: Image
 
 }
 
+interface CollapsibleRowProps {
+  isOpen: boolean;
+  onToggle: () => void;
+  summary: React.ReactNode;
+  actions?: React.ReactNode;
+  children: React.ReactNode;
+}
+
+export function CollapsibleRow({ isOpen, onToggle, summary, actions, children }: CollapsibleRowProps) {
+  return (
+    <div className="rounded-xl border border-forest/10">
+      <div className="flex items-center justify-between gap-2 p-4">
+        <button type="button" onClick={onToggle} className="flex flex-1 items-center gap-2 text-left text-sm font-semibold text-forest">
+          {isOpen ? <ChevronUpIcon className="h-4 w-4 shrink-0 text-forest/40" /> : <ChevronDownIcon className="h-4 w-4 shrink-0 text-forest/40" />}
+          <span className="truncate">{summary}</span>
+        </button>
+        {actions && <div className="flex shrink-0 items-center gap-1">{actions}</div>}
+      </div>
+      {isOpen && <div className="px-4 pb-4">{children}</div>}
+    </div>);
+
+}
+
 interface RepeatSectionProps {
   label: string;
   onAdd: () => void;

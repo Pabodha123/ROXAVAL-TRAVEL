@@ -13,8 +13,6 @@ const itineraryDaySchema = new mongoose.Schema(
     hotel: { type: mongoose.Schema.Types.ObjectId, ref: 'Hotel' },
     roomType: { type: String, default: '' },
     numberOfRooms: { type: Number, default: 1, min: 1 },
-    tourGuide: { type: mongoose.Schema.Types.ObjectId, ref: 'TourGuide' },
-    vehicle: { type: mongoose.Schema.Types.ObjectId, ref: 'Vehicle' },
     meals: { type: [String], enum: ['Breakfast', 'Lunch', 'Dinner'], default: [] },
     transport: { type: String, default: '' },
     arrivalTime: { type: String, default: '' },
@@ -35,6 +33,8 @@ const itineraryVersionSchema = new mongoose.Schema(
     summary: String,
     days: { type: [itineraryDaySchema], default: [] },
     hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Hotel' }],
+    tourGuide: { type: mongoose.Schema.Types.ObjectId, ref: 'TourGuide' },
+    vehicle: { type: mongoose.Schema.Types.ObjectId, ref: 'Vehicle' },
     pricing: {
       basePrice: Number,
       discount: Number,
@@ -64,6 +64,8 @@ const itinerarySchema = new mongoose.Schema(
     summary: { type: String, default: '' },
     days: { type: [itineraryDaySchema], default: [] },
     hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Hotel' }],
+    tourGuide: { type: mongoose.Schema.Types.ObjectId, ref: 'TourGuide' },
+    vehicle: { type: mongoose.Schema.Types.ObjectId, ref: 'Vehicle' },
     pricing: {
       basePrice: { type: Number, required: true },
       discount: { type: Number, default: 0 },
