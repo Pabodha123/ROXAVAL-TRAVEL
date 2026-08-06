@@ -15,7 +15,6 @@ import {
   NumberField,
   SelectField,
   CheckboxField,
-  OrderedRefList,
   RepeatSection,
   CollapsibleRow,
   TagListInput,
@@ -28,6 +27,66 @@ import { TransferPickerModal } from '../../components/itinerary-picker/TransferP
 const PRIORITY_OPTIONS = ['Low', 'Medium', 'High'];
 
 const MEAL_OPTIONS = ['Breakfast', 'Lunch', 'Dinner'];
+
+const DEFAULT_INCLUSIONS = `Accommodation in 3-Star or 4-Star Hotels
+Comfortable rooms with modern amenities, including daily breakfast and dinner as per the itinerary.
+
+Chauffeur Guide With Luxury Car/Van
+Professional, English-speaking chauffeur guide to accompany you throughout the journey.
+
+All Sightseeing & Excursions
+Visits to all major attractions mentioned in the itinerary.
+
+Airport Pickup & Drop-off
+Meet-and-greet on arrival and smooth departure transfer at the end of the tour.
+
+Private Transport Throughout the Tour
+Fully air-conditioned luxury vehicle for your exclusive use.`;
+
+const DEFAULT_EXCLUSIONS = `Air Tickets
+Visa Fee
+Lunch and any other meals not mentioned in the itinerary
+Personal Expenses such as laundry, tips, telephone calls, mini-bar, etc.
+Early Check-in & Late Checkout Charges at hotels
+Entrance Tickets to sightseeing places and activities`;
+
+const DEFAULT_CANCELLATION_POLICY = `Payment Policy
+- Deposit: 50% of the total package cost is required at the time of booking to secure your reservation.
+- Balance Payment: The remaining 50% must be paid no later than 14 days before or on arrival day in Sri Lanka.
+- For last-minute bookings (within 14 days of travel), full payment is required upon confirmation.
+- Payments can be made via bank transfer or cash on arrival.
+
+Cancellation Policy
+- More than 30 days before arrival: Full refund of deposit (minus any bank/transaction charges).
+- 15–29 days before arrival: 50% of the deposit will be refunded.
+- 14 days or less before arrival / No-show: No refund.
+- Hotel cancellation policies may vary and will be applied accordingly.`;
+
+const DEFAULT_CUSTOMER_FACING_NOTES = `IMPORTANT NOTES
+This is just a quote; no reservations have been held yet or booking has not proceeded yet.
+The rooms & rates are subject to availability at the time of booking / confirmation.
+Hotel, sightseeing, meals, and transfer rates might change without prior notice until & unless the tour has been booked or confirmed from your end.
+The change in dates will attract a re-quote.
+Normal hotel check-in time is from 14:00 hours onwards & check-out time is at 12:00 hrs.
+The above cost does not include any kind of surcharge, if applicable, during the given travel period.
+Quotation might change due to currency rate fluctuation during confirmation & booking process (for international tours).
+We are not responsible for any loss of your valuables like mobiles, bags, jewellery & money.
+
+ADDITIONAL INFORMATION
+Booking & Confirmation: A booking is confirmed once Roxaval Travels receives the initial deposit and a written/email/WhatsApp confirmation from the client.
+All bookings are subject to availability of hotels, transport, and activities at the time of reservation.
+Passport copies for all travelers must be provided at the time of booking for hotel check-in purposes.
+
+Account Details
+Bank Name: Hatton National Bank
+Account Number: 119010103701
+Bank Code: 119
+Company Name: Roxaval Travels Pvt Ltd
+Swift Code: HBLILKLX
+
+Note: Above quote is based on the current rate of exchange. If the rate of exchange changes at the time of final billing, the package quote will change accordingly.
+
++94 77 880 3522 | bookings@roxavaltravels.com | www.roxavaltravels.com`;
 
 interface RefOption {
   value: string;
@@ -249,12 +308,12 @@ export function AdminCustomRequestDetail() {
   const [currency, setCurrency] = useState('USD');
   const [pricePerPerson, setPricePerPerson] = useState(true);
   const [adminNotes, setAdminNotes] = useState('');
-  const [customerFacingNotes, setCustomerFacingNotes] = useState('');
+  const [customerFacingNotes, setCustomerFacingNotes] = useState(DEFAULT_CUSTOMER_FACING_NOTES);
   const [visaRequirements, setVisaRequirements] = useState('');
   const [travelInsurance, setTravelInsurance] = useState('');
-  const [cancellationPolicy, setCancellationPolicy] = useState('');
-  const [inclusions, setInclusions] = useState('');
-  const [exclusions, setExclusions] = useState('');
+  const [cancellationPolicy, setCancellationPolicy] = useState(DEFAULT_CANCELLATION_POLICY);
+  const [inclusions, setInclusions] = useState(DEFAULT_INCLUSIONS);
+  const [exclusions, setExclusions] = useState(DEFAULT_EXCLUSIONS);
 
   const [routeLegs, setRouteLegs] = useState<RouteLeg[]>([]);
   const [legDeparture, setLegDeparture] = useState('');
@@ -373,12 +432,12 @@ export function AdminCustomRequestDetail() {
       setCurrency(itin.pricing.currency);
       setPricePerPerson(itin.pricing.pricePerPerson);
       setAdminNotes(itin.adminNotes);
-      setCustomerFacingNotes(itin.customerFacingNotes);
+      setCustomerFacingNotes(itin.customerFacingNotes || DEFAULT_CUSTOMER_FACING_NOTES);
       setVisaRequirements(itin.visaRequirements || '');
       setTravelInsurance(itin.travelInsurance || '');
-      setCancellationPolicy(itin.cancellationPolicy || '');
-      setInclusions(itin.inclusions || '');
-      setExclusions(itin.exclusions || '');
+      setCancellationPolicy(itin.cancellationPolicy || DEFAULT_CANCELLATION_POLICY);
+      setInclusions(itin.inclusions || DEFAULT_INCLUSIONS);
+      setExclusions(itin.exclusions || DEFAULT_EXCLUSIONS);
       setRouteLegs([]);
       setExpandedDays(new Set());
     } else {
@@ -543,9 +602,15 @@ export function AdminCustomRequestDetail() {
     setTotalPrice(suggestedTotal - discount);
   };
 
+  const lastLegToDate = routeLegs.length > 0 ? routeLegs[routeLegs.length - 1].toDate : '';
+
   const addRouteLeg = () => {
     if (!legDeparture.trim() || !legArrival.trim() || !legFromDate || !legToDate) {
       toast('Please fill in departure, arrival and both dates.', 'error');
+      return;
+    }
+    if (lastLegToDate && legFromDate < lastLegToDate) {
+      toast('From Date cannot be earlier than the previous leg\'s To Date.', 'error');
       return;
     }
     if (legToDate < legFromDate) {
@@ -554,6 +619,7 @@ export function AdminCustomRequestDetail() {
     }
     const nights = Math.round((new Date(legToDate).getTime() - new Date(legFromDate).getTime()) / 86400000);
     const dayCount = Math.max(nights, 1);
+    const matchedDestId = destOptions.find((d) => d.label.trim().toLowerCase() === legArrival.trim().toLowerCase())?.value;
     setDays((prev) => {
       // The form always starts with one untouched blank day — replace it
       // instead of leaving it orphaned alongside the generated days (it has
@@ -568,7 +634,8 @@ export function AdminCustomRequestDetail() {
         newDays.push({
           ...emptyDay(dayNumber),
           title: i === 0 ? `${legDeparture} → ${legArrival}` : `${legArrival} – Day ${i + 1}`,
-          date: date.toISOString().slice(0, 10)
+          date: date.toISOString().slice(0, 10),
+          destinations: matchedDestId ? [matchedDestId] : []
         });
       }
       return [...base, ...newDays];
@@ -931,9 +998,14 @@ export function AdminCustomRequestDetail() {
                 <p className="mb-4 text-xs text-forest/50">Quickly lay out the day-by-day route — each leg you add creates the matching day cards below, ready to fill in one by one.</p>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end">
                   <TextField label="Departure Destination" value={legDeparture} onChange={setLegDeparture} placeholder="e.g. Colombo Airport" />
-                  <TextField label="Arrival Destination" value={legArrival} onChange={setLegArrival} placeholder="e.g. Sigiriya" />
-                  <TextField label="From Date" type="date" value={legFromDate} onChange={setLegFromDate} />
-                  <TextField label="To Date" type="date" value={legToDate} onChange={setLegToDate} />
+                  <div>
+                    <TextField label="Arrival Destination" value={legArrival} onChange={setLegArrival} placeholder="e.g. Sigiriya" list="route-arrival-destinations" />
+                    <datalist id="route-arrival-destinations">
+                      {destOptions.map((d) => <option key={d.value} value={d.label} />)}
+                    </datalist>
+                  </div>
+                  <TextField label="From Date" type="date" value={legFromDate} onChange={setLegFromDate} min={lastLegToDate || undefined} />
+                  <TextField label="To Date" type="date" value={legToDate} onChange={setLegToDate} min={legFromDate || undefined} />
                   <button type="button" onClick={addRouteLeg} className="flex items-center justify-center gap-1.5 rounded-xl bg-emerald px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-light">
                     <PlusIcon className="h-4 w-4" /> Add
                   </button>
@@ -1021,10 +1093,9 @@ export function AdminCustomRequestDetail() {
                         }
                         </div>
                         <div className="sm:col-span-2">
-                          <TextAreaField label="Schedule" value={day.schedule} onChange={(v) => updateDay(i, { schedule: v })} rows={2} required minLength={5} />
+                          <TextAreaField label="Schedule" value={day.schedule} onChange={(v) => updateDay(i, { schedule: v })} rows={2} />
                         </div>
-                        <OrderedRefList label="Destinations (in visit order)" options={destOptions} value={day.destinations} onChange={(v) => updateDay(i, { destinations: v })} />
-                        <div className="rounded-xl border border-forest/10 p-3">
+                        <div className="sm:col-span-2 rounded-xl border border-forest/10 p-3">
                           <div className="flex items-center justify-between">
                             <p className="text-xs font-semibold uppercase text-forest/50">Sightseeing</p>
                             <button type="button" onClick={() => openPicker(i, 'activity')} className="text-xs font-semibold text-emerald hover:underline">Browse & Price</button>
@@ -1046,7 +1117,6 @@ export function AdminCustomRequestDetail() {
                         <p className="mt-1 text-xs text-forest/40">Not selected yet.</p>
                         }
                         </div>
-                        <TagListInput label="+ Add Custom Destination" value={day.customDestinations} onChange={(v) => updateDay(i, { customDestinations: v })} />
                         <TagListInput label="+ Add Custom Activity" value={day.customActivities} onChange={(v) => updateDay(i, { customActivities: v })} />
                         <div className="rounded-xl border border-forest/10 p-3">
                           <div className="flex items-center justify-between">
@@ -1091,10 +1161,6 @@ export function AdminCustomRequestDetail() {
                         <div className="sm:col-span-2 flex justify-end border-t border-forest/5 pt-2">
                           <p className="text-sm font-semibold text-forest">Day Cost: ${day.dayCost.toLocaleString()}</p>
                         </div>
-                        <TextField label="Transport" value={day.transport} onChange={(v) => updateDay(i, { transport: v })} />
-                        <TextField label="Travel Time" value={day.travelTime} onChange={(v) => updateDay(i, { travelTime: v })} placeholder="e.g. 2h 30m to next stop" />
-                        <TextField label="Arrival Time" value={day.arrivalTime} onChange={(v) => updateDay(i, { arrivalTime: v })} placeholder="e.g. 10:00 AM" />
-                        <TextField label="Departure Time" value={day.departureTime} onChange={(v) => updateDay(i, { departureTime: v })} placeholder="e.g. 8:00 AM" />
                         <FieldWrap label="Meals">
                           <div className="flex gap-3 pt-1.5">
                             {MEAL_OPTIONS.map((m) =>
@@ -1200,6 +1266,7 @@ export function AdminCustomRequestDetail() {
         onClose={closePicker}
         destinationOptions={destOptions}
         defaultDestination={days[pickerDayIndex]?.destinations[0]}
+        secondaryDestination={days[pickerDayIndex + 1]?.destinations[0]}
         travelers={request.travelers}
         selectedIds={days[pickerDayIndex]?.activities || []}
         onAdd={addActivitySelection}

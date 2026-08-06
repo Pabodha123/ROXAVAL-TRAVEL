@@ -32,13 +32,16 @@ interface TextFieldProps {
   placeholder?: string;
   required?: boolean;
   minLength?: number;
+  min?: string;
+  max?: string;
+  list?: string;
   error?: string;
 }
 
-export function TextField({ label, value, onChange, type = 'text', placeholder, required, minLength, error }: TextFieldProps) {
+export function TextField({ label, value, onChange, type = 'text', placeholder, required, minLength, min, max, list, error }: TextFieldProps) {
   return (
     <FieldWrap label={label} required={required} error={error}>
-      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} required={required} minLength={minLength} className={baseInput} />
+      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} required={required} minLength={minLength} min={min} max={max} list={list} className={baseInput} />
     </FieldWrap>);
 
 }

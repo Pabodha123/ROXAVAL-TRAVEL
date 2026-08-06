@@ -26,14 +26,19 @@ interface Props {
   onClose: () => void;
   destinationOptions: { value: string; label: string }[];
   defaultDestination?: string;
+  secondaryDestination?: string;
   travelers: { adults: number; children: number; infants: number };
   selectedIds: string[];
   onAdd: (selection: ActivitySelection) => void;
   onRemove: (activityId: string) => void;
 }
 
-export function ActivityPickerModal({ open, onClose, destinationOptions, defaultDestination, travelers, selectedIds, onAdd, onRemove }: Props) {
-  const [destination, setDestination] = useState(defaultDestination || '');
+export function ActivityPickerModal({ open, onClose, destinationOptions, defaultDestination, secondaryDestination, travelers, selectedIds, onAdd, onRemove }: Props) {
+  // Auto-suggested destinations: this day's arrival + the next day's arrival
+  // (e.g. an Airport -> Sigiriya leg should also surface Pinnawala/Dambulla
+  // waypoint activities that belong to whichever destination comes next).
+  const suggestedDestinations = Array.from(new Set([defaultDestination, secondaryDestination].filter(Boolean))) as string[];
+  const [destination, setDestination] = useState('');
   const [category, setCategory] = useState('');
   const [search, setSearch] = useState('');
   const [activities, setActivities] = useState<ActivityRow[]>([]);
@@ -41,21 +46,29 @@ export function ActivityPickerModal({ open, onClose, destinationOptions, default
 
   useEffect(() => {
     if (!open) return;
-    setDestination(defaultDestination || '');
+    setDestination('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, defaultDestination]);
+  }, [open, defaultDestination, secondaryDestination]);
 
   useEffect(() => {
     if (!open) return;
     setLoading(true);
-    const params: Record<string, string | number | undefined> = { limit: 50 };
-    if (destination) params.destinations = destination;
-    if (category) params.category = category;
-    if (search) params.q = search;
-    apiGetList<ActivityRow>('/activities', params).
-    then(({ data }) => setActivities(data)).
+    const activeDestinations = destination ? [destination] : suggestedDestinations;
+    const baseParams: Record<string, string | number | undefined> = { limit: 50 };
+    if (category) baseParams.category = category;
+    if (search) baseParams.q = search;
+    const fetches = activeDestinations.length > 0 ?
+    activeDestinations.map((d) => apiGetList<ActivityRow>('/activities', { ...baseParams, destinations: d })) :
+    [apiGetList<ActivityRow>('/activities', baseParams)];
+    Promise.all(fetches).
+    then((results) => {
+      const merged = new Map<string, ActivityRow>();
+      results.forEach(({ data }) => data.forEach((a) => merged.set(a._id, a)));
+      setActivities(Array.from(merged.values()));
+    }).
     finally(() => setLoading(false));
-  }, [open, destination, category, search]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, destination, category, search, defaultDestination, secondaryDestination]);
 
   const costFor = (a: ActivityRow) => {
     const p = a.pricing || { adult: 0, child: 0, infant: 0 };
@@ -81,7 +94,7 @@ export function ActivityPickerModal({ open, onClose, destinationOptions, default
     <Modal open={open} onClose={onClose} title="Select Sightseeing" maxWidth="max-w-3xl">
       <div className="grid gap-3 sm:grid-cols-3">
         <select value={destination} onChange={(e) => setDestination(e.target.value)} className="rounded-xl border border-forest/15 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald">
-          <option value="">All Destinations</option>
+          <option value="">{suggestedDestinations.length > 0 ? 'Suggested (this + next stop)' : 'All Destinations'}</option>
           {destinationOptions.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
         </select>
         <select value={category} onChange={(e) => setCategory(e.target.value)} className="rounded-xl border border-forest/15 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald">
@@ -93,6 +106,11 @@ export function ActivityPickerModal({ open, onClose, destinationOptions, default
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search sightseeing…" className="w-full rounded-xl border border-forest/15 bg-white py-2.5 pl-9 pr-3 text-sm outline-none focus:border-emerald" />
         </div>
       </div>
+      {!destination && suggestedDestinations.length > 0 &&
+      <p className="mt-2 text-xs text-forest/50">
+          Showing sightseeing for {suggestedDestinations.map((id) => destinationOptions.find((d) => d.value === id)?.label || id).join(' and ')}. Pick a destination above to narrow or broaden this list.
+        </p>
+      }
 
       <div className="mt-4 max-h-96 overflow-auto rounded-xl border border-forest/10">
         {loading ?

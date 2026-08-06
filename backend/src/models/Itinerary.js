@@ -5,7 +5,7 @@ const itineraryDaySchema = new mongoose.Schema(
     dayNumber: { type: Number, required: true },
     date: { type: Date },
     title: { type: String, required: true },
-    schedule: { type: String, required: true }, // free-text daily schedule/description
+    schedule: { type: String, default: '' }, // free-text daily schedule/description
     destinations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Destination' }],
     activities: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Activity' }],
     customDestinations: { type: [String], default: [] },

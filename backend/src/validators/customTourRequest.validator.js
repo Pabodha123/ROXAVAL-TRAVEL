@@ -72,7 +72,7 @@ const buildItinerarySchema = z.object({
       dayNumber: z.number().int().min(1),
       date: z.coerce.date().optional(),
       title: z.string().min(2),
-      schedule: z.string().min(5),
+      schedule: z.string().optional().default(''),
       destinations: z.array(z.string()).optional(),
       activities: z.array(z.string()).optional(),
       customDestinations: z.array(z.string()).optional(),
