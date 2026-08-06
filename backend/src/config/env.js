@@ -16,7 +16,7 @@ const env = {
   MONGO_URI_TEST: process.env.MONGO_URI_TEST,
 
   JWT_SECRET: process.env.JWT_SECRET,
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '15m',
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
   JWT_COOKIE_EXPIRES_IN: parseInt(process.env.JWT_COOKIE_EXPIRES_IN, 10) || 30,
