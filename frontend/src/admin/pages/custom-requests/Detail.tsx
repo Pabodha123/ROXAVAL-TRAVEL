@@ -1258,6 +1258,7 @@ export function AdminCustomRequestDetail() {
         onClose={closePicker}
         destinationOptions={destOptions}
         defaultDestination={days[pickerDayIndex]?.destinations[0]}
+        travelDate={days[pickerDayIndex]?.date}
         onConfirm={applyHotelSelection} />
 
       }

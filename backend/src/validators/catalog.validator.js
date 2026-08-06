@@ -31,23 +31,29 @@ const createActivitySchema = z.object({
 const updateActivitySchema = createActivitySchema.partial();
 
 // ---------- Hotel ----------
+const occupancyPricingSchema = z.object({
+  single: z.number().min(0).optional(),
+  double: z.number().min(0).optional(),
+  triple: z.number().min(0).optional(),
+  quad: z.number().min(0).optional(),
+  extraBed: z.number().min(0).optional(),
+  childWithBed: z.number().min(0).optional(),
+  childNoBed: z.number().min(0).optional(),
+  infant: z.number().min(0).optional(),
+});
+const seasonalRateSchema = z.object({
+  validFrom: z.coerce.date(),
+  validTo: z.coerce.date(),
+  currency: z.string().optional(),
+  pricing: occupancyPricingSchema.optional(),
+});
 const roomTypeSchema = z.object({
   name: localizedField(2),
   maxOccupancy: z.number().int().min(1).optional(),
   pricePerNight: z.number().positive(),
   mealPlan: z.enum(['Room Only', 'Bed & Breakfast', 'Half Board', 'Full Board', 'All Inclusive']).optional(),
-  pricing: z
-    .object({
-      single: z.number().min(0).optional(),
-      double: z.number().min(0).optional(),
-      triple: z.number().min(0).optional(),
-      quad: z.number().min(0).optional(),
-      extraBed: z.number().min(0).optional(),
-      childWithBed: z.number().min(0).optional(),
-      childNoBed: z.number().min(0).optional(),
-      infant: z.number().min(0).optional(),
-    })
-    .optional(),
+  pricing: occupancyPricingSchema.optional(),
+  seasonalRates: z.array(seasonalRateSchema).optional(),
   amenities: localizedFieldArray().optional(),
 });
 const createHotelSchema = z.object({

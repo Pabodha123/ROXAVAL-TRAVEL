@@ -13,6 +13,7 @@ const roomTypeSchema = new mongoose.Schema(
       default: 'Bed & Breakfast',
     },
     // Per-occupancy nightly rates used by the itinerary builder's hotel picker.
+    // Acts as the fallback rate when no seasonalRates period covers the stay date.
     pricing: {
       single: { type: Number, default: 0 },
       double: { type: Number, default: 0 },
@@ -22,6 +23,29 @@ const roomTypeSchema = new mongoose.Schema(
       childWithBed: { type: Number, default: 0 },
       childNoBed: { type: Number, default: 0 },
       infant: { type: Number, default: 0 },
+    },
+    // Date-ranged rate periods (supplier rate sheets are almost always seasonal).
+    // The itinerary hotel picker resolves the period covering the day's travel
+    // date and falls back to `pricing` above when no period matches.
+    seasonalRates: {
+      type: [
+        {
+          validFrom: { type: Date, required: true },
+          validTo: { type: Date, required: true },
+          currency: { type: String, default: 'USD' },
+          pricing: {
+            single: { type: Number, default: 0 },
+            double: { type: Number, default: 0 },
+            triple: { type: Number, default: 0 },
+            quad: { type: Number, default: 0 },
+            extraBed: { type: Number, default: 0 },
+            childWithBed: { type: Number, default: 0 },
+            childNoBed: { type: Number, default: 0 },
+            infant: { type: Number, default: 0 },
+          },
+        },
+      ],
+      default: [],
     },
     amenities: localizedStringArray(),
   },

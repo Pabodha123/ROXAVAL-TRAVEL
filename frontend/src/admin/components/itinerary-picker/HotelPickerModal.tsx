@@ -22,12 +22,20 @@ export interface HotelSelection {
   roomCost: number;
 }
 
+interface SeasonalRate {
+  validFrom: string;
+  validTo: string;
+  currency?: string;
+  pricing: RoomOccupancy;
+}
+
 interface RoomTypeRow {
   _id: string;
   name: string;
   mealPlan?: string;
   maxOccupancy: number;
   pricing?: RoomOccupancy;
+  seasonalRates?: SeasonalRate[];
 }
 
 interface HotelRow {
@@ -53,15 +61,31 @@ const OCCUPANCY_FIELDS: { key: keyof RoomOccupancy; label: string }[] = [
 
 const MEAL_PLAN_OPTIONS = ['Room Only', 'Bed & Breakfast', 'Half Board', 'Full Board', 'All Inclusive'];
 
+// Picks the seasonal rate period covering `travelDate`, falling back to the
+// room type's default `pricing` when no period matches (or no date is given).
+function resolveRate(rt: RoomTypeRow, travelDate?: string): { pricing: RoomOccupancy; currency: string; seasonal: boolean } {
+  if (travelDate && rt.seasonalRates?.length) {
+    const d = new Date(travelDate).getTime();
+    const match = rt.seasonalRates.find((s) => {
+      const from = new Date(s.validFrom).getTime();
+      const to = new Date(s.validTo).getTime();
+      return d >= from && d <= to;
+    });
+    if (match) return { pricing: match.pricing, currency: match.currency || 'USD', seasonal: true };
+  }
+  return { pricing: rt.pricing || emptyOccupancy(), currency: 'USD', seasonal: false };
+}
+
 interface Props {
   open: boolean;
   onClose: () => void;
   destinationOptions: { value: string; label: string }[];
   defaultDestination?: string;
+  travelDate?: string;
   onConfirm: (selection: HotelSelection) => void;
 }
 
-export function HotelPickerModal({ open, onClose, destinationOptions, defaultDestination, onConfirm }: Props) {
+export function HotelPickerModal({ open, onClose, destinationOptions, defaultDestination, travelDate, onConfirm }: Props) {
   const [destination, setDestination] = useState(defaultDestination || '');
   const [starRating, setStarRating] = useState('');
   const [mealPlan, setMealPlan] = useState('');
@@ -101,7 +125,8 @@ export function HotelPickerModal({ open, onClose, destinationOptions, defaultDes
     setOccupancy(emptyOccupancy());
   };
 
-  const rate = pickedRoomType?.pricing || emptyOccupancy();
+  const resolved = pickedRoomType ? resolveRate(pickedRoomType, travelDate) : { pricing: emptyOccupancy(), currency: 'USD', seasonal: false };
+  const rate = resolved.pricing;
   const subtotal = OCCUPANCY_FIELDS.reduce((sum, f) => sum + occupancy[f.key] * (rate[f.key] || 0), 0);
   const roomCount = occupancy.single + occupancy.double + occupancy.triple + occupancy.quad;
 
@@ -154,16 +179,24 @@ export function HotelPickerModal({ open, onClose, destinationOptions, defaultDes
             </thead>
             <tbody>
               {hotels.flatMap((h) =>
-            (h.roomTypes.length ? h.roomTypes : []).map((rt) =>
-            <tr key={`${h._id}-${rt._id}`} className={`border-t border-forest/5 ${pickedHotel?._id === h._id && pickedRoomType?._id === rt._id ? 'bg-emerald/10' : ''}`}>
+            (h.roomTypes.length ? h.roomTypes : []).map((rt) => {
+              const rowRate = resolveRate(rt, travelDate);
+              return (
+                <tr key={`${h._id}-${rt._id}`} className={`border-t border-forest/5 ${pickedHotel?._id === h._id && pickedRoomType?._id === rt._id ? 'bg-emerald/10' : ''}`}>
                     <td className="p-2 text-forest">{h.name} {h.starRating ? `(${h.starRating}★)` : ''}</td>
                     <td className="p-2 text-forest">{rt.name}</td>
-                    <td className="p-2 text-forest/60">{rt.mealPlan || '—'}</td>
-                    {OCCUPANCY_FIELDS.map((f) => <td key={f.key} className="p-2 text-right text-forest/70">{rt.pricing?.[f.key] || 0}</td>)}
+                    <td className="p-2 text-forest/60">
+                      {rt.mealPlan || '—'}
+                      {rowRate.seasonal && <span className="ml-1 rounded-full bg-emerald/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald" title="Rate for this day's travel date">SEASON</span>}
+                      {rowRate.currency !== 'USD' && <span className="ml-1 text-[9px] font-semibold text-forest/40">{rowRate.currency}</span>}
+                    </td>
+                    {OCCUPANCY_FIELDS.map((f) => <td key={f.key} className="p-2 text-right text-forest/70">{rowRate.pricing[f.key] || 0}</td>)}
                     <td className="p-2 text-right">
                       <button type="button" onClick={() => selectRoomType(h, rt)} className="rounded-full bg-forest px-3 py-1 text-[11px] font-semibold text-white hover:bg-emerald">Select</button>
                     </td>
-                  </tr>
+                  </tr>);
+
+            }
             )
             )}
               {!loading && hotels.length === 0 && <tr><td colSpan={10} className="p-4 text-center text-forest/40">No hotels match these filters.</td></tr>}

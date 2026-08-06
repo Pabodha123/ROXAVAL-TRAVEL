@@ -21,14 +21,24 @@ interface RoomOccupancyPricing {
   infant: number;
 }
 
+interface SeasonalRate {
+  validFrom: string;
+  validTo: string;
+  currency: string;
+  pricing: RoomOccupancyPricing;
+}
+
 interface RoomType {
   name: LocalizedString;
   maxOccupancy: number;
   pricePerNight: number;
   mealPlan?: string;
   pricing?: RoomOccupancyPricing;
+  seasonalRates?: SeasonalRate[];
   amenities: LocalizedString[];
 }
+
+const CURRENCY_OPTIONS = ['USD', 'EUR', 'GBP', 'AED'];
 
 interface HotelDetail {
   name: LocalizedString;
@@ -49,7 +59,8 @@ interface HotelDetail {
 
 const emptyOccupancyPricing = (): RoomOccupancyPricing => ({ single: 0, double: 0, triple: 0, quad: 0, extraBed: 0, childWithBed: 0, childNoBed: 0, infant: 0 });
 
-const emptyRoomType = (): RoomType => ({ name: emptyLocalizedString(), maxOccupancy: 2, pricePerNight: 0, mealPlan: 'Bed & Breakfast', pricing: emptyOccupancyPricing(), amenities: [] });
+const emptyRoomType = (): RoomType => ({ name: emptyLocalizedString(), maxOccupancy: 2, pricePerNight: 0, mealPlan: 'Bed & Breakfast', pricing: emptyOccupancyPricing(), seasonalRates: [], amenities: [] });
+const emptySeasonalRate = (): SeasonalRate => ({ validFrom: '', validTo: '', currency: 'USD', pricing: emptyOccupancyPricing() });
 
 export function AdminHotelForm() {
   const { id } = useParams<{id: string;}>();
@@ -99,7 +110,18 @@ export function AdminHotelForm() {
       setMealPlans((h.amenities || []).filter((a) => known.has(a.en)).map((a) => a.en));
       setRoomTypes(
         h.roomTypes?.length ?
-        h.roomTypes.map((r) => ({ ...r, mealPlan: r.mealPlan || 'Bed & Breakfast', pricing: { ...emptyOccupancyPricing(), ...r.pricing } })) :
+        h.roomTypes.map((r) => ({
+          ...r,
+          mealPlan: r.mealPlan || 'Bed & Breakfast',
+          pricing: { ...emptyOccupancyPricing(), ...r.pricing },
+          seasonalRates: (r.seasonalRates || []).map((s) => ({
+            ...s,
+            validFrom: s.validFrom ? s.validFrom.slice(0, 10) : '',
+            validTo: s.validTo ? s.validTo.slice(0, 10) : '',
+            currency: s.currency || 'USD',
+            pricing: { ...emptyOccupancyPricing(), ...s.pricing }
+          }))
+        })) :
         [emptyRoomType()]
       );
       setContactPerson(h.contactPerson || '');
@@ -113,6 +135,19 @@ export function AdminHotelForm() {
 
   const updateRoomType = (index: number, patch: Partial<RoomType>) => {
     setRoomTypes((prev) => prev.map((r, i) => i === index ? { ...r, ...patch } : r));
+  };
+
+  const addSeasonalRate = (roomIndex: number) => {
+    setRoomTypes((prev) => prev.map((r, i) => i === roomIndex ? { ...r, seasonalRates: [...(r.seasonalRates || []), emptySeasonalRate()] } : r));
+  };
+  const updateSeasonalRate = (roomIndex: number, rateIndex: number, patch: Partial<SeasonalRate>) => {
+    setRoomTypes((prev) => prev.map((r, i) => {
+      if (i !== roomIndex) return r;
+      return { ...r, seasonalRates: (r.seasonalRates || []).map((s, si) => si === rateIndex ? { ...s, ...patch } : s) };
+    }));
+  };
+  const removeSeasonalRate = (roomIndex: number, rateIndex: number) => {
+    setRoomTypes((prev) => prev.map((r, i) => i === roomIndex ? { ...r, seasonalRates: (r.seasonalRates || []).filter((_, si) => si !== rateIndex) } : r));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -215,7 +250,7 @@ export function AdminHotelForm() {
                     <TranslatedTagListInput label="Room Amenities" value={r.amenities} onChange={(v) => updateRoomType(i, { amenities: v })} />
                   </div>
                   <div className="sm:col-span-4">
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-forest/60">Per-Occupancy Pricing (USD/night) — used by the itinerary builder's hotel picker</p>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-forest/60">Default Pricing (USD/night) — used when no seasonal period below covers the stay date</p>
                     <div className="grid gap-3 sm:grid-cols-4">
                       <NumberField label="Single" value={r.pricing?.single ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, single: v } })} min={0} />
                       <NumberField label="Double" value={r.pricing?.double ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, double: v } })} min={0} />
@@ -225,6 +260,39 @@ export function AdminHotelForm() {
                       <NumberField label="Child w/ Bed" value={r.pricing?.childWithBed ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, childWithBed: v } })} min={0} />
                       <NumberField label="Child no Bed" value={r.pricing?.childNoBed ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, childNoBed: v } })} min={0} />
                       <NumberField label="Infant" value={r.pricing?.infant ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, infant: v } })} min={0} />
+                    </div>
+                  </div>
+                  <div className="sm:col-span-4 rounded-xl border border-forest/10 bg-cream/40 p-3">
+                    <div className="mb-2 flex items-center justify-between">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-forest/60">Seasonal Rate Periods {r.seasonalRates?.length ? `(${r.seasonalRates.length})` : ''}</p>
+                      <button type="button" onClick={() => addSeasonalRate(i)} className="text-xs font-semibold text-emerald hover:underline">+ Add Season</button>
+                    </div>
+                    {!r.seasonalRates?.length && <p className="text-xs text-forest/40">No seasonal periods — the default pricing above always applies.</p>}
+                    <div className="space-y-3">
+                      {(r.seasonalRates || []).map((s, si) =>
+                      <div key={si} className="rounded-lg border border-forest/10 bg-white p-3">
+                          <div className="grid gap-3 sm:grid-cols-4">
+                            <TextField label="Valid From" type="date" value={s.validFrom} onChange={(v) => updateSeasonalRate(i, si, { validFrom: v })} required />
+                            <TextField label="Valid To" type="date" value={s.validTo} onChange={(v) => updateSeasonalRate(i, si, { validTo: v })} required />
+                            <SelectField label="Currency" value={s.currency} onChange={(v) => updateSeasonalRate(i, si, { currency: v })} options={CURRENCY_OPTIONS.map((c) => ({ label: c, value: c }))} />
+                            <div className="flex items-end">
+                              <button type="button" onClick={() => removeSeasonalRate(i, si)} className="flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-700">
+                                <TrashIcon className="h-3.5 w-3.5" /> Remove Season
+                              </button>
+                            </div>
+                          </div>
+                          <div className="mt-3 grid gap-3 sm:grid-cols-4">
+                            <NumberField label="Single" value={s.pricing.single} onChange={(v) => updateSeasonalRate(i, si, { pricing: { ...s.pricing, single: v } })} min={0} />
+                            <NumberField label="Double" value={s.pricing.double} onChange={(v) => updateSeasonalRate(i, si, { pricing: { ...s.pricing, double: v } })} min={0} />
+                            <NumberField label="Triple" value={s.pricing.triple} onChange={(v) => updateSeasonalRate(i, si, { pricing: { ...s.pricing, triple: v } })} min={0} />
+                            <NumberField label="Quad" value={s.pricing.quad} onChange={(v) => updateSeasonalRate(i, si, { pricing: { ...s.pricing, quad: v } })} min={0} />
+                            <NumberField label="Extra Bed" value={s.pricing.extraBed} onChange={(v) => updateSeasonalRate(i, si, { pricing: { ...s.pricing, extraBed: v } })} min={0} />
+                            <NumberField label="Child w/ Bed" value={s.pricing.childWithBed} onChange={(v) => updateSeasonalRate(i, si, { pricing: { ...s.pricing, childWithBed: v } })} min={0} />
+                            <NumberField label="Child no Bed" value={s.pricing.childNoBed} onChange={(v) => updateSeasonalRate(i, si, { pricing: { ...s.pricing, childNoBed: v } })} min={0} />
+                            <NumberField label="Infant" value={s.pricing.infant} onChange={(v) => updateSeasonalRate(i, si, { pricing: { ...s.pricing, infant: v } })} min={0} />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="sm:col-span-4">
