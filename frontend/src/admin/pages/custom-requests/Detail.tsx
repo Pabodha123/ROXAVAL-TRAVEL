@@ -448,9 +448,10 @@ export function AdminCustomRequestDetail() {
       setVehicle('');
       setVisaRequirements('');
       setTravelInsurance('');
-      setCancellationPolicy('');
-      setInclusions('');
-      setExclusions('');
+      setCancellationPolicy(DEFAULT_CANCELLATION_POLICY);
+      setInclusions(DEFAULT_INCLUSIONS);
+      setExclusions(DEFAULT_EXCLUSIONS);
+      setCustomerFacingNotes(DEFAULT_CUSTOMER_FACING_NOTES);
       setRouteLegs([]);
       if (request.roomTypePreference) {
         setDays([{ ...emptyDay(1), roomType: request.roomTypePreference }]);
