@@ -1,20 +1,20 @@
+const crypto = require('crypto');
 const { CustomTourRequest, Itinerary, Customer, Admin, User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { notify, notifyAllAdmins } = require('./notification.service');
 
 /**
- * Step 1: Customer submits a multi-step inquiry. Stored as 'Pending' and
- * immediately visible to admins on the dashboard.
+ * Shared by the customer-submitted wizard and the admin-created "New Query"
+ * form — both end up creating the same CustomTourRequest shape and firing
+ * the same admin notification, they just differ in how `customer` and
+ * `actorId` (for the revisionHistory entry) are resolved.
  */
-const submitRequest = async (customerUserId, payload) => {
-  const customer = await Customer.findOne({ user: customerUserId }).populate('user', 'fullName');
-  if (!customer) throw ApiError.notFound('Customer profile not found.');
-
+const createRequestForCustomer = async (customer, payload, actorId) => {
   const request = await CustomTourRequest.create({
     ...payload,
     customer: customer._id,
     status: 'Pending',
-    revisionHistory: [{ action: 'submitted', actor: customerUserId }],
+    revisionHistory: [{ action: 'submitted', actor: actorId }],
   });
 
   await notifyAllAdmins({
@@ -27,6 +27,43 @@ const submitRequest = async (customerUserId, payload) => {
   });
 
   return request;
+};
+
+/**
+ * Step 1: Customer submits a multi-step inquiry. Stored as 'Pending' and
+ * immediately visible to admins on the dashboard.
+ */
+const submitRequest = async (customerUserId, payload) => {
+  const customer = await Customer.findOne({ user: customerUserId }).populate('user', 'fullName');
+  if (!customer) throw ApiError.notFound('Customer profile not found.');
+  return createRequestForCustomer(customer, payload, customerUserId);
+};
+
+/**
+ * Admin/ops equivalent of `submitRequest` for phone/email/walk-in leads —
+ * either attaches to an existing Customer or creates a new User+Customer on
+ * the spot, then creates the request exactly as if the customer had.
+ */
+const adminCreateRequest = async (adminUserId, payload) => {
+  const { customerId, newCustomer, ...requestPayload } = payload;
+
+  let customer;
+  if (customerId) {
+    customer = await Customer.findById(customerId).populate('user', 'fullName');
+    if (!customer) throw ApiError.notFound('Customer not found.');
+  } else {
+    const user = await User.create({
+      fullName: newCustomer.fullName,
+      email: newCustomer.email,
+      phone: newCustomer.phone,
+      password: crypto.randomBytes(12).toString('hex'),
+      role: 'customer',
+    });
+    customer = await Customer.create({ user: user._id });
+    customer = await customer.populate('user', 'fullName');
+  }
+
+  return createRequestForCustomer(customer, requestPayload, adminUserId);
 };
 
 /**
@@ -257,6 +294,7 @@ const respondCannotModify = async (requestId, adminId, note) => {
 
 module.exports = {
   submitRequest,
+  adminCreateRequest,
   assignAdmin,
   buildAndSendItinerary,
   acceptItinerary,

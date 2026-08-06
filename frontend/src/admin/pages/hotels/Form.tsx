@@ -10,10 +10,23 @@ import { TranslatedInput, TranslatedTextarea, TranslatedTagListInput, emptyLocal
 const CATEGORY_OPTIONS = ['Budget', 'Standard', 'Deluxe', 'Boutique', 'Luxury', 'Resort'];
 const MEAL_PLAN_OPTIONS = ['Room Only', 'Bed & Breakfast', 'Half Board', 'Full Board', 'All Inclusive'];
 
+interface RoomOccupancyPricing {
+  single: number;
+  double: number;
+  triple: number;
+  quad: number;
+  extraBed: number;
+  childWithBed: number;
+  childNoBed: number;
+  infant: number;
+}
+
 interface RoomType {
   name: LocalizedString;
   maxOccupancy: number;
   pricePerNight: number;
+  mealPlan?: string;
+  pricing?: RoomOccupancyPricing;
   amenities: LocalizedString[];
 }
 
@@ -34,7 +47,9 @@ interface HotelDetail {
   status: string;
 }
 
-const emptyRoomType = (): RoomType => ({ name: emptyLocalizedString(), maxOccupancy: 2, pricePerNight: 0, amenities: [] });
+const emptyOccupancyPricing = (): RoomOccupancyPricing => ({ single: 0, double: 0, triple: 0, quad: 0, extraBed: 0, childWithBed: 0, childNoBed: 0, infant: 0 });
+
+const emptyRoomType = (): RoomType => ({ name: emptyLocalizedString(), maxOccupancy: 2, pricePerNight: 0, mealPlan: 'Bed & Breakfast', pricing: emptyOccupancyPricing(), amenities: [] });
 
 export function AdminHotelForm() {
   const { id } = useParams<{id: string;}>();
@@ -82,7 +97,11 @@ export function AdminHotelForm() {
       const known = new Set(MEAL_PLAN_OPTIONS);
       setAmenities((h.amenities || []).filter((a) => !known.has(a.en)));
       setMealPlans((h.amenities || []).filter((a) => known.has(a.en)).map((a) => a.en));
-      setRoomTypes(h.roomTypes?.length ? h.roomTypes : [emptyRoomType()]);
+      setRoomTypes(
+        h.roomTypes?.length ?
+        h.roomTypes.map((r) => ({ ...r, mealPlan: r.mealPlan || 'Bed & Breakfast', pricing: { ...emptyOccupancyPricing(), ...r.pricing } })) :
+        [emptyRoomType()]
+      );
       setContactPerson(h.contactPerson || '');
       setContactPhone(h.contactPhone || '');
       setContactEmail(h.contactEmail || '');
@@ -191,15 +210,29 @@ export function AdminHotelForm() {
                   <TranslatedInput label="Room Name" value={r.name} onChange={(v) => updateRoomType(i, { name: v })} />
                   <NumberField label="Max Occupancy" value={r.maxOccupancy} onChange={(v) => updateRoomType(i, { maxOccupancy: v })} min={1} />
                   <NumberField label="Price / Night (USD)" value={r.pricePerNight} onChange={(v) => updateRoomType(i, { pricePerNight: v })} min={0} />
-                  <div className="flex items-end">
-                    {roomTypes.length > 1 &&
-                  <button type="button" onClick={() => setRoomTypes((prev) => prev.filter((_, idx) => idx !== i))} className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-700">
-                        <TrashIcon className="h-3.5 w-3.5" /> Remove
-                      </button>
-                  }
-                  </div>
+                  <SelectField label="Meal Plan" value={r.mealPlan || 'Bed & Breakfast'} onChange={(v) => updateRoomType(i, { mealPlan: v })} options={MEAL_PLAN_OPTIONS.map((m) => ({ label: m, value: m }))} />
                   <div className="sm:col-span-4">
                     <TranslatedTagListInput label="Room Amenities" value={r.amenities} onChange={(v) => updateRoomType(i, { amenities: v })} />
+                  </div>
+                  <div className="sm:col-span-4">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-forest/60">Per-Occupancy Pricing (USD/night) — used by the itinerary builder's hotel picker</p>
+                    <div className="grid gap-3 sm:grid-cols-4">
+                      <NumberField label="Single" value={r.pricing?.single ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, single: v } })} min={0} />
+                      <NumberField label="Double" value={r.pricing?.double ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, double: v } })} min={0} />
+                      <NumberField label="Triple" value={r.pricing?.triple ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, triple: v } })} min={0} />
+                      <NumberField label="Quad" value={r.pricing?.quad ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, quad: v } })} min={0} />
+                      <NumberField label="Extra Bed" value={r.pricing?.extraBed ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, extraBed: v } })} min={0} />
+                      <NumberField label="Child w/ Bed" value={r.pricing?.childWithBed ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, childWithBed: v } })} min={0} />
+                      <NumberField label="Child no Bed" value={r.pricing?.childNoBed ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, childNoBed: v } })} min={0} />
+                      <NumberField label="Infant" value={r.pricing?.infant ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, infant: v } })} min={0} />
+                    </div>
+                  </div>
+                  <div className="sm:col-span-4">
+                    {roomTypes.length > 1 &&
+                  <button type="button" onClick={() => setRoomTypes((prev) => prev.filter((_, idx) => idx !== i))} className="flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-700">
+                        <TrashIcon className="h-3.5 w-3.5" /> Remove Room Type
+                      </button>
+                  }
                   </div>
                 </div>
               </div>

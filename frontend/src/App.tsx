@@ -46,6 +46,8 @@ import { AdminTourGuidesList } from './admin/pages/tour-guides/List';
 import { AdminTourGuideForm } from './admin/pages/tour-guides/Form';
 import { AdminVehiclesList } from './admin/pages/vehicles/List';
 import { AdminVehicleForm } from './admin/pages/vehicles/Form';
+import { AdminTransfersList } from './admin/pages/transfers/List';
+import { AdminTransferForm } from './admin/pages/transfers/Form';
 import { AdminBookingsList } from './admin/pages/bookings/List';
 import { AdminBookingDetail } from './admin/pages/bookings/Detail';
 import { AdminPaymentsList } from './admin/pages/payments/List';
@@ -57,6 +59,7 @@ import { AdminBlogForm } from './admin/pages/blog/Form';
 import { AdminSettings } from './admin/pages/settings/Settings';
 import { AdminProfile } from './admin/pages/profile/Profile';
 import { AdminCustomRequestsList } from './admin/pages/custom-requests/List';
+import { AdminCustomRequestNew } from './admin/pages/custom-requests/New';
 import { AdminCustomRequestDetail } from './admin/pages/custom-requests/Detail';
 import { AdminDocumentsList } from './admin/pages/documents/List';
 import { AdminNotifications } from './admin/pages/notifications/Notifications';
@@ -134,6 +137,9 @@ export function App() {
             <Route path="vehicles" element={<AdminVehiclesList />} />
             <Route path="vehicles/new" element={<AdminVehicleForm />} />
             <Route path="vehicles/:id/edit" element={<AdminVehicleForm />} />
+            <Route path="transfers" element={<AdminTransfersList />} />
+            <Route path="transfers/new" element={<AdminTransferForm />} />
+            <Route path="transfers/:id/edit" element={<AdminTransferForm />} />
 
             <Route path="bookings" element={<AdminBookingsList />} />
             <Route path="bookings/:id" element={<AdminBookingDetail />} />
@@ -153,6 +159,7 @@ export function App() {
             <Route path="profile" element={<AdminProfile />} />
 
             <Route path="custom-requests" element={<AdminCustomRequestsList />} />
+            <Route path="custom-requests/new" element={<AdminCustomRequestNew />} />
             <Route path="custom-requests/:id" element={<AdminCustomRequestDetail />} />
 
             <Route path="documents" element={<AdminDocumentsList />} />

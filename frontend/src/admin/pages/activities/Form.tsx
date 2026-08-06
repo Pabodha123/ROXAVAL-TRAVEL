@@ -18,6 +18,7 @@ interface AdminActivityRaw {
   category: string;
   durationHours: number;
   priceFrom: number;
+  pricing?: { adult: number; child: number; infant: number };
   destinations: { _id: string }[];
   difficultyLevel: string;
   location: LocalizedString;
@@ -47,6 +48,9 @@ export function AdminActivityForm() {
   const [category, setCategory] = useState('Adventure');
   const [durationHours, setDurationHours] = useState(2);
   const [priceFrom, setPriceFrom] = useState(0);
+  const [priceAdult, setPriceAdult] = useState(0);
+  const [priceChild, setPriceChild] = useState(0);
+  const [priceInfant, setPriceInfant] = useState(0);
   const [destinations, setDestinations] = useState<string[]>([]);
   const [difficultyLevel, setDifficultyLevel] = useState('Easy');
   const [location, setLocation] = useState<LocalizedString>(emptyLocalizedString());
@@ -76,6 +80,9 @@ export function AdminActivityForm() {
       setCategory(a.category);
       setDurationHours(a.durationHours);
       setPriceFrom(a.priceFrom);
+      setPriceAdult(a.pricing?.adult || 0);
+      setPriceChild(a.pricing?.child || 0);
+      setPriceInfant(a.pricing?.infant || 0);
       setDestinations(a.destinations.map((d) => d._id));
       setDifficultyLevel(a.difficultyLevel);
       setLocation(a.location || emptyLocalizedString());
@@ -102,6 +109,7 @@ export function AdminActivityForm() {
       category,
       durationHours,
       priceFrom,
+      pricing: { adult: priceAdult, child: priceChild, infant: priceInfant },
       destinations,
       difficultyLevel,
       location,
@@ -150,6 +158,16 @@ export function AdminActivityForm() {
           </div>
           <div className="mt-4">
             <TranslatedTextarea label="Description" value={description} onChange={setDescription} required />
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-white p-6 shadow-soft">
+          <p className="mb-1 font-display text-sm font-semibold text-forest">Per-Traveler Pricing</p>
+          <p className="mb-4 text-xs text-forest/50">Used by the itinerary builder's Sightseeing picker to price this activity per adult/child/infant.</p>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <NumberField label="Adult Price (USD)" value={priceAdult} onChange={setPriceAdult} min={0} />
+            <NumberField label="Child Price (USD)" value={priceChild} onChange={setPriceChild} min={0} />
+            <NumberField label="Infant Price (USD)" value={priceInfant} onChange={setPriceInfant} min={0} />
           </div>
           <div className="mt-4">
             <CheckboxField label="Feature on homepage" checked={isFeatured} onChange={setIsFeatured} />

@@ -92,7 +92,7 @@ export function Topbar({ onOpenMobile }: {onOpenMobile: () => void;}) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 8 }}
               transition={{ duration: 0.15 }}
-              className="absolute right-0 mt-2 w-80 rounded-2xl bg-white p-2 shadow-lift">
+              className="absolute right-0 mt-2 w-[26rem] rounded-2xl bg-white p-2 shadow-lift">
 
                 <div className="flex items-center justify-between px-2 py-1.5">
                   <p className="text-xs font-semibold uppercase tracking-wide text-forest/50">Notifications</p>
@@ -100,15 +100,15 @@ export function Topbar({ onOpenMobile }: {onOpenMobile: () => void;}) {
                 <button onClick={markAllRead} className="text-xs font-semibold text-emerald hover:underline">Mark all read</button>
                 }
                 </div>
-                <div className="max-h-80 overflow-y-auto">
-                  {notifications.length === 0 && <p className="p-4 text-center text-xs text-forest/40">No notifications yet.</p>}
+                <div className="grid max-h-80 grid-cols-2 gap-2 overflow-y-auto">
+                  {notifications.length === 0 && <p className="col-span-2 p-4 text-center text-xs text-forest/40">No notifications yet.</p>}
                   {notifications.map((n) =>
                 <button
                   key={n._id}
                   onClick={() => openNotification(n)}
                   className={`block w-full rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-cream ${!n.isRead ? 'bg-cream/60' : ''}`}>
 
-                      <p className="text-sm font-semibold text-forest">{n.title}</p>
+                      <p className="truncate text-sm font-semibold text-forest">{n.title}</p>
                       <p className="mt-0.5 line-clamp-2 text-xs text-forest/60">{n.message}</p>
                     </button>
                 )}

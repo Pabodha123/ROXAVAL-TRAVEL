@@ -17,6 +17,7 @@ import {
   FileTextIcon,
   UserIcon,
   CarIcon,
+  ArrowLeftRightIcon,
   MailIcon,
   CakeIcon,
   XIcon } from
@@ -35,7 +36,8 @@ const navGroups = [
   { to: '/admin/activities', label: 'Activities', icon: TargetIcon },
   { to: '/admin/hotels', label: 'Hotels', icon: BedDoubleIcon },
   { to: '/admin/tour-guides', label: 'Tour Guides', icon: UserIcon },
-  { to: '/admin/vehicles', label: 'Vehicles', icon: CarIcon }]
+  { to: '/admin/vehicles', label: 'Vehicles', icon: CarIcon },
+  { to: '/admin/transfers', label: 'Transfers', icon: ArrowLeftRightIcon }]
 
 },
 {

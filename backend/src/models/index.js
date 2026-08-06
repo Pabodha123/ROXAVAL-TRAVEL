@@ -7,6 +7,7 @@ module.exports = {
   Hotel: require('./Hotel'),
   TourGuide: require('./TourGuide'),
   Vehicle: require('./Vehicle'),
+  Transfer: require('./Transfer'),
   TourPackage: require('./TourPackage'),
   CustomTourRequest: require('./CustomTourRequest'),
   Itinerary: require('./Itinerary'),

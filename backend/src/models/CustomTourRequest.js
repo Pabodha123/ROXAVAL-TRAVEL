@@ -35,6 +35,8 @@ const customTourRequestSchema = new mongoose.Schema(
       adults: { type: Number, required: true, min: 1 },
       children: { type: Number, default: 0 },
       infants: { type: Number, default: 0 },
+      childAges: { type: [Number], default: [] },
+      infantAges: { type: [Number], default: [] },
     },
 
     // Step 2: Preferences
@@ -92,6 +94,17 @@ const customTourRequestSchema = new mongoose.Schema(
     },
     priority: { type: String, enum: ['Low', 'Medium', 'High'], default: 'Medium' },
     assignedAdmin: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
+
+    // Lead/query metadata (set when an admin creates the request on behalf of
+    // a phone/email/walk-in lead rather than the customer submitting it themselves)
+    leadSource: {
+      type: String,
+      enum: ['Website', 'Phone', 'Email', 'Walk-in', 'Referral', 'Agent', 'Other'],
+      default: 'Website',
+    },
+    operationPerson: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
+    salesPerson: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
+    company: { type: String, default: '' },
     itinerary: { type: mongoose.Schema.Types.ObjectId, ref: 'Itinerary' },
     revisionHistory: [
       {

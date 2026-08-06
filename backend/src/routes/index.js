@@ -6,6 +6,7 @@ router.use('/activities', require('./activity.routes'));
 router.use('/hotels', require('./hotel.routes'));
 router.use('/tour-guides', require('./tourGuide.routes'));
 router.use('/vehicles', require('./vehicle.routes'));
+router.use('/transfers', require('./transfer.routes'));
 router.use('/packages', require('./tourPackage.routes'));
 router.use('/blogs', require('./blog.routes'));
 router.use('/reviews', require('./review.routes'));

@@ -9,6 +9,7 @@
     "dev": "nodemon src/server.js",
     "seed": "node src/utils/seed.js",
     "migrate:itinerary-guide-vehicle": "node src/utils/migrateItineraryGuideVehicle.js",
+    "migrate:hotel-room-pricing": "node src/utils/migrateHotelRoomPricing.js",
     "lint": "eslint src"
   },
   "engines": {

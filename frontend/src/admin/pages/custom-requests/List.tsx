@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { EyeIcon, Loader2Icon, SearchIcon, UserCheckIcon } from 'lucide-react';
+import { EyeIcon, Loader2Icon, PlusIcon, SearchIcon, UserCheckIcon } from 'lucide-react';
 import { useAdminList } from '../../hooks/useAdminList';
 import { DataTable, Column } from '../../components/DataTable';
 import { PageHeader } from '../../components/PageHeader';
@@ -95,7 +95,14 @@ export function AdminCustomRequestsList() {
 
   return (
     <div>
-      <PageHeader title="Custom Tour Requests" subtitle="Review inquiries and craft personalized itineraries" />
+      <PageHeader
+        title="Custom Tour Requests"
+        subtitle="Review inquiries and craft personalized itineraries"
+        action={
+        <Link to="/admin/custom-requests/new" className="inline-flex items-center gap-2 rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-cream hover:bg-emerald">
+            <PlusIcon className="h-4 w-4" /> New Query
+          </Link>
+        } />
 
       <div className="mb-4 flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[220px]">

@@ -7,6 +7,22 @@ const roomTypeSchema = new mongoose.Schema(
     name: localizedString('Room type name is required'), // e.g. "Deluxe Double"
     maxOccupancy: { type: Number, default: 2 },
     pricePerNight: { type: Number, required: true },
+    mealPlan: {
+      type: String,
+      enum: ['Room Only', 'Bed & Breakfast', 'Half Board', 'Full Board', 'All Inclusive'],
+      default: 'Bed & Breakfast',
+    },
+    // Per-occupancy nightly rates used by the itinerary builder's hotel picker.
+    pricing: {
+      single: { type: Number, default: 0 },
+      double: { type: Number, default: 0 },
+      triple: { type: Number, default: 0 },
+      quad: { type: Number, default: 0 },
+      extraBed: { type: Number, default: 0 },
+      childWithBed: { type: Number, default: 0 },
+      childNoBed: { type: Number, default: 0 },
+      infant: { type: Number, default: 0 },
+    },
     amenities: localizedStringArray(),
   },
   { _id: true }

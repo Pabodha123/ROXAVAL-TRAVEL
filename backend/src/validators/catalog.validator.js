@@ -10,6 +10,13 @@ const createActivitySchema = z.object({
   category: z.enum(['Adventure', 'Wildlife', 'Culture', 'Relaxation', 'Scenic', 'Water Sports', 'Nature']).optional(),
   durationHours: z.number().positive().optional(),
   priceFrom: z.number().min(0).optional(),
+  pricing: z
+    .object({
+      adult: z.number().min(0).optional(),
+      child: z.number().min(0).optional(),
+      infant: z.number().min(0).optional(),
+    })
+    .optional(),
   destinations: z.array(z.string()).optional(),
   difficultyLevel: z.enum(['Easy', 'Moderate', 'Hard']).optional(),
   location: localizedField(0).optional(),
@@ -28,6 +35,19 @@ const roomTypeSchema = z.object({
   name: localizedField(2),
   maxOccupancy: z.number().int().min(1).optional(),
   pricePerNight: z.number().positive(),
+  mealPlan: z.enum(['Room Only', 'Bed & Breakfast', 'Half Board', 'Full Board', 'All Inclusive']).optional(),
+  pricing: z
+    .object({
+      single: z.number().min(0).optional(),
+      double: z.number().min(0).optional(),
+      triple: z.number().min(0).optional(),
+      quad: z.number().min(0).optional(),
+      extraBed: z.number().min(0).optional(),
+      childWithBed: z.number().min(0).optional(),
+      childNoBed: z.number().min(0).optional(),
+      infant: z.number().min(0).optional(),
+    })
+    .optional(),
   amenities: localizedFieldArray().optional(),
 });
 const createHotelSchema = z.object({
@@ -76,6 +96,21 @@ const createVehicleSchema = z.object({
 });
 const updateVehicleSchema = createVehicleSchema.partial();
 
+// ---------- Transfer ----------
+const createTransferSchema = z.object({
+  name: z.string().min(2),
+  destination: z.string().min(1),
+  supplier: z.string().optional(),
+  type: z.enum(['Private (PVT)', 'Seat-in-Coach (SIC)']).optional(),
+  transferFor: z.string().optional(),
+  vehicle: z.string().optional().transform((v) => (v ? v : undefined)),
+  costWithDriver: z.number().positive(),
+  costWithoutDriver: z.number().min(0).optional(),
+  currency: z.string().optional(),
+  status: z.enum(['active', 'inactive']).optional(),
+});
+const updateTransferSchema = createTransferSchema.partial();
+
 // ---------- Review ----------
 const createReviewSchema = z.object({
   tourPackage: z.string().optional(),
@@ -120,6 +155,8 @@ module.exports = {
   updateTourGuideSchema,
   createVehicleSchema,
   updateVehicleSchema,
+  createTransferSchema,
+  updateTransferSchema,
   createReviewSchema,
   moderateReviewSchema,
   createBlogSchema,

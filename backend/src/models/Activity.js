@@ -21,6 +21,12 @@ const activitySchema = new mongoose.Schema(
     },
     durationHours: { type: Number, default: 2 },
     priceFrom: { type: Number, default: 0 },
+    // Per-traveler pricing used by the itinerary builder's sightseeing picker.
+    pricing: {
+      adult: { type: Number, default: 0 },
+      child: { type: Number, default: 0 },
+      infant: { type: Number, default: 0 },
+    },
     destinations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Destination' }],
     difficultyLevel: { type: String, enum: ['Easy', 'Moderate', 'Hard'], default: 'Easy' },
     location: localizedString(),

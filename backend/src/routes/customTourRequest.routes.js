@@ -5,6 +5,7 @@ const { protect, restrictTo } = require('../middleware/auth');
 const validate = require('../middleware/validate');
 const {
   createCustomTourRequestSchema,
+  adminCreateRequestSchema,
   buildItinerarySchema,
   requestChangesSchema,
   cannotModifySchema,
@@ -28,6 +29,7 @@ router.patch('/:id/reject', restrictTo('customer'), controller.rejectItinerary);
 router.patch('/:id/request-changes', restrictTo('customer'), validate({ body: requestChangesSchema }), controller.requestChanges);
 
 // Admin
+router.post('/admin/create', restrictTo('admin', 'superadmin'), validate({ body: adminCreateRequestSchema }), controller.adminCreateRequest);
 router.get('/', restrictTo('admin', 'superadmin'), controller.getAllRequests);
 router.get('/:id', restrictTo('admin', 'superadmin'), controller.getRequestById);
 router.patch('/:id/assign', restrictTo('admin', 'superadmin'), controller.assignAdmin);

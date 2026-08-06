@@ -31,6 +31,9 @@ const populateItinerary = {
     { path: 'days.destinations', select: 'name' },
     { path: 'days.activities', select: 'name' },
     { path: 'days.hotel', select: 'name category starRating' },
+    { path: 'days.hotelOptions.hotel', select: 'name category starRating' },
+    { path: 'days.activityPricing.activity', select: 'name' },
+    { path: 'days.transfers.transfer', select: 'name supplier' },
     { path: 'hotels', select: 'name category starRating' },
     { path: 'tourGuide', select: 'name' },
     { path: 'vehicle', select: 'name type' },
@@ -81,12 +84,20 @@ const getMyRequestById = catchAsync(async (req, res) => {
   new ApiResponse(200, data, 'Request fetched').send(res);
 });
 
+// Admin: create a request on behalf of a phone/email/walk-in lead
+const adminCreateRequest = catchAsync(async (req, res) => {
+  const request = await customTourService.adminCreateRequest(req.user._id, req.body);
+  new ApiResponse(201, request, 'Query created successfully').send(res);
+});
+
 // Admin: list all requests (appears immediately on Admin Dashboard)
 const getAllRequests = catchAsync(async (req, res) => {
   const features = new ApiFeatures(CustomTourRequest.find(), req.query).search(['referenceNumber']).filter().sort().paginate();
   const docs = await features.query
     .populate({ path: 'customer', populate: { path: 'user', select: 'fullName email phone' } })
     .populate('preferredDestinations preferredActivities')
+    .populate({ path: 'operationPerson', populate: { path: 'user', select: 'fullName' } })
+    .populate({ path: 'salesPerson', populate: { path: 'user', select: 'fullName' } })
     .populate(populateItinerary);
   const meta = await features.getMeta(CustomTourRequest, {});
   const data = localizeList(docs, req.lang || 'en', translatableFields);
@@ -97,6 +108,8 @@ const getRequestById = catchAsync(async (req, res) => {
   const request = await CustomTourRequest.findById(req.params.id)
     .populate({ path: 'customer', populate: { path: 'user', select: 'fullName email phone' } })
     .populate('preferredDestinations preferredActivities')
+    .populate({ path: 'operationPerson', populate: { path: 'user', select: 'fullName' } })
+    .populate({ path: 'salesPerson', populate: { path: 'user', select: 'fullName' } })
     .populate(populateItinerary);
   if (!request) throw ApiError.notFound('Custom tour request not found');
   const data = localizeDoc(request, req.lang || 'en', translatableFields);
@@ -155,6 +168,7 @@ const updatePriority = catchAsync(async (req, res) => {
 module.exports = {
   generateItinerary,
   submitRequest,
+  adminCreateRequest,
   getMyRequests,
   getMyRequestById,
   getAllRequests,
