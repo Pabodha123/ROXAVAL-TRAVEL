@@ -1,5 +1,6 @@
 import React from 'react';
-import { ArrowRightIcon, BedDoubleIcon, CalendarIcon, CarIcon, MapPinIcon, PlaneIcon, PrinterIcon, StarIcon, UsersIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowLeftIcon, ArrowRightIcon, BedDoubleIcon, CalendarIcon, CarIcon, MapPinIcon, PlaneIcon, PrinterIcon, StarIcon, UsersIcon } from 'lucide-react';
 import { WHATSAPP_DISPLAY_SL, CONTACT_EMAIL, WEBSITE_DISPLAY } from '../../lib/contact';
 
 interface RefName {
@@ -127,7 +128,7 @@ function NotesBlock({ text }: { text?: string }) {
   );
 }
 
-export function QuotationView({ request }: { request: QuotationRequest }) {
+export function QuotationView({ request, backHref }: { request: QuotationRequest; backHref?: string }) {
   const itin = request.itinerary;
   const days = itin.days || [];
   const nights = Math.max(0, days.length - 1);
@@ -144,7 +145,14 @@ export function QuotationView({ request }: { request: QuotationRequest }) {
   return (
     <div className="min-h-screen bg-cream/40 pb-20">
       <div className="print:hidden sticky top-0 z-10 flex items-center justify-between bg-forest px-4 py-3 sm:px-8">
-        <p className="text-sm font-semibold text-white">Quotation Preview</p>
+        <div className="flex items-center gap-4">
+          {backHref &&
+            <Link to={backHref} className="flex items-center gap-1.5 text-xs font-semibold text-white/70 hover:text-white">
+              <ArrowLeftIcon className="h-3.5 w-3.5" /> Back
+            </Link>
+          }
+          <p className="text-sm font-semibold text-white">Quotation Preview</p>
+        </div>
         <button
           type="button"
           onClick={() => window.print()}

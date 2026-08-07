@@ -17,5 +17,5 @@ export function AdminQuotationPreview() {
   if (loading) return <div className="grid min-h-screen place-items-center bg-cream"><Loader2Icon className="h-6 w-6 animate-spin text-forest/40" /></div>;
   if (!request?.itinerary) return <div className="grid min-h-screen place-items-center bg-cream text-sm text-forest/50">No itinerary has been built for this request yet.</div>;
 
-  return <QuotationView request={request} />;
+  return <QuotationView request={request} backHref={`/admin/custom-requests/${id}`} />;
 }

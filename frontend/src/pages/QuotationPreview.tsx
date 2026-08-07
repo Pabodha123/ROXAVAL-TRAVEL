@@ -17,5 +17,5 @@ export function QuotationPreview() {
   if (loading) return <div className="grid min-h-screen place-items-center bg-cream"><Loader2Icon className="h-6 w-6 animate-spin text-forest/40" /></div>;
   if (!request?.itinerary) return <div className="grid min-h-screen place-items-center bg-cream text-sm text-forest/50">Your itinerary isn't ready yet.</div>;
 
-  return <QuotationView request={request} />;
+  return <QuotationView request={request} backHref={`/my-tours/requests/${id}`} />;
 }
