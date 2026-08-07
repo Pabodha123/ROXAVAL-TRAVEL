@@ -1,7 +1,7 @@
-const path = require('path');
 const router = require('express').Router();
 const { protect, restrictTo } = require('../middleware/auth');
 const { uploadImage } = require('../middleware/upload');
+const { uploadBuffer } = require('../config/cloudinary');
 const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
@@ -14,8 +14,8 @@ router.post(
   uploadImage.single('image'),
   catchAsync(async (req, res) => {
     if (!req.file) throw ApiError.badRequest('Image file is required');
-    const url = `/uploads/images/${path.basename(req.file.path)}`;
-    new ApiResponse(201, { url }, 'Image uploaded').send(res);
+    const result = await uploadBuffer(req.file.buffer, { folder: 'images' });
+    new ApiResponse(201, { url: result.secure_url }, 'Image uploaded').send(res);
   })
 );
 
@@ -25,7 +25,8 @@ router.post(
   uploadImage.array('images', 10),
   catchAsync(async (req, res) => {
     if (!req.files?.length) throw ApiError.badRequest('At least one image file is required');
-    const urls = req.files.map((f) => `/uploads/images/${path.basename(f.path)}`);
+    const results = await Promise.all(req.files.map((f) => uploadBuffer(f.buffer, { folder: 'images' })));
+    const urls = results.map((r) => r.secure_url);
     new ApiResponse(201, { urls }, 'Images uploaded').send(res);
   })
 );

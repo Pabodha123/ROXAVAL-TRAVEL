@@ -1,21 +1,22 @@
-const path = require('path');
 const { Payment, Customer } = require('../models');
 const catchAsync = require('../utils/catchAsync');
 const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
 const ApiFeatures = require('../utils/ApiFeatures');
 const paymentService = require('../services/payment.service');
+const { uploadBuffer } = require('../config/cloudinary');
 
 const createPayment = catchAsync(async (req, res) => {
   const { payment, whatsappLink } = await paymentService.createPayment(req.user, req.body);
   new ApiResponse(201, { payment, whatsappLink }, 'Payment recorded').send(res);
 });
 
-// Customer uploads a payment receipt (bank transfer proof)
+// Customer uploads a payment receipt (bank transfer proof) — image or PDF,
+// so resourceType 'auto' lets Cloudinary pick the right storage type.
 const uploadReceipt = catchAsync(async (req, res) => {
   if (!req.file) throw ApiError.badRequest('Receipt file is required');
-  const fileUrl = `/uploads/receipts/${path.basename(req.file.path)}`;
-  const payment = await paymentService.attachReceipt(req.params.id, fileUrl);
+  const result = await uploadBuffer(req.file.buffer, { folder: 'receipts', resourceType: 'auto' });
+  const payment = await paymentService.attachReceipt(req.params.id, result.secure_url);
   new ApiResponse(200, payment, 'Receipt uploaded and pending verification').send(res);
 });
 

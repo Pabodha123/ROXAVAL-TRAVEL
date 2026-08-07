@@ -53,6 +53,12 @@ const env = {
     documentsDir: process.env.UPLOAD_DOCUMENTS_DIR || 'uploads/documents',
   },
 
+  CLOUDINARY: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
+  },
+
   RATE_LIMIT: {
     windowMin: parseInt(process.env.RATE_LIMIT_WINDOW_MIN, 10) || 15,
     max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) || 300,
