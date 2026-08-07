@@ -16,6 +16,17 @@ const translatableFields = [
   'itinerary.days.destinations.name',
   'itinerary.days.activities.name',
   'itinerary.days.hotel.name',
+  'itinerary.days.hotel.description',
+  'itinerary.days.hotel.address',
+  'itinerary.days.hotel.destination.name',
+  'itinerary.days.hotel.roomTypes.name',
+  'itinerary.days.hotelOptions.hotel.name',
+  'itinerary.days.hotelOptions.hotel.description',
+  'itinerary.days.hotelOptions.hotel.address',
+  'itinerary.days.hotelOptions.hotel.destination.name',
+  'itinerary.days.hotelOptions.hotel.roomTypes.name',
+  'itinerary.days.activityPricing.activity.name',
+  'itinerary.days.activityPricing.activity.description',
   'itinerary.hotels.name',
   'aiGeneratedItinerary.days.destinations.name',
   'aiGeneratedItinerary.days.activities.name',
@@ -25,15 +36,29 @@ const translatableFields = [
 // Deep-populates the day-level refs inside an Itinerary subdocument array —
 // a plain `.populate('itinerary')` only resolves the top-level doc, leaving
 // each day's hotel/tourGuide/vehicle/destinations/activities as raw ids.
+// Hotel/Activity here pull images + description too (not just `name`) so the
+// customer-facing Quotation Preview can render rich day-by-day cards.
 const populateItinerary = {
   path: 'itinerary',
   populate: [
     { path: 'days.destinations', select: 'name' },
     { path: 'days.activities', select: 'name' },
-    { path: 'days.hotel', select: 'name category starRating' },
-    { path: 'days.hotelOptions.hotel', select: 'name category starRating' },
-    { path: 'days.activityPricing.activity', select: 'name' },
-    { path: 'days.transfers.transfer', select: 'name supplier' },
+    {
+      path: 'days.hotel',
+      select: 'name category starRating images address description destination roomTypes.name roomTypes.mealPlan',
+      populate: { path: 'destination', select: 'name' },
+    },
+    {
+      path: 'days.hotelOptions.hotel',
+      select: 'name category starRating images address description destination roomTypes.name roomTypes.mealPlan',
+      populate: { path: 'destination', select: 'name' },
+    },
+    { path: 'days.activityPricing.activity', select: 'name image description category' },
+    {
+      path: 'days.transfers.transfer',
+      select: 'name type supplier transferFor vehicle',
+      populate: { path: 'vehicle', select: 'name type' },
+    },
     { path: 'hotels', select: 'name category starRating' },
     { path: 'tourGuide', select: 'name' },
     { path: 'vehicle', select: 'name type' },

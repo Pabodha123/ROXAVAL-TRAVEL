@@ -321,7 +321,6 @@ export function AdminCustomRequestDetail() {
   const [legFromDate, setLegFromDate] = useState('');
   const [legToDate, setLegToDate] = useState('');
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
-  const [generatingQuotation, setGeneratingQuotation] = useState(false);
   const [pickerDayIndex, setPickerDayIndex] = useState<number | null>(null);
   const [pickerKind, setPickerKind] = useState<'hotel' | 'activity' | 'transfer' | null>(null);
 
@@ -720,9 +719,9 @@ export function AdminCustomRequestDetail() {
     }
   };
 
-  const generateQuotation = async () => {
+  const generateQuotation = () => {
     const itin = request?.itinerary;
-    if (!itin) return;
+    if (!itin || !id) return;
     const uncoveredDay = itin.days.find((d) => {
       const hasHotel = Boolean(d.hotel);
       const hasSightseeingOrTransfer = (d.activityPricing || []).some((a) => a.selected !== false) || (d.transfers || []).some((t) => t.selected !== false) || Boolean(d.transport);
@@ -732,19 +731,7 @@ export function AdminCustomRequestDetail() {
       toast(`Day ${uncoveredDay.dayNumber} needs a hotel and at least one sightseeing/transfer before generating the quotation.`, 'error');
       return;
     }
-    const itinId = itin._id;
-    setGeneratingQuotation(true);
-    try {
-      const result = await apiPost<{ fileUrl: string }>(`/documents/itineraries/${itinId}/quotation`);
-      if (result?.fileUrl) {
-        window.open(`${API_ORIGIN}${result.fileUrl}`, '_blank');
-        toast('Quotation generated.');
-      }
-    } catch (err) {
-      toast(err instanceof ApiRequestError ? err.message : 'Failed to generate quotation.', 'error');
-    } finally {
-      setGeneratingQuotation(false);
-    }
+    window.open(`/admin/custom-requests/${id}/quotation`, '_blank');
   };
 
   if (loading || !request) return <div className="grid h-64 place-items-center"><Loader2Icon className="h-6 w-6 animate-spin text-forest/40" /></div>;
@@ -906,8 +893,8 @@ export function AdminCustomRequestDetail() {
               <div className="flex items-center justify-between">
                 <p className="font-display text-lg font-semibold text-forest">{request.itinerary.title}</p>
                 <div className="flex items-center gap-2">
-                  <button type="button" onClick={generateQuotation} disabled={generatingQuotation} className="flex items-center gap-1.5 rounded-full border border-forest/15 px-3.5 py-1.5 text-xs font-semibold text-forest hover:bg-cream disabled:opacity-60">
-                    {generatingQuotation ? <Loader2Icon className="h-3.5 w-3.5 animate-spin" /> : <DownloadIcon className="h-3.5 w-3.5" />} Generate Quotation
+                  <button type="button" onClick={generateQuotation} className="flex items-center gap-1.5 rounded-full border border-forest/15 px-3.5 py-1.5 text-xs font-semibold text-forest hover:bg-cream">
+                    <DownloadIcon className="h-3.5 w-3.5" /> Generate Quotation
                   </button>
                   <StatusBadge status={request.itinerary.status} />
                 </div>

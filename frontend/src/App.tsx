@@ -18,6 +18,7 @@ import { Auth } from './pages/Auth';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { ResetPassword } from './pages/ResetPassword';
 import { MyTours } from './pages/MyTours';
+import { QuotationPreview } from './pages/QuotationPreview';
 import { Notifications } from './pages/Notifications';
 import { AboutUs } from './pages/AboutUs';
 import { ContactUs } from './pages/ContactUs';
@@ -61,6 +62,7 @@ import { AdminProfile } from './admin/pages/profile/Profile';
 import { AdminCustomRequestsList } from './admin/pages/custom-requests/List';
 import { AdminCustomRequestNew } from './admin/pages/custom-requests/New';
 import { AdminCustomRequestDetail } from './admin/pages/custom-requests/Detail';
+import { AdminQuotationPreview } from './admin/pages/custom-requests/QuotationPreview';
 import { AdminDocumentsList } from './admin/pages/documents/List';
 import { AdminNotifications } from './admin/pages/notifications/Notifications';
 import { AdminContactList } from './admin/pages/contact/List';
@@ -105,10 +107,13 @@ export function App() {
           <Route path="/account-settings" element={<RequireAuth><Placeholder title="Account Settings" /></RequireAuth>} />
         </Route>
 
+        <Route path="/my-tours/requests/:id/quotation" element={<RequireAuth><QuotationPreview /></RequireAuth>} />
+
         <Route path="/admin" element={<AdminRoot />}>
           <Route path="login" element={<AdminLogin />} />
           <Route path="forgot-password" element={<AdminForgotPassword />} />
           <Route path="reset-password/:token" element={<AdminResetPassword />} />
+          <Route path="custom-requests/:id/quotation" element={<RequireAdminAuth><AdminQuotationPreview /></RequireAdminAuth>} />
 
           <Route element={<RequireAdminAuth><AdminLayout /></RequireAdminAuth>}>
             <Route index element={<Navigate to="dashboard" replace />} />

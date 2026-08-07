@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
   CalendarIcon, UsersIcon, DownloadIcon, Loader2Icon, MapPinIcon,
   BedDoubleIcon, MessageCircleIcon, PackageIcon, SendIcon, CheckIcon,
-  XCircleIcon, SparklesIcon, StarIcon, CompassIcon, ChevronDownIcon } from
+  XCircleIcon, SparklesIcon, StarIcon, CompassIcon, ChevronDownIcon, ExternalLinkIcon } from
 'lucide-react';
 import { useAdminList } from '../admin/hooks/useAdminList';
 import { StatusBadge } from '../admin/components/StatusBadge';
@@ -552,6 +552,10 @@ function RequestsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
                 <StatusBadge status={itin.status} />
               </div>
               {itin.summary && <p className="mt-2 text-sm text-forest/60">{itin.summary}</p>}
+
+              <Link to={`/my-tours/requests/${selected._id}/quotation`} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald hover:underline">
+                <ExternalLinkIcon className="h-3.5 w-3.5" /> View Full Quotation
+              </Link>
 
               <div className="mt-4 space-y-3">
                 {itin.days.map((d) =>
