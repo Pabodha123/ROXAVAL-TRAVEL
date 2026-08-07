@@ -154,7 +154,7 @@ export function QuotationView({ request }: { request: QuotationRequest }) {
         </button>
       </div>
 
-      <div className="mx-auto max-w-4xl bg-white px-6 py-10 shadow-soft print:shadow-none sm:px-10">
+      <div className="mx-auto mt-6 max-w-4xl rounded-2xl border border-forest/15 bg-white px-6 py-10 shadow-soft print:mt-0 print:rounded-none print:shadow-none sm:px-10">
         {/* Header */}
         <div className="border-b border-forest/10 pb-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
