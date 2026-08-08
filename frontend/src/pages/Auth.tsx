@@ -11,6 +11,20 @@ type Tab = 'login' | 'register';
 
 const inputClass = 'w-full rounded-full border border-forest/15 bg-white py-3 pl-11 pr-4 text-sm text-forest outline-none placeholder:text-forest/35 focus:border-emerald';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^[+]?[0-9\s\-()]{7,20}$/;
+const PASSPORT_REGEX = /^[A-Za-z0-9]{5,15}$/;
+const PASSWORD_STRENGTH_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
+function calculateAge(dob: string) {
+  const birth = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--;
+  return age;
+}
+
 export function Auth() {
   const { t } = useTranslation('auth');
   const { login, register } = useAuth();
@@ -27,6 +41,7 @@ export function Auth() {
   const [fullName, setFullName] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [passportNumber, setPassportNumber] = useState('');
@@ -40,12 +55,41 @@ export function Auth() {
     navigate(from, { replace: true });
   };
 
+  const validateLogin = (): string | null => {
+    if (!loginEmail.trim()) return t('validation.emailRequired');
+    if (!EMAIL_REGEX.test(loginEmail.trim())) return t('validation.emailInvalid');
+    if (!loginPassword) return t('validation.passwordRequired');
+    return null;
+  };
+
+  const validateRegister = (): string | null => {
+    if (!fullName.trim()) return t('validation.fullNameRequired');
+    if (fullName.trim().length < 2) return t('validation.fullNameTooShort');
+    if (!regEmail.trim()) return t('validation.emailRequired');
+    if (!EMAIL_REGEX.test(regEmail.trim())) return t('validation.emailInvalid');
+    if (phone.trim() && !PHONE_REGEX.test(phone.trim())) return t('validation.phoneInvalid');
+    if (dateOfBirth) {
+      if (new Date(dateOfBirth) > new Date()) return t('validation.dobFuture');
+      if (calculateAge(dateOfBirth) < 18) return t('validation.dobMinAge');
+    }
+    if (passportNumber.trim() && !PASSPORT_REGEX.test(passportNumber.trim())) return t('validation.passportInvalid');
+    if (!regPassword) return t('validation.passwordRequired');
+    if (!PASSWORD_STRENGTH_REGEX.test(regPassword)) return t('validation.passwordWeak');
+    if (regPassword !== confirmPassword) return t('validation.passwordsDontMatch');
+    return null;
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    const validationError = validateLogin();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
-      const user = await login(loginEmail, loginPassword);
+      const user = await login(loginEmail.trim(), loginPassword);
       redirectAfterAuth(user.role);
     } catch (err) {
       setError(err instanceof ApiRequestError ? err.message : t('loginFailed'));
@@ -56,16 +100,21 @@ export function Auth() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    const validationError = validateRegister();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
       const user = await register({
-        fullName,
-        email: regEmail,
+        fullName: fullName.trim(),
+        email: regEmail.trim(),
         password: regPassword,
-        phone: phone || undefined,
+        phone: phone.trim() || undefined,
         dateOfBirth: dateOfBirth || undefined,
-        passportNumber: passportNumber || undefined,
+        passportNumber: passportNumber.trim() || undefined,
       });
       redirectAfterAuth(user.role);
     } catch (err) {
@@ -216,6 +265,18 @@ export function Auth() {
                 <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-forest/35 hover:text-forest">
                   {showPassword ? <EyeOffIcon className="h-4.5 w-4.5" /> : <EyeIcon className="h-4.5 w-4.5" />}
                 </button>
+              </div>
+              <div className="relative">
+                <LockIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
+                <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                minLength={8}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder={t('confirmPasswordPlaceholder')}
+                className={inputClass} />
+
               </div>
 
               {error && <p className="rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-600">{error}</p>}
