@@ -135,6 +135,11 @@ export function CustomTourWizard() {
 
   const destinationName = (id: string) => destinations.find((d) => d._id === id)?.name || id;
   const activityName = (id: string) => activities.find((a) => a._id === id)?.name || id;
+  // Once the traveler has picked destinations, narrow the Activities step to only
+  // what's actually offered there — otherwise (nothing picked yet) show everything.
+  const activitiesForSelectedDestinations = formData.selectedDestinations.length === 0 ?
+  activities :
+  activities.filter((a) => a.destinations.some((d) => formData.selectedDestinations.includes(d._id)));
   const hotelName = (id?: string) => hotels.find((h) => h._id === id)?.name;
 
   const buildPreferencesPayload = () => {
@@ -363,12 +368,17 @@ export function CustomTourWizard() {
 
             {step === 2 &&
             <div>
-                <p className="mb-6 text-forest/70">What kind of experiences are you looking for?</p>
+                <p className="text-forest/70">What kind of experiences are you looking for?</p>
+                <p className="mb-6 text-xs text-forest/45">
+                  {formData.selectedDestinations.length > 0 ?
+                'Showing activities available in your selected destinations.' :
+                'Pick destinations in the previous step to narrow this list down.'}
+                </p>
                 <div className="mb-6">
                   <AutocompleteTagInput
                   label="Search or add an activity"
                   placeholder="e.g. Whale Watching, or type one not listed…"
-                  options={activities.map((a) => ({ id: a._id, label: a.name }))}
+                  options={activitiesForSelectedDestinations.map((a) => ({ id: a._id, label: a.name }))}
                   selectedIds={formData.selectedActivities}
                   onSelectedIdsChange={(ids) => setFormData((prev) => ({ ...prev, selectedActivities: ids }))}
                   customValues={formData.customActivities}
@@ -376,8 +386,11 @@ export function CustomTourWizard() {
 
                 </div>
                 {activitiesLoading ? <p className="text-sm text-forest/50">Loading activities…</p> :
+              activitiesForSelectedDestinations.length === 0 ?
+              <p className="text-sm text-forest/50">No catalog activities found for your selected destinations yet — you can still add one by typing its name above.</p> :
+
               <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                  {activities.map((a) =>
+                  {activitiesForSelectedDestinations.map((a) =>
                 <div key={a._id} onClick={() => toggleSelection('selectedActivities', a._id)} className={`group relative cursor-pointer overflow-hidden rounded-2xl border-2 transition-all ${formData.selectedActivities.includes(a._id) ? 'border-emerald shadow-md' : 'border-transparent'}`}>
                       <img src={a.image} alt={a.name} className="h-32 w-full object-cover transition-transform group-hover:scale-105" />
                       <div className="absolute inset-0 bg-gradient-to-t from-forest/90 to-transparent p-3 flex flex-col justify-end">
