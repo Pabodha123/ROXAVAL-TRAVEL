@@ -12,7 +12,9 @@ import {
   MapPinIcon,
   BedDoubleIcon,
   Users2Icon,
-  UserIcon } from
+  UserIcon,
+  RouteIcon,
+  UtensilsIcon } from
 'lucide-react';
 import { apiGetOne, apiGetList } from '../lib/api';
 import { LoadingState, ErrorState } from '../components/ui/StatusState';
@@ -21,6 +23,19 @@ import { BreadcrumbBackRow } from '../components/layout/BreadcrumbBackRow';
 import { BookingModal } from '../components/booking/BookingModal';
 import { useAuth } from '../context/AuthContext';
 import type { TourPackage, Review } from '../types/tourPackage';
+
+// Day descriptions authored as "Distance: ... Travel Time: ... <narrative>" get their
+// facts pulled out into badges instead of buried in a wall of text. Descriptions that
+// don't follow this pattern (e.g. admin-built itineraries) render unchanged.
+function parseDayDescription(description: string) {
+  const match = description.match(/^Distance:\s*(.+?)\s*Travel Time:\s*(.+?)\.\s+(?=[A-Z])/);
+  if (!match) return { distance: null as string | null, travelTime: null as string | null, body: description };
+  return {
+    distance: match[1].replace(/\.$/, '').trim(),
+    travelTime: match[2].trim(),
+    body: description.slice(match[0].length).trim()
+  };
+}
 
 export function TourPackageDetails() {
   const { t } = useTranslation('packages');
@@ -134,26 +149,52 @@ export function TourPackageDetails() {
           {pkg.itinerary.length > 0 &&
           <div className="mt-10">
               <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.dayByDayItinerary')}</h2>
-              <div className="mt-5 space-y-4">
-                {pkg.itinerary.map((day) =>
-              <div key={day.dayNumber} className="flex gap-4 rounded-3xl bg-white p-6 shadow-soft">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald text-sm font-bold text-white">
-                      {day.dayNumber}
-                    </div>
-                    <div>
-                      <h3 className="font-display text-lg font-semibold text-forest">{day.title}</h3>
-                      <p className="mt-1.5 text-sm leading-relaxed text-forest/65">{day.description}</p>
-                      {day.hotel &&
-                  <p className="mt-2 flex items-center gap-1.5 text-xs font-medium text-forest/50">
-                          <BedDoubleIcon className="h-3.5 w-3.5" /> {t('detail.overnightAt', { hotel: day.hotel.name })}
-                        </p>
-                  }
-                      {day.meals && day.meals.length > 0 &&
-                  <p className="mt-1 text-xs text-forest/50">{t('detail.meals', { meals: day.meals.join(', ') })}</p>
-                  }
-                    </div>
-                  </div>
-              )}
+              <div className="mt-6">
+                {pkg.itinerary.map((day, i) => {
+                const { distance, travelTime, body } = parseDayDescription(day.description);
+                return (
+                  <div key={day.dayNumber} className="flex gap-5">
+                      <div className="flex flex-col items-center">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald text-sm font-bold text-white ring-4 ring-emerald/15">
+                          {day.dayNumber}
+                        </div>
+                        {i < pkg.itinerary.length - 1 && <div className="my-1 w-px flex-1 bg-forest/10" />}
+                      </div>
+                      <div className={`flex-1 rounded-3xl bg-white p-6 shadow-soft ${i < pkg.itinerary.length - 1 ? 'mb-5' : ''}`}>
+                        <h3 className="font-display text-lg font-semibold text-forest">{day.title}</h3>
+                        {(distance || travelTime) &&
+                      <div className="mt-3 flex flex-wrap gap-2">
+                            {distance &&
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald/8 px-3 py-1 text-xs font-semibold text-emerald">
+                                <RouteIcon className="h-3.5 w-3.5" /> {distance}
+                              </span>
+                        }
+                            {travelTime &&
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-3 py-1 text-xs font-semibold text-forest/70">
+                                <ClockIcon className="h-3.5 w-3.5" /> {travelTime}
+                              </span>
+                        }
+                          </div>
+                      }
+                        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-forest/65">{body}</p>
+                        {(day.hotel || day.meals && day.meals.length > 0) &&
+                      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 border-t border-forest/8 pt-3.5">
+                            {day.hotel &&
+                        <p className="flex items-center gap-1.5 text-xs font-medium text-forest/55">
+                                <BedDoubleIcon className="h-3.5 w-3.5 text-forest/35" /> {t('detail.overnightAt', { hotel: day.hotel.name })}
+                              </p>
+                        }
+                            {day.meals && day.meals.length > 0 &&
+                        <p className="flex items-center gap-1.5 text-xs font-medium text-forest/55">
+                                <UtensilsIcon className="h-3.5 w-3.5 text-forest/35" /> {day.meals.join(', ')}
+                              </p>
+                        }
+                          </div>
+                      }
+                      </div>
+                    </div>);
+
+              })}
               </div>
             </div>
           }
