@@ -24,6 +24,7 @@ const HOTEL_CATEGORIES = ['Budget', 'Standard', 'Deluxe', 'Boutique', 'Luxury', 
 const MEAL_PREFERENCES = ['Breakfast Only', 'Half Board', 'Full Board', 'All Inclusive', 'Vegetarian', 'Vegan', 'Halal', 'No Preference'];
 const TRAVEL_STYLES = ['Relaxed', 'Adventure', 'Cultural', 'Luxury', 'Family', 'Honeymoon', 'Backpacking'];
 const TRANSPORT_OPTIONS = ['Private Car', 'Van', 'SUV', 'Minibus', 'No Preference'];
+const ROOM_TYPE_OPTIONS = ['No Preference', 'Single', 'Double', 'Twin', 'Triple', 'Family / Quad', 'Suite'];
 
 interface FormData {
   arrivalDate: string;
@@ -424,7 +425,10 @@ export function CustomTourWizard() {
                 </div>
                 <div>
                   <label className="mb-2 block text-sm font-medium text-forest">Room Type</label>
-                  <input type="text" value={formData.roomTypePreference} onChange={(e) => setFormData({ ...formData, roomTypePreference: e.target.value })} placeholder="e.g. Double, Twin, Suite, No preference" className="w-full max-w-sm rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" />
+                  <select value={formData.roomTypePreference} onChange={(e) => setFormData({ ...formData, roomTypePreference: e.target.value })} className="w-full max-w-sm rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald">
+                    <option value="">Select a room type…</option>
+                    {ROOM_TYPE_OPTIONS.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                  </select>
                 </div>
                 <div>
                   <label className="mb-3 block font-semibold text-forest">Estimated Budget (USD)</label>
