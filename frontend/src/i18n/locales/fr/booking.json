@@ -10,7 +10,10 @@
     "confirmBooking": "Confirmer la Réservation",
     "selectDateError": "Veuillez sélectionner une date de voyage.",
     "createError": "Impossible de créer la réservation. Veuillez réessayer.",
-    "successToast": "Réservation {{reference}} créée — poursuivez le paiement dans Mes Voyages."
+    "successToast": "Réservation {{reference}} créée — poursuivez le paiement dans Mes Voyages.",
+    "bookingConfirmedTitle": "Réservation Confirmée",
+    "bookingConfirmedBody": "Votre réservation {{reference}} a été créée. Il ne reste qu'une étape — rendez-vous dans l'onglet Réservations pour finaliser votre paiement.",
+    "goToPayment": "Aller au Paiement"
   },
   "payment": {
     "title": "Paiement",

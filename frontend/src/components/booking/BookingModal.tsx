@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Loader2Icon } from 'lucide-react';
+import { CheckCircle2Icon, CreditCardIcon, Loader2Icon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from '../ui/Modal';
 import { apiPost, ApiRequestError } from '../../lib/api';
@@ -32,6 +32,7 @@ export function BookingModal({ open, onClose, source, onSuccess }: BookingModalP
   const [specialRequests, setSpecialRequests] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [createdBooking, setCreatedBooking] = useState<{ _id: string; bookingReference: string } | null>(null);
 
   const estimatedTotal = source.price * Math.max(adults + children, 1);
 
@@ -54,7 +55,7 @@ export function BookingModal({ open, onClose, source, onSuccess }: BookingModalP
       await apiPost<{ _id: string; bookingReference: string }>('/bookings/from-itinerary', { itinerary: source.id, ...payload });
 
       toast(t('modal.successToast', { reference: booking.bookingReference }));
-      onSuccess(booking);
+      setCreatedBooking(booking);
     } catch (err) {
       setError(err instanceof ApiRequestError ? err.message : t('modal.createError'));
     } finally {
@@ -62,8 +63,35 @@ export function BookingModal({ open, onClose, source, onSuccess }: BookingModalP
     }
   };
 
+  const handleClose = () => {
+    setCreatedBooking(null);
+    onClose();
+  };
+
+  const goToPayment = () => {
+    if (!createdBooking) return;
+    onSuccess(createdBooking);
+    setCreatedBooking(null);
+  };
+
+  if (createdBooking) {
+    return (
+      <Modal open={open} onClose={handleClose} title={t('modal.bookingConfirmedTitle')} maxWidth="max-w-lg">
+        <div className="space-y-5 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald/10 text-emerald">
+            <CheckCircle2Icon className="h-7 w-7" />
+          </div>
+          <p className="text-sm text-forest/70">{t('modal.bookingConfirmedBody', { reference: createdBooking.bookingReference })}</p>
+          <button onClick={goToPayment} className="flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-[1.02] active:scale-95">
+            <CreditCardIcon className="h-4 w-4" /> {t('modal.goToPayment')}
+          </button>
+        </div>
+      </Modal>);
+
+  }
+
   return (
-    <Modal open={open} onClose={onClose} title={t('modal.bookTitle', { name: source.name })} maxWidth="max-w-lg">
+    <Modal open={open} onClose={handleClose} title={t('modal.bookTitle', { name: source.name })} maxWidth="max-w-lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-forest">{t('modal.travelDate')}</label>

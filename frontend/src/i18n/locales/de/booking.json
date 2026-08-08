@@ -10,7 +10,10 @@
     "confirmBooking": "Buchung Bestätigen",
     "selectDateError": "Bitte wählen Sie ein Reisedatum.",
     "createError": "Buchung konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
-    "successToast": "Buchung {{reference}} erstellt — fahren Sie mit der Zahlung in Meine Reisen fort."
+    "successToast": "Buchung {{reference}} erstellt — fahren Sie mit der Zahlung in Meine Reisen fort.",
+    "bookingConfirmedTitle": "Buchung Bestätigt",
+    "bookingConfirmedBody": "Ihre Buchung {{reference}} wurde erstellt. Nur noch ein Schritt — gehen Sie zum Tab „Buchungen“, um Ihre Zahlung abzuschließen.",
+    "goToPayment": "Zur Zahlung"
   },
   "payment": {
     "title": "Zahlung",

@@ -10,7 +10,10 @@
     "confirmBooking": "Confirm Booking",
     "selectDateError": "Please select a travel date.",
     "createError": "Could not create booking. Please try again.",
-    "successToast": "Booking {{reference}} created — proceed to payment in My Tours."
+    "successToast": "Booking {{reference}} created — proceed to payment in My Tours.",
+    "bookingConfirmedTitle": "Booking Confirmed",
+    "bookingConfirmedBody": "Your booking {{reference}} has been created. You're one step away — head to the Bookings tab to complete your payment.",
+    "goToPayment": "Go to Payment"
   },
   "payment": {
     "title": "Payment",

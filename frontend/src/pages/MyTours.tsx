@@ -421,7 +421,7 @@ function BookingsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
 
 }
 
-function RequestsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
+function RequestsTab({ initialSelectedId, onBookingCreated }: {initialSelectedId?: string;onBookingCreated: (bookingId: string) => void;}) {
   const { items, loading, error, refetch } = useAdminList<CustomRequestItem>('/custom-tours/my-requests', {}, 20);
   const [selectedId, setSelectedId] = useState<string | null>(initialSelectedId || null);
   const [note, setNote] = useState('');
@@ -693,9 +693,9 @@ function RequestsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
         open={bookingOpen}
         onClose={() => setBookingOpen(false)}
         source={bookingSource}
-        onSuccess={() => {
+        onSuccess={(booking) => {
           setBookingOpen(false);
-          toast('Booking created! Check the Bookings tab to pay.');
+          onBookingCreated(booking._id);
         }} />
 
       }
@@ -707,7 +707,13 @@ export function MyTours() {
   const { t } = useTranslation('dashboard');
   const { section, id } = useParams<{section?: string;id?: string;}>();
   const [tab, setTab] = useState<'bookings' | 'requests'>(section === 'requests' ? 'requests' : 'bookings');
+  const [selectedBookingId, setSelectedBookingId] = useState<string | undefined>(section === 'bookings' ? id : undefined);
   const requestsUnread = useUnreadCount('CustomTourRequest');
+
+  const handleBookingCreated = (bookingId: string) => {
+    setSelectedBookingId(bookingId);
+    setTab('bookings');
+  };
 
   return (
     <main className="min-h-screen bg-cream pt-28 pb-20">
@@ -735,7 +741,7 @@ export function MyTours() {
         </div>
 
         <div className="mt-8">
-          {tab === 'bookings' ? <BookingsTab initialSelectedId={section === 'bookings' ? id : undefined} /> : <RequestsTab initialSelectedId={section === 'requests' ? id : undefined} />}
+          {tab === 'bookings' ? <BookingsTab initialSelectedId={selectedBookingId} /> : <RequestsTab initialSelectedId={section === 'requests' ? id : undefined} onBookingCreated={handleBookingCreated} />}
         </div>
       </div>
     </main>);
