@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeftIcon, ArrowRightIcon, BedDoubleIcon, CalendarIcon, CarIcon, MapPinIcon, PlaneIcon, PrinterIcon, StarIcon, UsersIcon } from 'lucide-react';
 import { WHATSAPP_DISPLAY_SL, CONTACT_EMAIL, WEBSITE_DISPLAY } from '../../lib/contact';
+import { NotesBlock } from './NotesBlock';
 
 interface RefName {
   _id: string;
@@ -97,36 +98,6 @@ const nextDate = (iso?: string) => {
   d.setDate(d.getDate() + 1);
   return fmtDate(d.toISOString());
 };
-
-// Renders the free-text quotation fields (inclusions/exclusions/cancellation
-// policy/notes), which admins fill from a blank-line-separated "Heading \n
-// bullet lines" template (see DEFAULT_* constants in the admin builder) —
-// parsed here into headed sections instead of dumped as one text blob.
-function NotesBlock({ text }: { text?: string }) {
-  if (!text || !text.trim()) return null;
-  const blocks = text.trim().split(/\n\s*\n/);
-  return (
-    <div className="space-y-4">
-      {blocks.map((block, i) => {
-        const lines = block.split('\n').filter(Boolean);
-        if (lines.length === 1) {
-          return <p key={i} className="text-xs leading-relaxed text-forest/60">{lines[0]}</p>;
-        }
-        const [heading, ...rest] = lines;
-        return (
-          <div key={i}>
-            <p className="text-sm font-semibold text-forest">{heading}</p>
-            <ul className="mt-1.5 space-y-1">
-              {rest.map((line, j) =>
-                <li key={j} className="text-xs leading-relaxed text-forest/70">{line.replace(/^-\s*/, '')}</li>
-              )}
-            </ul>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
 
 export function QuotationView({ request, backHref }: { request: QuotationRequest; backHref?: string }) {
   const itin = request.itinerary;

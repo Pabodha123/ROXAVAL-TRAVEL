@@ -12,6 +12,7 @@ import { apiGetList, apiGetOne, apiPatch, apiPost, apiPostForm, ApiRequestError,
 import { useToast } from '../context/ToastContext';
 import { useUnreadCount } from '../hooks/useUnreadCount';
 import { BookingModal, BookingSource } from '../components/booking/BookingModal';
+import { NotesBlock } from '../components/quotation/NotesBlock';
 import { BackButton } from '../components/ui/BackButton';
 import { Timeline } from '../components/ui/Timeline';
 import { resolveRequestStage, resolveFullStage } from '../lib/tourTimeline';
@@ -563,10 +564,14 @@ function RequestsTab({ initialSelectedId, onBookingCreated }: {initialSelectedId
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald text-xs font-bold text-white">{d.dayNumber}</div>
                     <div>
                       <p className="text-sm font-semibold text-forest">{d.title}</p>
-                      <p className="mt-1 text-xs text-forest/60">{d.schedule}</p>
-                      {d.hotel && <p className="mt-1.5 flex items-center gap-1.5 text-xs text-forest/50"><BedDoubleIcon className="h-3.5 w-3.5" /> {d.hotel.name}{d.roomType ? ` (${d.roomType})` : ''}</p>}
+                      {d.schedule && <p className="mt-1 text-xs leading-relaxed text-forest/60">{d.schedule}</p>}
+                      {d.hotel &&
+                  <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-xs font-medium text-forest/60">
+                          <BedDoubleIcon className="h-3.5 w-3.5 text-forest/35" /> {d.hotel.name}{d.roomType ? ` (${d.roomType})` : ''}
+                        </p>
+                  }
                       {(d.arrivalTime || d.departureTime) &&
-                  <p className="mt-1 text-xs text-forest/50">
+                  <p className="mt-1.5 text-xs text-forest/50">
                           {d.arrivalTime && <span>Arrive {d.arrivalTime}</span>}
                           {d.departureTime && <span>{d.arrivalTime ? ' · ' : ''}Depart {d.departureTime}</span>}
                         </p>
@@ -579,7 +584,11 @@ function RequestsTab({ initialSelectedId, onBookingCreated }: {initialSelectedId
             )}
               </div>
 
-              {itin.customerFacingNotes && <p className="mt-4 text-xs italic text-forest/50">{itin.customerFacingNotes}</p>}
+              {itin.customerFacingNotes &&
+          <div className="mt-5 rounded-xl bg-cream/50 p-4">
+                  <NotesBlock text={itin.customerFacingNotes} />
+                </div>
+          }
 
               <div className="mt-4 flex items-center justify-between border-t border-forest/10 pt-4">
                 <span className="text-sm text-forest/60">Total Price</span>
