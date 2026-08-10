@@ -9,6 +9,7 @@ import { PriorityBadge } from '../../components/PriorityBadge';
 import { Timeline } from '../../../components/ui/Timeline';
 import { resolveRequestStage } from '../../../lib/tourTimeline';
 import { MessagingPanel } from '../../../components/messaging/MessagingPanel';
+import { NotesBlock } from '../../../components/quotation/NotesBlock';
 import {
   TextField,
   TextAreaField,
@@ -930,12 +931,37 @@ export function AdminCustomRequestDetail() {
               )}
               </div>
               {(request.itinerary.visaRequirements || request.itinerary.travelInsurance || request.itinerary.cancellationPolicy || request.itinerary.inclusions || request.itinerary.exclusions) &&
-              <div className="mt-4 space-y-2 border-t border-forest/10 pt-4 text-xs">
-                  {request.itinerary.visaRequirements && <p><span className="font-semibold text-forest">Visa Requirements: </span><span className="text-forest/60">{request.itinerary.visaRequirements}</span></p>}
-                  {request.itinerary.travelInsurance && <p><span className="font-semibold text-forest">Travel Insurance: </span><span className="text-forest/60">{request.itinerary.travelInsurance}</span></p>}
-                  {request.itinerary.cancellationPolicy && <p><span className="font-semibold text-forest">Cancellation Policy: </span><span className="text-forest/60">{request.itinerary.cancellationPolicy}</span></p>}
-                  {request.itinerary.inclusions && <p><span className="font-semibold text-forest">Inclusions: </span><span className="text-forest/60">{request.itinerary.inclusions}</span></p>}
-                  {request.itinerary.exclusions && <p><span className="font-semibold text-forest">Exclusions: </span><span className="text-forest/60">{request.itinerary.exclusions}</span></p>}
+              <div className="mt-4 grid gap-4 border-t border-forest/10 pt-4 sm:grid-cols-2">
+                  {request.itinerary.visaRequirements &&
+                <div>
+                      <p className="text-xs font-semibold text-forest">Visa Requirements</p>
+                      <div className="mt-1.5"><NotesBlock text={request.itinerary.visaRequirements} /></div>
+                    </div>
+                }
+                  {request.itinerary.travelInsurance &&
+                <div>
+                      <p className="text-xs font-semibold text-forest">Travel Insurance</p>
+                      <div className="mt-1.5"><NotesBlock text={request.itinerary.travelInsurance} /></div>
+                    </div>
+                }
+                  {request.itinerary.cancellationPolicy &&
+                <div>
+                      <p className="text-xs font-semibold text-forest">Cancellation Policy</p>
+                      <div className="mt-1.5"><NotesBlock text={request.itinerary.cancellationPolicy} /></div>
+                    </div>
+                }
+                  {request.itinerary.inclusions &&
+                <div>
+                      <p className="text-xs font-semibold text-forest">Inclusions</p>
+                      <div className="mt-1.5"><NotesBlock text={request.itinerary.inclusions} /></div>
+                    </div>
+                }
+                  {request.itinerary.exclusions &&
+                <div>
+                      <p className="text-xs font-semibold text-forest">Exclusions</p>
+                      <div className="mt-1.5"><NotesBlock text={request.itinerary.exclusions} /></div>
+                    </div>
+                }
                 </div>
               }
               <div className="mt-4 flex items-center justify-between border-t border-forest/10 pt-4">
