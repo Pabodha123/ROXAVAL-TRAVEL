@@ -31,6 +31,8 @@ interface FormData {
   adults: number;
   children: number;
   infants: number;
+  childAges: number[];
+  infantAges: number[];
   isFlexible: boolean;
   selectedDestinations: string[];
   selectedActivities: string[];
@@ -48,7 +50,7 @@ interface FormData {
 }
 
 const initialFormData: FormData = {
-  arrivalDate: '', days: '7', adults: 2, children: 0, infants: 0, isFlexible: false,
+  arrivalDate: '', days: '7', adults: 2, children: 0, infants: 0, childAges: [], infantAges: [], isFlexible: false,
   selectedDestinations: [], selectedActivities: [],
   customDestinations: [], customActivities: [],
   hotelCategory: 'Standard', mealPreferences: [], roomTypePreference: '',
@@ -73,6 +75,15 @@ export function CustomTourWizard() {
 
   const { items: destinations, loading: destinationsLoading } = useApiList<DestinationRef>('/destinations', { limit: 100 }, 100);
   const { items: activities, loading: activitiesLoading } = useApiList<Activity>('/activities', { limit: 100 }, 100);
+
+  // Keep the ages arrays in sync with the traveler counts — new slots default
+  // to a mid-range age, existing entries are preserved when the count shrinks/grows.
+  useEffect(() => {
+    setFormData((prev) => ({ ...prev, childAges: Array.from({ length: prev.children }, (_, i) => prev.childAges[i] ?? 8) }));
+  }, [formData.children]);
+  useEffect(() => {
+    setFormData((prev) => ({ ...prev, infantAges: Array.from({ length: prev.infants }, (_, i) => prev.infantAges[i] ?? 1) }));
+  }, [formData.infants]);
 
   // Prefill from "Plan My Tour" on a Tour Package Details page, if navigated here with a package selected
   useEffect(() => {
@@ -126,7 +137,7 @@ export function CustomTourWizard() {
         endDate: endDate.toISOString(),
         isFlexible: formData.isFlexible
       },
-      travelers: { adults: formData.adults, children: formData.children, infants: formData.infants },
+      travelers: { adults: formData.adults, children: formData.children, infants: formData.infants, childAges: formData.childAges, infantAges: formData.infantAges },
       preferredDestinations: formData.selectedDestinations,
       preferredActivities: formData.selectedActivities,
       customDestinations: formData.customDestinations,
@@ -277,9 +288,45 @@ export function CustomTourWizard() {
                 <div><label className="mb-2 block text-sm font-medium text-forest">Number of Days</label><input type="number" min={1} value={formData.days} onChange={(e) => setFormData({ ...formData, days: e.target.value })} placeholder="e.g. 10" className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" /></div>
                 <div className="grid grid-cols-3 gap-4">
                   <div><label className="mb-2 block text-sm font-medium text-forest">Adults</label><input type="number" min={1} value={formData.adults} onChange={(e) => setFormData({ ...formData, adults: Number(e.target.value) })} className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" /></div>
-                  <div><label className="mb-2 block text-sm font-medium text-forest">Children</label><input type="number" min={0} value={formData.children} onChange={(e) => setFormData({ ...formData, children: Number(e.target.value) })} className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" /></div>
-                  <div><label className="mb-2 block text-sm font-medium text-forest">Infants</label><input type="number" min={0} value={formData.infants} onChange={(e) => setFormData({ ...formData, infants: Number(e.target.value) })} className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" /></div>
+                  <div><label className="mb-2 block text-sm font-medium text-forest">Children <span className="font-normal text-forest/40">(5-11)</span></label><input type="number" min={0} value={formData.children} onChange={(e) => setFormData({ ...formData, children: Number(e.target.value) })} className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" /></div>
+                  <div><label className="mb-2 block text-sm font-medium text-forest">Infants <span className="font-normal text-forest/40">(under 5)</span></label><input type="number" min={0} value={formData.infants} onChange={(e) => setFormData({ ...formData, infants: Number(e.target.value) })} className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" /></div>
                 </div>
+                {formData.childAges.length > 0 &&
+                <div className="sm:col-span-2">
+                    <label className="mb-2 block text-sm font-medium text-forest">Children's Ages <span className="font-normal text-forest/50">(helps us set up the right room & bed configuration)</span></label>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.childAges.map((age, i) =>
+                    <input
+                      key={i}
+                      type="number"
+                      min={5}
+                      max={11}
+                      value={age}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, childAges: prev.childAges.map((a, idx) => idx === i ? Number(e.target.value) || 0 : a) }))}
+                      className="w-20 rounded-xl border border-forest/10 bg-cream/50 px-3 py-2.5 text-sm outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" />
+
+                    )}
+                    </div>
+                  </div>
+                }
+                {formData.infantAges.length > 0 &&
+                <div className="sm:col-span-2">
+                    <label className="mb-2 block text-sm font-medium text-forest">Infants' Ages <span className="font-normal text-forest/50">(in years)</span></label>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.infantAges.map((age, i) =>
+                    <input
+                      key={i}
+                      type="number"
+                      min={0}
+                      max={4}
+                      value={age}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, infantAges: prev.infantAges.map((a, idx) => idx === i ? Number(e.target.value) || 0 : a) }))}
+                      className="w-20 rounded-xl border border-forest/10 bg-cream/50 px-3 py-2.5 text-sm outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" />
+
+                    )}
+                    </div>
+                  </div>
+                }
                 <label className="flex items-center gap-2 text-sm font-medium text-forest">
                   <input type="checkbox" checked={formData.isFlexible} onChange={(e) => setFormData({ ...formData, isFlexible: e.target.checked })} className="h-4 w-4 rounded border-forest/20 text-emerald focus:ring-emerald" />
                   My travel dates are flexible
