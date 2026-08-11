@@ -37,7 +37,7 @@ const createRequestForCustomer = async (customer, payload, actorId) => {
 
   await notifyAllAdmins({
     type: 'inquiry_received',
-    title: 'New Custom Tour Inquiry',
+    title: `New Custom Tour Inquiry — ${customer.user?.fullName || 'a customer'}`,
     message: `New Custom Tour Inquiry from ${customer.user?.fullName || 'a customer'}`,
     link: `/admin/custom-requests/${request._id}`,
     relatedModel: 'CustomTourRequest',
@@ -178,7 +178,9 @@ const buildAndSendItinerary = async (requestId, adminId, itineraryPayload) => {
  */
 const acceptItinerary = async (customerUserId, requestId) => {
   const customer = await Customer.findOne({ user: customerUserId });
-  const request = await CustomTourRequest.findOne({ _id: requestId, customer: customer._id }).populate('itinerary');
+  const request = await CustomTourRequest.findOne({ _id: requestId, customer: customer._id })
+    .populate('itinerary')
+    .populate({ path: 'customer', populate: { path: 'user', select: 'fullName' } });
   if (!request || !request.itinerary) throw ApiError.notFound('Itinerary not found for this request.');
 
   request.itinerary.status = 'Accepted';
@@ -188,9 +190,10 @@ const acceptItinerary = async (customerUserId, requestId) => {
   request.revisionHistory.push({ action: 'approved', actor: customerUserId });
   await request.save();
 
+  const customerName = request.customer?.user?.fullName || 'A customer';
   await notifyAssignedOrAllAdmins(request, {
     type: 'itinerary_approved',
-    title: 'Itinerary Approved',
+    title: `Itinerary Approved — ${customerName}`,
     message: `The customer has approved the itinerary for request ${request.referenceNumber}. They may now proceed to booking.`,
     link: `/admin/custom-requests/${request._id}`,
     relatedModel: 'CustomTourRequest',
@@ -205,7 +208,9 @@ const acceptItinerary = async (customerUserId, requestId) => {
  */
 const rejectItinerary = async (customerUserId, requestId) => {
   const customer = await Customer.findOne({ user: customerUserId });
-  const request = await CustomTourRequest.findOne({ _id: requestId, customer: customer._id }).populate('itinerary');
+  const request = await CustomTourRequest.findOne({ _id: requestId, customer: customer._id })
+    .populate('itinerary')
+    .populate({ path: 'customer', populate: { path: 'user', select: 'fullName' } });
   if (!request || !request.itinerary) throw ApiError.notFound('Itinerary not found for this request.');
 
   request.itinerary.status = 'Rejected';
@@ -215,9 +220,10 @@ const rejectItinerary = async (customerUserId, requestId) => {
   request.revisionHistory.push({ action: 'rejected', actor: customerUserId });
   await request.save();
 
+  const customerName = request.customer?.user?.fullName || 'A customer';
   await notifyAssignedOrAllAdmins(request, {
     type: 'general',
-    title: 'Itinerary Rejected',
+    title: `Itinerary Rejected — ${customerName}`,
     message: `The customer has rejected the itinerary for request ${request.referenceNumber}.`,
     link: `/admin/custom-requests/${request._id}`,
     relatedModel: 'CustomTourRequest',
@@ -232,7 +238,9 @@ const rejectItinerary = async (customerUserId, requestId) => {
  */
 const requestChanges = async (customerUserId, requestId, note) => {
   const customer = await Customer.findOne({ user: customerUserId });
-  const request = await CustomTourRequest.findOne({ _id: requestId, customer: customer._id }).populate('itinerary');
+  const request = await CustomTourRequest.findOne({ _id: requestId, customer: customer._id })
+    .populate('itinerary')
+    .populate({ path: 'customer', populate: { path: 'user', select: 'fullName' } });
   if (!request || !request.itinerary) throw ApiError.notFound('Itinerary not found for this request.');
 
   request.itinerary.status = 'Changes Requested';
@@ -242,9 +250,10 @@ const requestChanges = async (customerUserId, requestId, note) => {
   request.revisionHistory.push({ action: 'changes_requested', note, actor: customerUserId });
   await request.save();
 
+  const customerName = request.customer?.user?.fullName || 'A customer';
   await notifyAssignedOrAllAdmins(request, {
     type: 'changes_requested',
-    title: 'Customer Requested Changes',
+    title: `Customer Requested Changes — ${customerName}`,
     message: `Changes were requested on ${request.referenceNumber}: "${note}"`,
     link: `/admin/custom-requests/${request._id}`,
     relatedModel: 'CustomTourRequest',

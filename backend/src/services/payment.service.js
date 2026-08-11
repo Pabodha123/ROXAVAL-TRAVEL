@@ -53,7 +53,7 @@ const createPayment = async (customerUserId, payload) => {
 
   await notifyAllAdmins({
     type: 'payment_submitted',
-    title: 'Payment Received',
+    title: `Payment Received — ${customerUserId.fullName || 'A customer'}`,
     message: `${customerUserId.fullName || 'A customer'} submitted a ${payload.paymentType} payment of ${payment.currency} ${payment.amount.toLocaleString()} for booking ${booking.bookingReference}.`,
     link: `/admin/payments`,
     relatedModel: 'Booking',

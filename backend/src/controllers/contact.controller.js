@@ -22,7 +22,7 @@ const create = catchAsync(async (req, res) => {
 
   await notifyAllAdmins({
     type: 'general',
-    title: 'New Contact Inquiry',
+    title: `New Contact Inquiry — ${contact.name}`,
     message: `${contact.name} sent a message: "${contact.subject}"`,
     link: '/admin/contact',
     relatedModel: 'Contact',

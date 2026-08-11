@@ -33,14 +33,15 @@ const sendMessage = async (userId, role, requestId, text) => {
   });
 
   if (role === 'customer') {
+    const customerName = request.customer?.user?.fullName || 'A customer';
     if (request.assignedAdmin) {
       const admin = await Admin.findById(request.assignedAdmin).populate('user');
       if (admin?.user) {
         await notify({
           recipient: admin.user._id,
           type: 'message_received',
-          title: 'New Message',
-          message: `${request.customer?.user?.fullName || 'A customer'} sent a message on request ${request.referenceNumber}: "${text}"`,
+          title: `New Message — ${customerName}`,
+          message: `${customerName} sent a message on request ${request.referenceNumber}: "${text}"`,
           link: `/admin/custom-requests/${request._id}`,
           relatedModel: 'CustomTourRequest',
           relatedId: request._id,
@@ -49,8 +50,8 @@ const sendMessage = async (userId, role, requestId, text) => {
     } else {
       await notifyAllAdmins({
         type: 'message_received',
-        title: 'New Message',
-        message: `${request.customer?.user?.fullName || 'A customer'} sent a message on request ${request.referenceNumber}: "${text}"`,
+        title: `New Message — ${customerName}`,
+        message: `${customerName} sent a message on request ${request.referenceNumber}: "${text}"`,
         link: `/admin/custom-requests/${request._id}`,
         relatedModel: 'CustomTourRequest',
         relatedId: request._id,
