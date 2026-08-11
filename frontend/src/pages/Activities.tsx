@@ -33,8 +33,9 @@ export function Activities() {
     category: category || undefined,
     location: location || undefined,
     difficultyLevel: difficulty || undefined,
+    isFeatured: 'true',
     sort
-  });
+  }, 24);
 
   return (
     <main className="min-h-screen bg-cream pt-24">
