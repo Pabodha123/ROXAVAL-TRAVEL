@@ -723,13 +723,17 @@ export function AdminCustomRequestDetail() {
   const generateQuotation = () => {
     const itin = request?.itinerary;
     if (!itin || !id) return;
+    const lastDayNumber = Math.max(...itin.days.map((d) => d.dayNumber));
     const uncoveredDay = itin.days.find((d) => {
-      const hasHotel = Boolean(d.hotel);
+      // The last day is the departure day — the client flies home, so no
+      // hotel is booked for that night.
+      const hasHotel = d.dayNumber === lastDayNumber || Boolean(d.hotel);
       const hasSightseeingOrTransfer = (d.activityPricing || []).some((a) => a.selected !== false) || (d.transfers || []).some((t) => t.selected !== false) || Boolean(d.transport);
       return !hasHotel || !hasSightseeingOrTransfer;
     });
     if (uncoveredDay) {
-      toast(`Day ${uncoveredDay.dayNumber} needs a hotel and at least one sightseeing/transfer before generating the quotation.`, 'error');
+      const missing = uncoveredDay.dayNumber === lastDayNumber ? 'at least one sightseeing/transfer' : 'a hotel and at least one sightseeing/transfer';
+      toast(`Day ${uncoveredDay.dayNumber} needs ${missing} before generating the quotation.`, 'error');
       return;
     }
     window.open(`/admin/custom-requests/${id}/quotation`, '_blank');
