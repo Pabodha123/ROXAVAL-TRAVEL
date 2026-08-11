@@ -59,6 +59,7 @@ export function AdminCustomRequestNew() {
   const [guideRequired, setGuideRequired] = useState(false);
   const [budgetAmount, setBudgetAmount] = useState(1000);
   const [budgetCurrency, setBudgetCurrency] = useState('USD');
+  const [sightseeingPreference, setSightseeingPreference] = useState('No Preference');
   const [specialRequests, setSpecialRequests] = useState('');
 
   useEffect(() => {
@@ -120,6 +121,7 @@ export function AdminCustomRequestNew() {
       roomTypePreference,
       guideRequired,
       estimatedBudget: { amount: budgetAmount, currency: budgetCurrency, perPerson: false },
+      sightseeingPreference,
       specialRequests
     };
     try {
@@ -229,6 +231,7 @@ export function AdminCustomRequestNew() {
           <div className="grid gap-4 sm:grid-cols-3">
             <NumberField label="Estimated Budget" value={budgetAmount} onChange={setBudgetAmount} min={0} required />
             <TextField label="Currency" value={budgetCurrency} onChange={setBudgetCurrency} />
+            <SelectField label="Sightseeing in Budget" value={sightseeingPreference} onChange={setSightseeingPreference} options={['Include', 'Exclude', 'No Preference'].map((v) => ({ label: v, value: v }))} />
           </div>
           <div className="mt-4">
             <TextAreaField label="Special Requests" value={specialRequests} onChange={setSpecialRequests} rows={3} />

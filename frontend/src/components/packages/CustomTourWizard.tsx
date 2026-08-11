@@ -31,6 +31,7 @@ const MEAL_PREFERENCES = ['Breakfast Only', 'Half Board', 'Full Board', 'All Inc
 const TRAVEL_STYLES = ['Relaxed', 'Adventure', 'Cultural', 'Luxury', 'Family', 'Honeymoon', 'Backpacking'];
 const TRANSPORT_OPTIONS = ['Private Car', 'Van', 'SUV', 'Minibus', 'No Preference'];
 const ROOM_TYPE_OPTIONS = ['No Preference', 'Single', 'Double', 'Twin', 'Triple', 'Family / Quad', 'Suite'];
+const SIGHTSEEING_PREFERENCE_OPTIONS = ['Include', 'Exclude', 'No Preference'];
 
 interface FormData {
   arrivalDate: string;
@@ -52,6 +53,7 @@ interface FormData {
   guideRequired: boolean;
   budget: string;
   perPerson: boolean;
+  sightseeingPreference: string;
   travelStyle: string;
   specialRequests: string;
 }
@@ -62,7 +64,7 @@ const initialFormData: FormData = {
   customDestinations: [], customActivities: [],
   hotelCategory: 'Standard', mealPreferences: [], roomTypePreference: '',
   transportPreference: 'No Preference', guideRequired: false,
-  budget: '', perPerson: true, travelStyle: 'Relaxed',
+  budget: '', perPerson: true, sightseeingPreference: 'No Preference', travelStyle: 'Relaxed',
   specialRequests: ''
 };
 
@@ -156,6 +158,7 @@ export function CustomTourWizard() {
       transportPreference: formData.transportPreference,
       guideRequired: formData.guideRequired,
       estimatedBudget: { amount: Number(formData.budget), currency: 'USD', perPerson: formData.perPerson },
+      sightseeingPreference: formData.sightseeingPreference,
       specialRequests: formData.specialRequests
     };
   };
@@ -443,6 +446,15 @@ export function CustomTourWizard() {
                   </label>
                 </div>
                 <div>
+                  <label className="mb-3 block font-semibold text-forest">Does this budget include sightseeing &amp; activities?</label>
+                  <p className="mb-3 text-sm text-forest/50">This helps us quote you accurately — you can arrange your own sightseeing to lower the cost, or have us include it all.</p>
+                  <div className="flex flex-wrap gap-3">
+                    {SIGHTSEEING_PREFERENCE_OPTIONS.map((opt) =>
+                  <button type="button" key={opt} onClick={() => setFormData({ ...formData, sightseeingPreference: opt })} className={`rounded-full px-6 py-2.5 text-sm font-medium transition-colors ${formData.sightseeingPreference === opt ? 'bg-emerald text-white' : 'bg-cream text-forest hover:bg-emerald/10'}`}>{opt}</button>
+                  )}
+                  </div>
+                </div>
+                <div>
                   <label className="mb-3 block font-semibold text-forest">Travel Style</label>
                   <div className="flex flex-wrap gap-3">
                     {TRAVEL_STYLES.map((opt) =>
@@ -492,6 +504,7 @@ export function CustomTourWizard() {
                   <div><dt className="text-forest/50">Vehicle Type</dt><dd className="font-medium text-forest">{formData.transportPreference}</dd></div>
                   <div><dt className="text-forest/50">Guide Required</dt><dd className="font-medium text-forest">{formData.guideRequired ? 'Yes' : 'No'}</dd></div>
                   <div><dt className="text-forest/50">Budget</dt><dd className="font-medium text-forest">{formData.budget ? `$${formData.budget} ${formData.perPerson ? 'per person' : 'total'}` : '—'}</dd></div>
+                  <div><dt className="text-forest/50">Sightseeing in Budget</dt><dd className="font-medium text-forest">{formData.sightseeingPreference}</dd></div>
                 </dl>
 
                 <div>

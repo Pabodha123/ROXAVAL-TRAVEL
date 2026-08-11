@@ -187,6 +187,7 @@ interface ItineraryDetail {
   tourGuide?: { _id: string; name: string };
   vehicle?: { _id: string; name: string };
   pricing: { basePrice: number; discount: number; totalPrice: number; currency: string; pricePerPerson: boolean };
+  sightseeingIncluded?: boolean;
   adminNotes: string;
   customerFacingNotes: string;
   visaRequirements?: string;
@@ -220,6 +221,7 @@ interface RequestDetail {
   transportPreference?: string;
   guideRequired?: boolean;
   estimatedBudget: { amount: number; currency: string; perPerson: boolean };
+  sightseeingPreference?: string;
   specialRequests: string;
   status: string;
   priority: string;
@@ -239,9 +241,9 @@ const emptyDay = (n: number): ItineraryDayForm => ({
   arrivalTime: '', departureTime: '', travelTime: '', notes: ''
 });
 
-const dayCostOf = (d: Pick<ItineraryDayForm, 'roomCost' | 'activityPricing' | 'transfers' | 'flights'>) =>
+const dayCostOf = (d: Pick<ItineraryDayForm, 'roomCost' | 'activityPricing' | 'transfers' | 'flights'>, opts: { excludeSightseeing?: boolean } = {}) =>
 (d.roomCost || 0) +
-(d.activityPricing || []).filter((a) => a.selected !== false).reduce((s, a) => s + (a.cost || 0), 0) +
+(opts.excludeSightseeing ? 0 : (d.activityPricing || []).filter((a) => a.selected !== false).reduce((s, a) => s + (a.cost || 0), 0)) +
 (d.transfers || []).filter((t) => t.selected !== false).reduce((s, t) => s + (t.cost || 0), 0) +
 (d.flights || []).filter((f) => f.selected !== false).reduce((s, f) => s + (f.cost || 0), 0);
 
@@ -311,6 +313,7 @@ export function AdminCustomRequestDetail() {
   const [totalPrice, setTotalPrice] = useState(0);
   const [currency, setCurrency] = useState('USD');
   const [pricePerPerson, setPricePerPerson] = useState(true);
+  const [sightseeingIncluded, setSightseeingIncluded] = useState(true);
   const [adminNotes, setAdminNotes] = useState('');
   const [customerFacingNotes, setCustomerFacingNotes] = useState(DEFAULT_CUSTOMER_FACING_NOTES);
   const [visaRequirements, setVisaRequirements] = useState('');
@@ -434,6 +437,7 @@ export function AdminCustomRequestDetail() {
       setTotalPrice(itin.pricing.totalPrice);
       setCurrency(itin.pricing.currency);
       setPricePerPerson(itin.pricing.pricePerPerson);
+      setSightseeingIncluded(itin.sightseeingIncluded ?? true);
       setAdminNotes(itin.adminNotes);
       setCustomerFacingNotes(itin.customerFacingNotes || DEFAULT_CUSTOMER_FACING_NOTES);
       setVisaRequirements(itin.visaRequirements || '');
@@ -447,6 +451,7 @@ export function AdminCustomRequestDetail() {
       setTitle(`Custom Itinerary for ${request.referenceNumber}`);
       setBasePrice(request.estimatedBudget.amount);
       setTotalPrice(request.estimatedBudget.amount);
+      setSightseeingIncluded(request.sightseeingPreference !== 'Exclude');
       setTourGuide('');
       setVehicle('');
       setVisaRequirements('');
@@ -598,9 +603,11 @@ export function AdminCustomRequestDetail() {
     setPickerKind(null);
   };
 
-  const suggestedTotal = days.reduce((sum, d) => sum + dayCostOf(d), 0) +
-  (tourGuide ? (guidePricePerDay[tourGuide] || 0) * days.length : 0) +
+  const guideVehicleCost = (tourGuide ? (guidePricePerDay[tourGuide] || 0) * days.length : 0) +
   (vehicle ? (vehiclePricePerDay[vehicle] || 0) * days.length : 0);
+  const suggestedTotalWithSightseeing = days.reduce((sum, d) => sum + dayCostOf(d), 0) + guideVehicleCost;
+  const suggestedTotalWithoutSightseeing = days.reduce((sum, d) => sum + dayCostOf(d, { excludeSightseeing: true }), 0) + guideVehicleCost;
+  const suggestedTotal = sightseeingIncluded ? suggestedTotalWithSightseeing : suggestedTotalWithoutSightseeing;
 
   const useSuggestedTotal = () => {
     setBasePrice(suggestedTotal);
@@ -707,6 +714,7 @@ export function AdminCustomRequestDetail() {
         tourGuide: tourGuide || undefined,
         vehicle: vehicle || undefined,
         pricing: { basePrice, discount, totalPrice, currency, pricePerPerson },
+        sightseeingIncluded,
         adminNotes,
         customerFacingNotes,
         visaRequirements,
@@ -796,6 +804,9 @@ export function AdminCustomRequestDetail() {
               }
               <div className="flex justify-between"><dt className="text-forest/50">Guide Required</dt><dd className="text-forest">{request.guideRequired ? 'Yes' : 'No'}</dd></div>
               <div className="flex justify-between"><dt className="text-forest/50">Budget</dt><dd className="text-forest">{request.estimatedBudget.currency} {request.estimatedBudget.amount.toLocaleString()}</dd></div>
+              {request.sightseeingPreference && request.sightseeingPreference !== 'No Preference' &&
+              <div className="flex justify-between"><dt className="text-forest/50">Sightseeing in Budget</dt><dd className="text-forest">{request.sightseeingPreference}</dd></div>
+              }
               <div className="flex items-center justify-between">
                 <dt className="text-forest/50">Priority</dt>
                 <dd className="flex items-center gap-2">
@@ -977,7 +988,10 @@ export function AdminCustomRequestDetail() {
                 </div>
               }
               <div className="mt-4 flex items-center justify-between border-t border-forest/10 pt-4">
-                <span className="text-sm text-forest/60">Total Price</span>
+                <div>
+                  <span className="text-sm text-forest/60">Total Price</span>
+                  <p className="text-xs text-forest/40">{request.itinerary.sightseeingIncluded === false ? 'Sightseeing & activities not included' : 'Includes sightseeing & activities'}</p>
+                </div>
                 <span className="font-display text-xl font-semibold text-forest">{request.itinerary.pricing.currency} {request.itinerary.pricing.totalPrice.toLocaleString()}</span>
               </div>
             </div> :
@@ -1234,12 +1248,22 @@ export function AdminCustomRequestDetail() {
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <p className="font-display text-sm font-semibold text-forest">Suggested Total (from selections)</p>
-                    <p className="mt-1 text-xs text-forest/60">Sum of every day's hotel, sightseeing and transfer costs, plus guide/vehicle day rates.</p>
+                    <p className="mt-1 text-xs text-forest/60">
+                      {sightseeingIncluded ?
+                    "Sum of every day's hotel, sightseeing and transfer costs, plus guide/vehicle day rates." :
+                    "Sum of every day's hotel and transfer costs, plus guide/vehicle day rates — sightseeing/activity costs excluded."}
+                    </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="font-display text-xl font-semibold text-forest">{currency} {suggestedTotal.toLocaleString()}</span>
                     <button type="button" onClick={useSuggestedTotal} className="rounded-full bg-emerald px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-light">Use this amount</button>
                   </div>
+                </div>
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-emerald/15 pt-4">
+                  <CheckboxField label="Include sightseeing costs in this quotation" checked={sightseeingIncluded} onChange={setSightseeingIncluded} />
+                  <p className="text-xs text-forest/50">
+                    With: {currency} {suggestedTotalWithSightseeing.toLocaleString()} &nbsp;·&nbsp; Without: {currency} {suggestedTotalWithoutSightseeing.toLocaleString()}
+                  </p>
                 </div>
               </div>
 

@@ -71,6 +71,7 @@ export interface QuotationItinerary {
   summary?: string;
   days: QuotationDay[];
   pricing: { basePrice: number; discount: number; totalPrice: number; currency: string; pricePerPerson: boolean };
+  sightseeingIncluded?: boolean;
   visaRequirements?: string;
   travelInsurance?: string;
   cancellationPolicy?: string;
@@ -291,6 +292,9 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
             <p className="font-display text-xl font-bold text-forest">
               Total: {itin.pricing.currency} {itin.pricing.totalPrice.toLocaleString()}{itin.pricing.pricePerPerson ? ' / person' : ''}
             </p>
+            <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold ${itin.sightseeingIncluded === false ? 'bg-gold/15 text-forest/70' : 'bg-emerald/10 text-emerald'}`}>
+              {itin.sightseeingIncluded === false ? 'Sightseeing & activities not included' : 'Includes sightseeing & activities'}
+            </span>
           </div>
         </div>
 

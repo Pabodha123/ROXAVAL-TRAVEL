@@ -119,6 +119,7 @@ const itineraryVersionSchema = new mongoose.Schema(
       currency: String,
       pricePerPerson: Boolean,
     },
+    sightseeingIncluded: Boolean,
     adminNotes: String,
     customerFacingNotes: String,
     visaRequirements: String,
@@ -155,6 +156,9 @@ const itinerarySchema = new mongoose.Schema(
       currency: { type: String, default: 'USD' },
       pricePerPerson: { type: Boolean, default: true },
     },
+    // Whether pricing.totalPrice includes guided sightseeing/activity costs
+    // or just accommodation/transport — shown to the customer on the quotation.
+    sightseeingIncluded: { type: Boolean, default: true },
     adminNotes: { type: String, default: '' },
     customerFacingNotes: { type: String, default: '' },
     visaRequirements: { type: String, default: '' },

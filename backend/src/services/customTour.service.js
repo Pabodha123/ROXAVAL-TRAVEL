@@ -132,6 +132,7 @@ const buildAndSendItinerary = async (requestId, adminId, itineraryPayload) => {
       days: itinerary.days,
       hotels: itinerary.hotels,
       pricing: itinerary.pricing,
+      sightseeingIncluded: itinerary.sightseeingIncluded,
       adminNotes: itinerary.adminNotes,
       customerFacingNotes: itinerary.customerFacingNotes,
       changedBy: adminId,

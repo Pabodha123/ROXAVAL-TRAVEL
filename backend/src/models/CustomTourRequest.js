@@ -74,6 +74,13 @@ const customTourRequestSchema = new mongoose.Schema(
       currency: { type: String, default: 'USD' },
       perPerson: { type: Boolean, default: true },
     },
+    // Whether the stated budget assumes guided sightseeing/activities are
+    // included, so the admin knows which kind of quote to build.
+    sightseeingPreference: {
+      type: String,
+      enum: ['Include', 'Exclude', 'No Preference'],
+      default: 'No Preference',
+    },
     specialRequests: { type: String, default: '' },
 
     // AI-drafted itinerary the customer reviewed before submitting (read-only snapshot,

@@ -31,6 +31,7 @@ const createCustomTourRequestSchema = z.object({
     currency: z.string().optional(),
     perPerson: z.boolean().optional(),
   }),
+  sightseeingPreference: z.enum(['Include', 'Exclude', 'No Preference']).optional(),
   specialRequests: z.string().optional(),
   aiGeneratedItinerary: z
     .object({
@@ -150,6 +151,7 @@ const buildItinerarySchema = z.object({
     currency: z.string().optional(),
     pricePerPerson: z.boolean().optional(),
   }),
+  sightseeingIncluded: z.boolean().optional(),
   adminNotes: z.string().optional(),
   customerFacingNotes: z.string().optional(),
   visaRequirements: z.string().optional(),
