@@ -54,3 +54,14 @@ body {
 }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Browsers drop background colors/images by default when printing or
+   saving as PDF (window.print()), so the quotation's forest-green header,
+   gold buttons, and colored cards would otherwise disappear — force them
+   to render exactly as on screen. */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
