@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckIcon, ChevronRightIcon, ChevronLeftIcon, MapPinIcon, TargetIcon, SendIcon, LockIcon, Loader2Icon, SparklesIcon, RefreshCwIcon, XIcon } from 'lucide-react';
+import { CheckIcon, ChevronRightIcon, ChevronLeftIcon, MapPinIcon, TargetIcon, SendIcon, LockIcon, Loader2Icon, SparklesIcon, XIcon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useApiList } from '../../hooks/useApiList';
@@ -9,7 +9,6 @@ import { apiGetOne, apiPost, ApiRequestError } from '../../lib/api';
 import { AutocompleteTagInput } from '../ui/AutocompleteTagInput';
 import type { DestinationRef } from '../../types/activity';
 import type { Activity } from '../../types/activity';
-import type { HotelRef } from '../../types/tourPackage';
 import type { TourPackage } from '../../types/tourPackage';
 
 const steps = [
@@ -58,24 +57,6 @@ const initialFormData: FormData = {
   specialRequests: ''
 };
 
-interface AiItineraryDay {
-  dayNumber: number;
-  title: string;
-  schedule: string;
-  destinations: string[];
-  activities: string[];
-  hotel?: string;
-  meals: string[];
-}
-
-interface AiItineraryDraft {
-  summary: string;
-  days: AiItineraryDay[];
-  estimatedTotal?: number;
-  currency: string;
-  generatedAt: string;
-}
-
 export function CustomTourWizard() {
   const { user } = useAuth();
   const toast = useToast();
@@ -90,13 +71,8 @@ export function CustomTourWizard() {
   const [prefillPackage, setPrefillPackage] = useState<TourPackage | null>(null);
   const [prefillDestinationName, setPrefillDestinationName] = useState<string | null>(null);
 
-  const [aiDraft, setAiDraft] = useState<AiItineraryDraft | null>(null);
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
-
   const { items: destinations, loading: destinationsLoading } = useApiList<DestinationRef>('/destinations', { limit: 100 }, 100);
   const { items: activities, loading: activitiesLoading } = useApiList<Activity>('/activities', { limit: 100 }, 100);
-  const { items: hotels } = useApiList<HotelRef>('/hotels', { limit: 100 }, 100);
 
   // Prefill from "Plan My Tour" on a Tour Package Details page, if navigated here with a package selected
   useEffect(() => {
@@ -134,14 +110,11 @@ export function CustomTourWizard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.state]);
 
-  const destinationName = (id: string) => destinations.find((d) => d._id === id)?.name || id;
-  const activityName = (id: string) => activities.find((a) => a._id === id)?.name || id;
   // Once the traveler has picked destinations, narrow the Activities step to only
   // what's actually offered there — otherwise (nothing picked yet) show everything.
   const activitiesForSelectedDestinations = formData.selectedDestinations.length === 0 ?
   activities :
   activities.filter((a) => a.destinations.some((d) => formData.selectedDestinations.includes(d._id)));
-  const hotelName = (id?: string) => hotels.find((h) => h._id === id)?.name;
 
   const buildPreferencesPayload = () => {
     const startDate = new Date(formData.arrivalDate);
@@ -168,26 +141,6 @@ export function CustomTourWizard() {
       specialRequests: formData.specialRequests
     };
   };
-
-  const generateDraft = async () => {
-    setAiLoading(true);
-    setAiError(null);
-    try {
-      const draft = await apiPost<AiItineraryDraft>('/custom-tours/generate-itinerary', buildPreferencesPayload());
-      setAiDraft(draft);
-    } catch (err) {
-      setAiError(err instanceof ApiRequestError ? err.message : 'Could not generate an AI itinerary. You can still submit without one.');
-    } finally {
-      setAiLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (step === 5 && !aiDraft && !aiLoading && formData.arrivalDate && formData.days && formData.budget) {
-      generateDraft();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
 
   const scrollToTop = () => wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   const nextStep = () => {
@@ -224,10 +177,7 @@ export function CustomTourWizard() {
     setSubmitting(true);
     setError(null);
     try {
-      await apiPost('/custom-tours', {
-        ...buildPreferencesPayload(),
-        aiGeneratedItinerary: aiDraft || undefined
-      });
+      await apiPost('/custom-tours', buildPreferencesPayload());
       setSubmitted(true);
       toast('Your custom tour request has been submitted!');
     } catch (err) {
@@ -494,63 +444,6 @@ export function CustomTourWizard() {
                   <label className="mb-3 block font-semibold text-forest">Special Requests & Notes</label>
                   <p className="mb-4 text-sm text-forest/60">Dietary requirements, special occasions, wheelchair access, or any specific places you want to ensure are included.</p>
                   <textarea rows={4} value={formData.specialRequests} onChange={(e) => setFormData({ ...formData, specialRequests: e.target.value })} className="w-full rounded-2xl border border-forest/10 bg-cream/50 p-4 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" placeholder="Tell us more about your dream trip..."></textarea>
-                </div>
-
-                <div className="rounded-2xl border border-emerald/20 bg-emerald/5 p-5">
-                  <div className="flex items-center justify-between">
-                    <p className="flex items-center gap-2 font-semibold text-forest">
-                      <SparklesIcon className="h-4 w-4 text-emerald" /> AI-Drafted Itinerary Preview
-                    </p>
-                    {aiDraft && !aiLoading &&
-                    <button type="button" onClick={generateDraft} className="flex items-center gap-1.5 text-xs font-semibold text-emerald hover:underline">
-                        <RefreshCwIcon className="h-3.5 w-3.5" /> Regenerate
-                      </button>
-                    }
-                  </div>
-
-                  {aiLoading &&
-                  <div className="mt-4 flex items-center gap-2 text-sm text-forest/60">
-                      <Loader2Icon className="h-4 w-4 animate-spin" /> Our AI is drafting your itinerary…
-                    </div>
-                  }
-
-                  {!aiLoading && aiError &&
-                  <div className="mt-4">
-                      <p className="text-sm text-red-600">{aiError}</p>
-                      <button type="button" onClick={generateDraft} className="mt-2 text-xs font-semibold text-emerald hover:underline">Try again</button>
-                    </div>
-                  }
-
-                  {!aiLoading && aiDraft &&
-                  <div className="mt-4 space-y-3">
-                      {aiDraft.summary && <p className="text-sm text-forest/70">{aiDraft.summary}</p>}
-                      <div className="space-y-2.5">
-                        {aiDraft.days.map((d) =>
-                      <div key={d.dayNumber} className="rounded-xl bg-white p-3.5">
-                            <p className="text-sm font-semibold text-forest">Day {d.dayNumber}: {d.title}</p>
-                            <p className="mt-1 text-xs text-forest/60">{d.schedule}</p>
-                            <p className="mt-1.5 text-xs text-forest/50">
-                              {d.destinations.length > 0 && <span>{d.destinations.map(destinationName).join(', ')}</span>}
-                              {d.activities.length > 0 && <span>{d.destinations.length > 0 ? ' · ' : ''}{d.activities.map(activityName).join(', ')}</span>}
-                              {hotelName(d.hotel) && <span>{(d.destinations.length > 0 || d.activities.length > 0) ? ' · ' : ''}{hotelName(d.hotel)}</span>}
-                            </p>
-                          </div>
-                      )}
-                      </div>
-                      {aiDraft.estimatedTotal &&
-                    <div className="flex items-center justify-between border-t border-emerald/15 pt-3 text-sm">
-                          <span className="text-forest/60">Estimated total</span>
-                          <span className="font-display text-lg font-semibold text-forest">{aiDraft.currency} {aiDraft.estimatedTotal.toLocaleString()}</span>
-                        </div>
-                    }
-                    </div>
-                  }
-
-                  {!aiLoading && !aiDraft && !aiError &&
-                  <button type="button" onClick={generateDraft} className="mt-4 flex items-center gap-2 rounded-full bg-emerald px-5 py-2.5 text-xs font-semibold text-white hover:bg-emerald-light">
-                      <SparklesIcon className="h-3.5 w-3.5" /> Generate AI Itinerary
-                    </button>
-                  }
                 </div>
 
                 {error && <p className="rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-600">{error}</p>}
