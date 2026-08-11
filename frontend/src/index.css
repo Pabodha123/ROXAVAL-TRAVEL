@@ -55,6 +55,20 @@ body {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* Continuous scroll for the hotel-partner logo strip */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
+
 /* Browsers drop background colors/images by default when printing or
    saving as PDF (window.print()), so the quotation's forest-green header,
    gold buttons, and colored cards would otherwise disappear — force them

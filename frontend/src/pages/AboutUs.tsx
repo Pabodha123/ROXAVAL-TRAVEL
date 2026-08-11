@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CompassIcon, HeartHandshakeIcon, LeafIcon, SparklesIcon, StarIcon, MessageCircleIcon, MapIcon } from 'lucide-react';
+import { SparklesIcon, StarIcon, MessageCircleIcon, MapIcon } from 'lucide-react';
 import { PageBanner } from '../components/layout/PageBanner';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { Stats } from '../components/sections/Stats';
 import { WhyChoose } from '../components/sections/WhyChoose';
+import { CoreValues } from '../components/sections/CoreValues';
+import { HotelPartners } from '../components/sections/HotelPartners';
 import { apiGetList } from '../lib/api';
 import type { Review } from '../types/review';
-
-const CORE_VALUES = [
-{ icon: HeartHandshakeIcon, title: 'Integrity', text: 'Transparent pricing and honest advice, every single time.' },
-{ icon: SparklesIcon, title: 'Excellence', text: 'Meticulous planning so every detail of your journey feels effortless.' },
-{ icon: LeafIcon, title: 'Sustainability', text: 'Partnering with local communities and protecting the island we love.' },
-{ icon: CompassIcon, title: 'Genuine Hospitality', text: 'Sri Lankan warmth woven into every welcome, meal and farewell.' }];
-
 
 const TEAM = [
 { role: 'Founder & Managing Director', initials: 'FD' },
@@ -37,7 +32,7 @@ export function AboutUs() {
       <PageBanner
         eyebrow="Our Story"
         title="About Roxaval Travels"
-        subtitle="Wings to explore Sri Lanka — a local team crafting fully customized journeys across the island."
+        subtitle="Let your journey smile."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'About Us' }]} />
 
 
@@ -89,45 +84,24 @@ export function AboutUs() {
             <MapIcon className="h-8 w-8 text-gold" />
             <h3 className="font-display mt-5 text-2xl font-semibold">Our Mission</h3>
             <p className="mt-3 leading-relaxed text-cream/80">
-              To craft seamless, fully personalized Sri Lankan journeys — connecting travelers with authentic experiences,
-              trusted local partners and unforgettable memories, with honesty and care at every step.
+              To make travelling in Sri Lanka simple, personal, and memorable through trusted service and authentic
+              local experiences.
             </p>
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.6, delay: 0.1 }} className="rounded-3xl bg-emerald p-8 text-white shadow-lift sm:p-10">
             <StarIcon className="h-8 w-8 text-gold" />
             <h3 className="font-display mt-5 text-2xl font-semibold">Our Vision</h3>
             <p className="mt-3 leading-relaxed text-cream/80">
-              To be Sri Lanka's most trusted name in personalized travel — recognized for elevating every visitor's journey
-              while championing sustainable, community-rooted tourism across the island.
+              To become one of Sri Lanka's most trusted travel brands, creating unforgettable experiences while making
+              a positive difference to local communities and the environment.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Core Values */}
-      <section className="bg-white py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading eyebrow="What We Stand For" title="Our Core Values" />
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {CORE_VALUES.map((v, i) =>
-            <motion.div
-              key={v.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="rounded-3xl bg-cream p-7 text-center shadow-soft">
+      <CoreValues />
 
-                <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-emerald/10 text-emerald">
-                  <v.icon className="h-7 w-7" />
-                </div>
-                <h3 className="mt-5 font-display text-lg font-semibold text-forest">{v.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-forest/65">{v.text}</p>
-              </motion.div>
-            )}
-          </div>
-        </div>
-      </section>
+      <HotelPartners />
 
       {/* Years of Experience / Company Statistics */}
       <Stats />
