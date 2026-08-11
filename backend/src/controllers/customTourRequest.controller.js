@@ -41,7 +41,7 @@ const translatableFields = [
 const populateItinerary = {
   path: 'itinerary',
   populate: [
-    { path: 'days.destinations', select: 'name' },
+    { path: 'days.destinations', select: 'name mapLocation' },
     { path: 'days.activities', select: 'name' },
     {
       path: 'days.hotel',

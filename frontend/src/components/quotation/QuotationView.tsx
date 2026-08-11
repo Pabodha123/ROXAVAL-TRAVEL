@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { ArrowLeftIcon, ArrowRightIcon, BedDoubleIcon, CalendarIcon, CarIcon, MapPinIcon, PlaneIcon, PrinterIcon, StarIcon, UsersIcon } from 'lucide-react';
 import { WHATSAPP_DISPLAY_SL, CONTACT_EMAIL, WEBSITE_DISPLAY } from '../../lib/contact';
 import { NotesBlock } from './NotesBlock';
+import { RouteMap } from './RouteMap';
 
 interface RefName {
   _id: string;
   name: string;
+  mapLocation?: { lat?: number; lng?: number };
 }
 
 interface HotelRef {
@@ -169,6 +171,8 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
             </div>
           }
         </div>
+
+        <RouteMap days={days} />
 
         {/* Day by day */}
         <div className="mt-8 space-y-8 print:space-y-5">
