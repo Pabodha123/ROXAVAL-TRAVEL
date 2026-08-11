@@ -4,6 +4,24 @@ const ApiError = require('../utils/ApiError');
 const { notify, notifyAllAdmins } = require('./notification.service');
 
 /**
+ * Customer-triggered events (approve/reject/request changes) on a request
+ * that nobody has claimed yet would otherwise notify no one — `assignedAdmin`
+ * is only set once an admin explicitly claims the request, which doesn't
+ * reliably happen. Falls back to notifying every admin, same as a brand new
+ * inquiry, so these events are never silently dropped.
+ */
+const notifyAssignedOrAllAdmins = async (request, notification) => {
+  if (request.assignedAdmin) {
+    const admin = await Admin.findById(request.assignedAdmin).populate('user');
+    if (admin?.user) {
+      await notify({ recipient: admin.user._id, ...notification });
+      return;
+    }
+  }
+  await notifyAllAdmins(notification);
+};
+
+/**
  * Shared by the customer-submitted wizard and the admin-created "New Query"
  * form — both end up creating the same CustomTourRequest shape and firing
  * the same admin notification, they just differ in how `customer` and
@@ -170,20 +188,14 @@ const acceptItinerary = async (customerUserId, requestId) => {
   request.revisionHistory.push({ action: 'approved', actor: customerUserId });
   await request.save();
 
-  if (request.assignedAdmin) {
-    const admin = await Admin.findById(request.assignedAdmin).populate('user');
-    if (admin?.user) {
-      await notify({
-        recipient: admin.user._id,
-        type: 'itinerary_approved',
-        title: 'Itinerary Approved',
-        message: `The customer has approved the itinerary for request ${request.referenceNumber}. They may now proceed to booking.`,
-        link: `/admin/custom-requests/${request._id}`,
-        relatedModel: 'CustomTourRequest',
-        relatedId: request._id,
-      });
-    }
-  }
+  await notifyAssignedOrAllAdmins(request, {
+    type: 'itinerary_approved',
+    title: 'Itinerary Approved',
+    message: `The customer has approved the itinerary for request ${request.referenceNumber}. They may now proceed to booking.`,
+    link: `/admin/custom-requests/${request._id}`,
+    relatedModel: 'CustomTourRequest',
+    relatedId: request._id,
+  });
 
   return request;
 };
@@ -203,20 +215,14 @@ const rejectItinerary = async (customerUserId, requestId) => {
   request.revisionHistory.push({ action: 'rejected', actor: customerUserId });
   await request.save();
 
-  if (request.assignedAdmin) {
-    const admin = await Admin.findById(request.assignedAdmin).populate('user');
-    if (admin?.user) {
-      await notify({
-        recipient: admin.user._id,
-        type: 'general',
-        title: 'Itinerary Rejected',
-        message: `The customer has rejected the itinerary for request ${request.referenceNumber}.`,
-        link: `/admin/custom-requests/${request._id}`,
-        relatedModel: 'CustomTourRequest',
-        relatedId: request._id,
-      });
-    }
-  }
+  await notifyAssignedOrAllAdmins(request, {
+    type: 'general',
+    title: 'Itinerary Rejected',
+    message: `The customer has rejected the itinerary for request ${request.referenceNumber}.`,
+    link: `/admin/custom-requests/${request._id}`,
+    relatedModel: 'CustomTourRequest',
+    relatedId: request._id,
+  });
 
   return request;
 };
@@ -236,20 +242,14 @@ const requestChanges = async (customerUserId, requestId, note) => {
   request.revisionHistory.push({ action: 'changes_requested', note, actor: customerUserId });
   await request.save();
 
-  if (request.assignedAdmin) {
-    const admin = await Admin.findById(request.assignedAdmin).populate('user');
-    if (admin?.user) {
-      await notify({
-        recipient: admin.user._id,
-        type: 'changes_requested',
-        title: 'Customer Requested Changes',
-        message: `Changes were requested on ${request.referenceNumber}: "${note}"`,
-        link: `/admin/custom-requests/${request._id}`,
-        relatedModel: 'CustomTourRequest',
-        relatedId: request._id,
-      });
-    }
-  }
+  await notifyAssignedOrAllAdmins(request, {
+    type: 'changes_requested',
+    title: 'Customer Requested Changes',
+    message: `Changes were requested on ${request.referenceNumber}: "${note}"`,
+    link: `/admin/custom-requests/${request._id}`,
+    relatedModel: 'CustomTourRequest',
+    relatedId: request._id,
+  });
 
   return request;
 };
