@@ -19,7 +19,14 @@ const steps = [
 'Transport',
 'Review & Submit'];
 
-const HOTEL_CATEGORIES = ['Budget', 'Standard', 'Deluxe', 'Boutique', 'Luxury', 'Resort'];
+// Customers think in star ratings, not our internal catalog category names —
+// map the ones customers actually ask for onto the existing hotelCategory
+// enum so no backend/model change is needed.
+const HOTEL_CATEGORIES = [
+  { label: '3 Star', value: 'Standard' },
+  { label: '4 Star', value: 'Deluxe' },
+  { label: '5 Star', value: 'Luxury' }
+];
 const MEAL_PREFERENCES = ['Breakfast Only', 'Half Board', 'Full Board', 'All Inclusive', 'Vegetarian', 'Vegan', 'Halal', 'No Preference'];
 const TRAVEL_STYLES = ['Relaxed', 'Adventure', 'Cultural', 'Luxury', 'Family', 'Honeymoon', 'Backpacking'];
 const TRANSPORT_OPTIONS = ['Private Car', 'Van', 'SUV', 'Minibus', 'No Preference'];
@@ -408,7 +415,7 @@ export function CustomTourWizard() {
                   <label className="mb-3 block font-semibold text-forest">Preferred Hotel Category</label>
                   <div className="flex flex-wrap gap-3">
                     {HOTEL_CATEGORIES.map((opt) =>
-                  <button type="button" key={opt} onClick={() => setFormData({ ...formData, hotelCategory: opt })} className={`rounded-full px-6 py-2.5 text-sm font-medium transition-colors ${formData.hotelCategory === opt ? 'bg-emerald text-white' : 'bg-cream text-forest hover:bg-emerald/10'}`}>{opt}</button>
+                  <button type="button" key={opt.value} onClick={() => setFormData({ ...formData, hotelCategory: opt.value })} className={`rounded-full px-6 py-2.5 text-sm font-medium transition-colors ${formData.hotelCategory === opt.value ? 'bg-emerald text-white' : 'bg-cream text-forest hover:bg-emerald/10'}`}>{opt.label}</button>
                   )}
                   </div>
                 </div>
@@ -479,7 +486,7 @@ export function CustomTourWizard() {
                   <div><dt className="text-forest/50">Travelers</dt><dd className="font-medium text-forest">{formData.adults} adults, {formData.children} children, {formData.infants} infants</dd></div>
                   <div><dt className="text-forest/50">Destinations</dt><dd className="font-medium text-forest">{formData.selectedDestinations.length + formData.customDestinations.length} selected</dd></div>
                   <div><dt className="text-forest/50">Activities</dt><dd className="font-medium text-forest">{formData.selectedActivities.length + formData.customActivities.length} selected</dd></div>
-                  <div><dt className="text-forest/50">Hotel Category</dt><dd className="font-medium text-forest">{formData.hotelCategory}</dd></div>
+                  <div><dt className="text-forest/50">Hotel Category</dt><dd className="font-medium text-forest">{HOTEL_CATEGORIES.find((c) => c.value === formData.hotelCategory)?.label || formData.hotelCategory}</dd></div>
                   <div><dt className="text-forest/50">Room Type</dt><dd className="font-medium text-forest">{formData.roomTypePreference || '—'}</dd></div>
                   <div><dt className="text-forest/50">Travel Style</dt><dd className="font-medium text-forest">{formData.travelStyle}</dd></div>
                   <div><dt className="text-forest/50">Vehicle Type</dt><dd className="font-medium text-forest">{formData.transportPreference}</dd></div>
