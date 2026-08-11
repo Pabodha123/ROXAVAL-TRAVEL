@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
   CalendarIcon, UsersIcon, DownloadIcon, Loader2Icon, MapPinIcon,
   BedDoubleIcon, MessageCircleIcon, PackageIcon, SendIcon, CheckIcon,
-  XCircleIcon, SparklesIcon, StarIcon, CompassIcon, ChevronDownIcon, ExternalLinkIcon } from
+  XCircleIcon, SparklesIcon, StarIcon, CompassIcon, ChevronDownIcon, ExternalLinkIcon, TargetIcon } from
 'lucide-react';
 import { useAdminList } from '../admin/hooks/useAdminList';
 import { StatusBadge } from '../admin/components/StatusBadge';
@@ -44,6 +44,14 @@ interface HotelRef {
   starRating?: number;
 }
 
+interface ActivityPricingEntry {
+  activity?: { _id: string; name: string; category?: string };
+  adultCount: number;
+  childCount: number;
+  infantCount: number;
+  selected?: boolean;
+}
+
 interface ItineraryDay {
   dayNumber: number;
   title: string;
@@ -55,6 +63,7 @@ interface ItineraryDay {
   arrivalTime?: string;
   departureTime?: string;
   travelTime?: string;
+  activityPricing?: ActivityPricingEntry[];
   customDestinations?: string[];
   customActivities?: string[];
   notes?: string;
@@ -569,6 +578,15 @@ function RequestsTab({ initialSelectedId, onBookingCreated }: {initialSelectedId
                   <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-xs font-medium text-forest/60">
                           <BedDoubleIcon className="h-3.5 w-3.5 text-forest/35" /> {d.hotel.name}{d.roomType ? ` (${d.roomType})` : ''}
                         </p>
+                  }
+                      {d.activityPricing && d.activityPricing.filter((a) => a.selected !== false && a.activity).length > 0 &&
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                          {d.activityPricing.filter((a) => a.selected !== false && a.activity).map((a, i) =>
+                    <span key={i} className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-xs font-medium text-forest/60">
+                              <TargetIcon className="h-3.5 w-3.5 text-forest/35" /> {a.activity?.name}
+                            </span>
+                    )}
+                        </div>
                   }
                       {(d.arrivalTime || d.departureTime) &&
                   <p className="mt-1.5 text-xs text-forest/50">
