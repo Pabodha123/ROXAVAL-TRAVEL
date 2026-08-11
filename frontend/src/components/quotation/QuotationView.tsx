@@ -139,10 +139,10 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
         <img
           src="/quotation-banner.png"
           alt="Roxaval Travels"
-          className="-mx-6 -mt-10 mb-8 w-[calc(100%+3rem)] max-w-none rounded-t-2xl object-cover print:rounded-none sm:-mx-10 sm:w-[calc(100%+5rem)]" />
+          className="-mx-6 -mt-10 mb-8 h-auto w-[calc(100%+3rem)] max-w-none rounded-t-2xl object-cover print:mb-4 print:h-32 print:rounded-none sm:-mx-10 sm:w-[calc(100%+5rem)]" />
 
         {/* Header */}
-        <div className="border-b border-forest/10 pb-6">
+        <div className="border-b border-forest/10 pb-6 print:pb-4">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="font-display text-2xl font-semibold text-forest sm:text-3xl">{itin.title || `${days.length} Days Sri Lankan Tour`}</p>

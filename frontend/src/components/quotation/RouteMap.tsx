@@ -56,9 +56,9 @@ export function RouteMap({ days }: { days: { dayNumber: number; destinations?: {
   if (stops.length === 0) return null;
 
   return (
-    <div className="mt-8 border-b border-forest/10 pb-8 print:break-inside-avoid">
+    <div className="mt-8 border-b border-forest/10 pb-8 print:mt-4 print:break-inside-avoid print:pb-4">
       <p className="font-display text-sm font-semibold text-forest">Trip Itinerary Route</p>
-      <div className="mt-3 h-80 w-full overflow-hidden rounded-2xl border border-forest/10">
+      <div className="mt-3 h-80 w-full overflow-hidden rounded-2xl border border-forest/10 print:mt-2 print:h-56">
         <MapContainer center={[7.8731, 80.7718]} zoom={7} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
