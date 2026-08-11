@@ -65,3 +65,13 @@ body {
     print-color-adjust: exact !important;
   }
 }
+
+/* Chrome's default print margins are ~25mm and reserve extra space for its
+   own header/footer (date, page title, page number) — tightening this
+   gives the quotation more usable space per page and less wasted whitespace.
+   (The browser's own header/footer text is a print-dialog setting the user
+   controls under "More settings" → "Headers and footers", not something
+   CSS can remove.) */
+@page {
+  margin: 12mm;
+}

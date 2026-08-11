@@ -114,7 +114,7 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
   });
 
   return (
-    <div className="min-h-screen bg-cream/40 pb-20">
+    <div className="min-h-screen bg-cream/40 pb-20 print:min-h-0 print:pb-0">
       <div className="print:hidden sticky top-0 z-10 flex items-center justify-between bg-forest px-4 py-3 sm:px-8">
         <div className="flex items-center gap-4">
           {backHref &&
@@ -171,7 +171,7 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
         </div>
 
         {/* Day by day */}
-        <div className="mt-8 space-y-8">
+        <div className="mt-8 space-y-8 print:space-y-5">
           {days.map((d) => {
             const activities = (d.activityPricing || []).filter((a) => a.selected !== false && a.activity);
             const transfers = (d.transfers || []).filter((t) => t.selected !== false && t.transfer);
@@ -248,7 +248,7 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
         </div>
 
         {/* Financial summary */}
-        <div className="mt-10 border-t border-forest/10 pt-6">
+        <div className="mt-10 border-t border-forest/10 pt-6 print:mt-6 print:break-inside-avoid">
           <p className="font-display text-lg font-semibold text-forest">Quotation Financial Summary <span className="text-sm font-normal text-forest/50">[ in {itin.pricing.currency} ]</span></p>
           <div className="mt-3 overflow-x-auto">
             <table className="w-full min-w-[560px] text-left text-xs">
@@ -291,7 +291,7 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
         </div>
 
         {/* Inclusions / Exclusions */}
-        <div className="mt-10 grid gap-8 border-t border-forest/10 pt-6 sm:grid-cols-2">
+        <div className="mt-10 grid gap-8 border-t border-forest/10 pt-6 print:mt-6 print:break-inside-avoid sm:grid-cols-2">
           <div>
             <p className="font-display text-sm font-semibold text-emerald">✅ Inclusions</p>
             <div className="mt-3"><NotesBlock text={itin.inclusions} /></div>
@@ -303,7 +303,7 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
         </div>
 
         {(itin.visaRequirements || itin.travelInsurance) &&
-          <div className="mt-8 grid gap-8 border-t border-forest/10 pt-6 sm:grid-cols-2">
+          <div className="mt-8 grid gap-8 border-t border-forest/10 pt-6 print:mt-5 print:break-inside-avoid sm:grid-cols-2">
             {itin.visaRequirements &&
               <div>
                 <p className="font-display text-sm font-semibold text-forest">Visa Requirements</p>
@@ -320,21 +320,21 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
         }
 
         {itin.cancellationPolicy &&
-          <div className="mt-8 border-t border-forest/10 pt-6">
+          <div className="mt-8 border-t border-forest/10 pt-6 print:mt-5 print:break-inside-avoid">
             <p className="font-display text-sm font-semibold text-forest">💸 Cancellation Policy</p>
             <div className="mt-3"><NotesBlock text={itin.cancellationPolicy} /></div>
           </div>
         }
 
         {itin.customerFacingNotes &&
-          <div className="mt-8 border-t border-forest/10 pt-6">
+          <div className="mt-8 border-t border-forest/10 pt-6 print:mt-5 print:break-inside-avoid">
             <p className="font-display text-sm font-semibold text-forest">📌 Important Notes</p>
             <div className="mt-3"><NotesBlock text={itin.customerFacingNotes} /></div>
           </div>
         }
 
         {/* Footer */}
-        <div className="mt-10 border-t border-forest/10 pt-6 text-center text-xs text-forest/50">
+        <div className="mt-10 border-t border-forest/10 pt-6 text-center text-xs text-forest/50 print:mt-6 print:break-inside-avoid">
           <p className="font-display text-sm font-semibold text-forest">Roxaval Travels</p>
           <p className="mt-1">{WHATSAPP_DISPLAY_SL} &nbsp;|&nbsp; {CONTACT_EMAIL} &nbsp;|&nbsp; {WEBSITE_DISPLAY}</p>
         </div>
