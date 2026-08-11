@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, DownloadIcon, Loader2Icon, PlusIcon, SendIcon, TrashIcon, UserCheckIcon, WandSparklesIcon, XIcon } from 'lucide-react';
+import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, DownloadIcon, Loader2Icon, PencilIcon, PlusIcon, SendIcon, TrashIcon, UserCheckIcon, WandSparklesIcon, XIcon } from 'lucide-react';
 import { apiGetList, apiGetOne, apiPatch, apiPost, ApiRequestError, API_ORIGIN } from '../../../lib/api';
 import { useToast } from '../../components/ToastProvider';
 import { PageHeader } from '../../components/PageHeader';
@@ -288,6 +288,9 @@ export function AdminCustomRequestDetail() {
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState(false);
   const [sending, setSending] = useState(false);
+  // Manually re-opens the builder over an already-sent itinerary so admins
+  // can tweak and resend it, without the customer having to request changes first.
+  const [forceEdit, setForceEdit] = useState(false);
 
   const [destOptions, setDestOptions] = useState<RefOption[]>([]);
   const [activityOptions, setActivityOptions] = useState<RefOption[]>([]);
@@ -359,7 +362,7 @@ export function AdminCustomRequestDetail() {
   useEffect(() => {
     if (!request) return;
     setCurrency(request.estimatedBudget.currency);
-    if (request.itinerary && !['Changes Requested', 'Rejected'].includes(request.itinerary.status)) return;
+    if (request.itinerary && !forceEdit && !['Changes Requested', 'Rejected'].includes(request.itinerary.status)) return;
     if (request.itinerary) {
       const itin = request.itinerary;
       setTitle(itin.title);
@@ -457,7 +460,8 @@ export function AdminCustomRequestDetail() {
         setDays([{ ...emptyDay(1), roomType: request.roomTypePreference }]);
       }
     }
-  }, [request]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [request, forceEdit]);
 
   const updateDay = (index: number, patch: Partial<ItineraryDayForm>) => {
     setDays((prev) => prev.map((d, i) => i === index ? { ...d, ...patch } : d));
@@ -712,6 +716,7 @@ export function AdminCustomRequestDetail() {
         exclusions
       });
       toast('Itinerary sent to customer.');
+      setForceEdit(false);
       load();
     } catch (err) {
       toast(err instanceof ApiRequestError ? err.message : 'Failed to send itinerary.', 'error');
@@ -741,7 +746,7 @@ export function AdminCustomRequestDetail() {
 
   if (loading || !request) return <div className="grid h-64 place-items-center"><Loader2Icon className="h-6 w-6 animate-spin text-forest/40" /></div>;
 
-  const showBuilder = !request.itinerary || ['Changes Requested', 'Rejected'].includes(request.itinerary.status);
+  const showBuilder = forceEdit || !request.itinerary || ['Changes Requested', 'Rejected'].includes(request.itinerary.status);
 
   return (
     <div>
@@ -898,6 +903,9 @@ export function AdminCustomRequestDetail() {
               <div className="flex items-center justify-between">
                 <p className="font-display text-lg font-semibold text-forest">{request.itinerary.title}</p>
                 <div className="flex items-center gap-2">
+                  <button type="button" onClick={() => setForceEdit(true)} className="flex items-center gap-1.5 rounded-full border border-forest/15 px-3.5 py-1.5 text-xs font-semibold text-forest hover:bg-cream">
+                    <PencilIcon className="h-3.5 w-3.5" /> Edit
+                  </button>
                   <button type="button" onClick={generateQuotation} className="flex items-center gap-1.5 rounded-full border border-forest/15 px-3.5 py-1.5 text-xs font-semibold text-forest hover:bg-cream">
                     <DownloadIcon className="h-3.5 w-3.5" /> Generate Quotation
                   </button>
@@ -975,6 +983,14 @@ export function AdminCustomRequestDetail() {
             </div> :
 
           <form onSubmit={sendItinerary} className="space-y-6">
+              {forceEdit &&
+            <div className="flex items-center justify-between rounded-2xl border border-forest/15 bg-cream/60 px-5 py-3">
+                  <p className="text-xs text-forest/60">Editing the itinerary that was already sent. Resend below to update the customer, or discard your changes.</p>
+                  <button type="button" onClick={() => setForceEdit(false)} className="shrink-0 rounded-full border border-forest/15 px-3.5 py-1.5 text-xs font-semibold text-forest hover:bg-white">
+                    Discard &amp; Go Back
+                  </button>
+                </div>
+            }
               {request.itinerary?.status === 'Changes Requested' &&
             <div className="rounded-2xl border border-gold/30 bg-gold/5 p-6">
                   <div className="flex items-start gap-3">
