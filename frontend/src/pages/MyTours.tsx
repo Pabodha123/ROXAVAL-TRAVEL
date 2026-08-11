@@ -565,7 +565,7 @@ function RequestsTab({ initialSelectedId, onBookingCreated }: {initialSelectedId
               </div>
               {itin.summary && <p className="mt-2 text-sm text-forest/60">{itin.summary}</p>}
 
-              <Link to={`/my-tours/requests/${selected._id}/quotation`} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald hover:underline">
+              <Link to={`/my-tours/requests/${selected._id}/quotation`} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]">
                 <ExternalLinkIcon className="h-3.5 w-3.5" /> View Full Quotation
               </Link>
 
