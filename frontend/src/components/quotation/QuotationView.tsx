@@ -183,8 +183,8 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
             const roomType = d.hotel?.roomTypes?.find((rt) => rt.name === d.roomType);
 
             return (
-              <div key={d.dayNumber} className="break-inside-avoid">
-                <div className="flex items-center gap-3">
+              <div key={d.dayNumber}>
+                <div className="flex items-center gap-3 print:break-inside-avoid">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald text-sm font-bold text-white">{d.dayNumber}</div>
                   <div>
                     <p className="font-display text-base font-semibold text-forest">Day {d.dayNumber}{d.destinations?.[0]?.name ? ` — ${d.destinations[0].name}` : ''}</p>
@@ -194,7 +194,7 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
 
                 <div className="mt-3 space-y-3 pl-12">
                   {activities.map((a, i) =>
-                    <div key={i} className="flex gap-3 rounded-xl border border-forest/10 p-3">
+                    <div key={i} className="flex gap-3 rounded-xl border border-forest/10 p-3 print:break-inside-avoid">
                       {a.activity?.image && <img src={a.activity.image} alt={a.activity.name} className="h-20 w-28 shrink-0 rounded-lg object-cover" />}
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-forest">{a.activity?.name}</p>
@@ -206,7 +206,7 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
                   )}
 
                   {transfers.map((t, i) =>
-                    <div key={i} className="flex items-center gap-3 rounded-xl border border-forest/10 p-3">
+                    <div key={i} className="flex items-center gap-3 rounded-xl border border-forest/10 p-3 print:break-inside-avoid">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cream text-forest"><CarIcon className="h-5 w-5" /></div>
                       <div>
                         <p className="text-sm font-semibold text-forest">{t.transfer?.name}</p>
@@ -216,7 +216,7 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
                   )}
 
                   {flights.map((f, i) =>
-                    <div key={i} className="flex items-center gap-3 rounded-xl border border-forest/10 p-3">
+                    <div key={i} className="flex items-center gap-3 rounded-xl border border-forest/10 p-3 print:break-inside-avoid">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cream text-forest"><PlaneIcon className="h-5 w-5" /></div>
                       <div>
                         <p className="text-sm font-semibold text-forest">{f.airline} {f.flightNumber}</p>
@@ -226,7 +226,7 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
                   )}
 
                   {d.hotel &&
-                    <div className="flex gap-3 rounded-xl border border-emerald/20 bg-emerald/5 p-3">
+                    <div className="flex gap-3 rounded-xl border border-emerald/20 bg-emerald/5 p-3 print:break-inside-avoid">
                       {d.hotel.images?.[0] && <img src={d.hotel.images[0]} alt={d.hotel.name} className="h-24 w-32 shrink-0 rounded-lg object-cover" />}
                       <div className="min-w-0">
                         <p className="flex items-center gap-1.5 text-sm font-semibold text-forest">
