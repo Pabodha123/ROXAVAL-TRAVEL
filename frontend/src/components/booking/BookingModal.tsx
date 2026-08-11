@@ -13,6 +13,10 @@ export interface BookingSource {
   currency: string;
   minTravelers?: number;
   maxTravelers?: number;
+  // Known from the accepted custom tour request — pre-fills the form instead
+  // of asking the customer to re-enter what they already told us.
+  defaultTravelDate?: string;
+  defaultTravelers?: { adults: number; children: number; infants: number };
 }
 
 interface BookingModalProps {
@@ -25,10 +29,10 @@ interface BookingModalProps {
 export function BookingModal({ open, onClose, source, onSuccess }: BookingModalProps) {
   const { t } = useTranslation('booking');
   const toast = useToast();
-  const [travelDate, setTravelDate] = useState('');
-  const [adults, setAdults] = useState(source.minTravelers || 2);
-  const [children, setChildren] = useState(0);
-  const [infants, setInfants] = useState(0);
+  const [travelDate, setTravelDate] = useState(source.defaultTravelDate ? source.defaultTravelDate.slice(0, 10) : '');
+  const [adults, setAdults] = useState(source.defaultTravelers?.adults ?? source.minTravelers ?? 2);
+  const [children, setChildren] = useState(source.defaultTravelers?.children ?? 0);
+  const [infants, setInfants] = useState(source.defaultTravelers?.infants ?? 0);
   const [specialRequests, setSpecialRequests] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
