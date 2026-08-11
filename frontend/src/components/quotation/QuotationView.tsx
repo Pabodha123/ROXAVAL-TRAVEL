@@ -134,6 +134,11 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
       </div>
 
       <div className="mx-auto mt-6 max-w-4xl rounded-2xl border border-forest/15 bg-white px-6 py-10 shadow-soft print:mt-0 print:rounded-none print:shadow-none sm:px-10">
+        <img
+          src="/quotation-banner.png"
+          alt="Roxaval Travels"
+          className="-mx-6 -mt-10 mb-8 w-[calc(100%+3rem)] max-w-none rounded-t-2xl object-cover print:rounded-none sm:-mx-10 sm:w-[calc(100%+5rem)]" />
+
         {/* Header */}
         <div className="border-b border-forest/10 pb-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
