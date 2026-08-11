@@ -1,12 +1,12 @@
 import {
   InboxIcon, RefreshCwIcon, SparklesIcon, MessageSquareWarningIcon, HelpCircleIcon,
   CheckCircle2Icon, CalendarPlusIcon, CalendarCheckIcon, CreditCardIcon, BadgeCheckIcon,
-  FileTextIcon, StarIcon, CakeIcon, MessageCircleIcon, BellIcon } from
+  FileTextIcon, StarIcon, CakeIcon, MessageCircleIcon, BellIcon, UserPlusIcon } from
 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export type NotificationType =
-  'inquiry_received' | 'inquiry_updated' | 'itinerary_ready' | 'changes_requested' |
+  'welcome' | 'inquiry_received' | 'inquiry_updated' | 'itinerary_ready' | 'changes_requested' |
   'cannot_modify' | 'itinerary_approved' | 'booking_created' | 'booking_confirmed' |
   'payment_submitted' | 'payment_verified' | 'document_ready' | 'review_moderated' |
   'birthday' | 'message_received' | 'general';
@@ -18,6 +18,7 @@ interface NotificationTypeMeta {
 }
 
 export const NOTIFICATION_TYPE_META: Record<string, NotificationTypeMeta> = {
+  welcome: { icon: UserPlusIcon, dot: 'bg-gold' },
   inquiry_received: { icon: InboxIcon, dot: 'bg-forest' },
   inquiry_updated: { icon: RefreshCwIcon, dot: 'bg-forest' },
   itinerary_ready: { icon: SparklesIcon, dot: 'bg-emerald' },

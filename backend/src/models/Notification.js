@@ -11,6 +11,7 @@ const notificationSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: [
+        'welcome',
         'inquiry_received',
         'inquiry_updated',
         'itinerary_ready',

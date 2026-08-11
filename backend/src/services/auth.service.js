@@ -3,6 +3,7 @@ const { User, Customer } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { generateAuthTokens, verifyRefreshToken } = require('../utils/token');
 const { sendEmail } = require('../utils/email');
+const { notify } = require('./notification.service');
 const env = require('../config/env');
 
 const register = async ({ fullName, email, phone, password, country, dateOfBirth, passportNumber }) => {
@@ -11,6 +12,14 @@ const register = async ({ fullName, email, phone, password, country, dateOfBirth
 
   const user = await User.create({ fullName, email, phone, password, role: 'customer' });
   await Customer.create({ user: user._id, country, dateOfBirth: dateOfBirth || undefined, passportNumber });
+
+  await notify({
+    recipient: user._id,
+    type: 'welcome',
+    title: `Welcome to ${env.COMPANY.name}, ${fullName.split(' ')[0]}!`,
+    message: 'Your account is ready. Browse our curated Sri Lanka tour packages or start planning a custom tour built just for you.',
+    link: '/packages',
+  });
 
   const tokens = generateAuthTokens(user);
   return { user, ...tokens };
