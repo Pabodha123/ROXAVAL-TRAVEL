@@ -9,7 +9,7 @@ import {
 import { apiPost } from '../../lib/api';
 import {
   WHATSAPP_DISPLAY, WHATSAPP_NUMBER_SL, WHATSAPP_DISPLAY_SL, whatsAppLink,
-  CONTACT_EMAIL, WEBSITE_DISPLAY, WEBSITE_URL, ADDRESS_SRI_LANKA, ADDRESS_UAE } from
+  CONTACT_EMAIL, WEBSITE_DISPLAY, WEBSITE_URL, ADDRESS_SRI_LANKA } from
 '../../lib/contact';
 
 const socials = [
@@ -133,7 +133,6 @@ export function Footer() {
             <h4 className="font-display text-lg font-semibold text-white">{t('footer.contactUs')}</h4>
             <ul className="mt-4 space-y-3 text-sm text-cream/70">
               <li className="flex gap-3"><MapPinIcon className="h-5 w-5 text-gold shrink-0" /> {ADDRESS_SRI_LANKA}</li>
-              <li className="flex gap-3"><MapPinIcon className="h-5 w-5 text-gold shrink-0" /> {ADDRESS_UAE}</li>
               <li className="flex gap-3">
                 <MessageCircleIcon className="h-5 w-5 text-gold shrink-0" />
                 <a href={whatsAppLink(undefined, WHATSAPP_NUMBER_SL)} target="_blank" rel="noreferrer" className="hover:text-gold transition-colors">

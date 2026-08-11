@@ -10,7 +10,7 @@ import { SectionHeading } from '../components/ui/SectionHeading';
 import { apiGetOne, apiPost, ApiRequestError } from '../lib/api';
 import {
   whatsAppLink, WHATSAPP_NUMBER, WHATSAPP_DISPLAY, WHATSAPP_NUMBER_SL, WHATSAPP_DISPLAY_SL,
-  CONTACT_EMAIL, WEBSITE_DISPLAY, WEBSITE_URL, ADDRESS_SRI_LANKA, ADDRESS_UAE } from
+  CONTACT_EMAIL, WEBSITE_DISPLAY, WEBSITE_URL, ADDRESS_SRI_LANKA } from
 '../lib/contact';
 
 interface Settings {
@@ -141,7 +141,6 @@ export function ContactUs() {
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.6 }} className="rounded-3xl bg-forest p-7 text-white shadow-lift">
             <ul className="space-y-4 text-sm">
               <li className="flex gap-3"><MapPinIcon className="h-5 w-5 shrink-0 text-gold" /> {settings.address}</li>
-              <li className="flex gap-3"><MapPinIcon className="h-5 w-5 shrink-0 text-gold" /> {ADDRESS_UAE}</li>
               <li className="flex gap-3"><MessageCircleIcon className="h-5 w-5 shrink-0 text-gold" /> WhatsApp : {WHATSAPP_DISPLAY_SL}</li>
               <li className="flex gap-3"><MessageCircleIcon className="h-5 w-5 shrink-0 text-gold" /> WhatsApp : {WHATSAPP_DISPLAY}</li>
               <li className="flex gap-3"><MailIcon className="h-5 w-5 shrink-0 text-gold" /> {settings.email}</li>
