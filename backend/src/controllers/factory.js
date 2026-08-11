@@ -23,7 +23,7 @@ const factory = (Model, { searchableFields = [], populate = [], baseFilter = () 
     const features = new ApiFeatures(query, req.query).search(expandedSearchable).filter().sort().limitFields().paginate();
     if (populate.length) populate.forEach((p) => (features.query = features.query.populate(p)));
 
-    const [docs, meta] = await Promise.all([features.query, features.getMeta(Model, filter)]);
+    const [docs, meta] = await Promise.all([features.query, features.getMeta(Model)]);
     const raw = req.query.raw === 'true';
     const data = raw || !translatableFields.length ? docs : localizeList(docs, req.lang || 'en', translatableFields);
     new ApiResponse(200, data, `${Model.modelName} list fetched`, meta).send(res);

@@ -91,7 +91,7 @@ const getMyRequests = catchAsync(async (req, res) => {
     .populate('aiGeneratedItinerary.days.destinations', 'name')
     .populate('aiGeneratedItinerary.days.activities', 'name')
     .populate('aiGeneratedItinerary.days.hotel', 'name');
-  const meta = await features.getMeta(CustomTourRequest, { customer: customer._id });
+  const meta = await features.getMeta(CustomTourRequest);
   const data = localizeList(docs, req.lang || 'en', translatableFields);
   new ApiResponse(200, data, 'Your custom tour requests', meta).send(res);
 });
@@ -124,7 +124,7 @@ const getAllRequests = catchAsync(async (req, res) => {
     .populate({ path: 'operationPerson', populate: { path: 'user', select: 'fullName' } })
     .populate({ path: 'salesPerson', populate: { path: 'user', select: 'fullName' } })
     .populate(populateItinerary);
-  const meta = await features.getMeta(CustomTourRequest, {});
+  const meta = await features.getMeta(CustomTourRequest);
   const data = localizeList(docs, req.lang || 'en', translatableFields);
   new ApiResponse(200, data, 'Custom tour requests fetched', meta).send(res);
 });

@@ -29,7 +29,7 @@ const updateMyProfile = catchAsync(async (req, res) => {
 const getAllCustomers = catchAsync(async (req, res) => {
   const features = new ApiFeatures(Customer.find(), req.query).filter().sort().paginate();
   const docs = await features.query.populate('user', '-password');
-  const meta = await features.getMeta(Customer, {});
+  const meta = await features.getMeta(Customer);
   new ApiResponse(200, docs, 'Customers fetched', meta).send(res);
 });
 

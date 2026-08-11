@@ -32,7 +32,7 @@ const generateQuotation = catchAsync(async (req, res) => {
 const getAllDocuments = catchAsync(async (req, res) => {
   const features = new ApiFeatures(Document.find(), req.query).search(['referenceNumber', 'fileName']).filter().sort().paginate();
   const docs = await features.query.populate('booking', 'bookingReference');
-  const meta = await features.getMeta(Document, {});
+  const meta = await features.getMeta(Document);
   new ApiResponse(200, docs, 'Documents fetched', meta).send(res);
 });
 
@@ -40,7 +40,7 @@ const getMyDocuments = catchAsync(async (req, res) => {
   const customer = await Customer.findOne({ user: req.user._id });
   const features = new ApiFeatures(Document.find({ customer: customer._id }), req.query).filter().sort().paginate();
   const docs = await features.query.populate('booking', 'bookingReference');
-  const meta = await features.getMeta(Document, { customer: customer._id });
+  const meta = await features.getMeta(Document);
   new ApiResponse(200, docs, 'Your documents', meta).send(res);
 });
 

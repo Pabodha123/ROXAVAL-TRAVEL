@@ -10,7 +10,7 @@
  *     .limitFields()
  *     .paginate();
  *   const docs = await features.query;
- *   const meta = await features.getMeta(Model, baseFilter);
+ *   const meta = await features.getMeta(Model);
  */
 class ApiFeatures {
   constructor(query, queryString) {
@@ -68,8 +68,12 @@ class ApiFeatures {
     return this;
   }
 
-  async getMeta(Model, baseFilter = {}) {
-    const total = await Model.countDocuments(baseFilter);
+  // Counts against the same conditions the list query ends up using
+  // (base filter + search + query-string filters) — pagination/sort/field
+  // selection don't affect getFilter(), so this stays accurate regardless
+  // of when getMeta() is called relative to paginate().
+  async getMeta(Model) {
+    const total = await Model.countDocuments(this.query.getFilter());
     const { page = 1, limit = 20 } = this.pagination || {};
     return {
       total,

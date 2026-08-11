@@ -40,7 +40,7 @@ const getMyBookings = catchAsync(async (req, res) => {
   const customer = await Customer.findOne({ user: req.user._id });
   const features = new ApiFeatures(Booking.find({ customer: customer._id }), req.query).filter().sort().paginate();
   const docs = await features.query.populate('tourPackage').populate('itinerary');
-  const meta = await features.getMeta(Booking, { customer: customer._id });
+  const meta = await features.getMeta(Booking);
   const data = localizeList(docs, req.lang || 'en', translatableFields);
   new ApiResponse(200, data, 'Your bookings', meta).send(res);
 });
@@ -62,7 +62,7 @@ const getAllBookings = catchAsync(async (req, res) => {
     .populate({ path: 'customer', populate: { path: 'user', select: 'fullName email phone' } })
     .populate('tourPackage')
     .populate('itinerary');
-  const meta = await features.getMeta(Booking, {});
+  const meta = await features.getMeta(Booking);
   const data = localizeList(docs, req.lang || 'en', translatableFields);
   new ApiResponse(200, data, 'Bookings fetched', meta).send(res);
 });

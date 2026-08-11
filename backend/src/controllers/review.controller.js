@@ -36,7 +36,7 @@ const getApproved = catchAsync(async (req, res) => {
   const docs = await features.query
     .populate({ path: 'customer', populate: { path: 'user', select: 'fullName' } })
     .populate('tourPackage', 'name heroImage');
-  const meta = await features.getMeta(Review, { status: 'approved' });
+  const meta = await features.getMeta(Review);
   const data = localizeList(docs, req.lang || 'en', ['tourPackage.name']);
   new ApiResponse(200, data, 'Approved reviews fetched', meta).send(res);
 });
@@ -82,7 +82,7 @@ const getAllForModeration = catchAsync(async (req, res) => {
   const docs = await features.query
     .populate({ path: 'customer', populate: { path: 'user', select: 'fullName email' } })
     .populate('tourPackage', 'name');
-  const meta = await features.getMeta(Review, {});
+  const meta = await features.getMeta(Review);
   const data = localizeList(docs, req.lang || 'en', ['tourPackage.name']);
   new ApiResponse(200, data, 'Reviews fetched', meta).send(res);
 });

@@ -26,7 +26,7 @@ const createAdmin = catchAsync(async (req, res) => {
 const getAllAdmins = catchAsync(async (req, res) => {
   const features = new ApiFeatures(Admin.find(), req.query).filter().sort().paginate();
   const docs = await features.query.populate('user', '-password');
-  const meta = await features.getMeta(Admin, {});
+  const meta = await features.getMeta(Admin);
   new ApiResponse(200, docs, 'Admins fetched', meta).send(res);
 });
 

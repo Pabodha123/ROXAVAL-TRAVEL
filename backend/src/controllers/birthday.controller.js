@@ -55,7 +55,7 @@ const resend = catchAsync(async (req, res) => {
 const getLogs = catchAsync(async (req, res) => {
   const features = new ApiFeatures(BirthdayLog.find(), req.query).filter().sort().paginate();
   const docs = await features.query.populate({ path: 'customer', populate: { path: 'user', select: 'fullName email' } }).sort('-sentAt');
-  const meta = await features.getMeta(BirthdayLog, {});
+  const meta = await features.getMeta(BirthdayLog);
   new ApiResponse(200, docs, 'Birthday delivery log fetched', meta).send(res);
 });
 

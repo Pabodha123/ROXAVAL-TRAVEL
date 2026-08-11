@@ -7,7 +7,7 @@ const ApiFeatures = require('../utils/ApiFeatures');
 const getMyNotifications = catchAsync(async (req, res) => {
   const features = new ApiFeatures(Notification.find({ recipient: req.user._id }), req.query).filter().sort().paginate();
   const docs = await features.query;
-  const meta = await features.getMeta(Notification, { recipient: req.user._id });
+  const meta = await features.getMeta(Notification);
   const unreadCount = await Notification.countDocuments({ recipient: req.user._id, isRead: false });
   new ApiResponse(200, docs, 'Notifications fetched', { ...meta, unreadCount }).send(res);
 });

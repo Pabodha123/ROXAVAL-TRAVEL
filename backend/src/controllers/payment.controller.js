@@ -24,7 +24,7 @@ const getMyPayments = catchAsync(async (req, res) => {
   const customer = await Customer.findOne({ user: req.user._id });
   const features = new ApiFeatures(Payment.find({ customer: customer._id }), req.query).filter().sort().paginate();
   const docs = await features.query.populate('booking', 'bookingReference status');
-  const meta = await features.getMeta(Payment, { customer: customer._id });
+  const meta = await features.getMeta(Payment);
   new ApiResponse(200, docs, 'Your payments', meta).send(res);
 });
 
@@ -34,7 +34,7 @@ const getAllPayments = catchAsync(async (req, res) => {
   const docs = await features.query
     .populate('booking', 'bookingReference status pricing')
     .populate({ path: 'customer', populate: { path: 'user', select: 'fullName email' } });
-  const meta = await features.getMeta(Payment, {});
+  const meta = await features.getMeta(Payment);
   new ApiResponse(200, docs, 'Payments fetched', meta).send(res);
 });
 
