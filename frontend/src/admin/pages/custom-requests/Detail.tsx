@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, DownloadIcon, Loader2Icon, PencilIcon, PlusIcon, SendIcon, TrashIcon, UserCheckIcon, WandSparklesIcon, XIcon } from 'lucide-react';
+import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, DownloadIcon, Loader2Icon, MessageCircleIcon, PencilIcon, PlusIcon, SendIcon, TrashIcon, UserCheckIcon, WandSparklesIcon, XIcon } from 'lucide-react';
 import { apiGetList, apiGetOne, apiPatch, apiPost, ApiRequestError, API_ORIGIN } from '../../../lib/api';
+import { whatsAppLink } from '../../../lib/contact';
 import { useToast } from '../../components/ToastProvider';
 import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
@@ -920,6 +921,19 @@ export function AdminCustomRequestDetail() {
                   <button type="button" onClick={generateQuotation} className="flex items-center gap-1.5 rounded-full border border-forest/15 px-3.5 py-1.5 text-xs font-semibold text-forest hover:bg-cream">
                     <DownloadIcon className="h-3.5 w-3.5" /> Generate Quotation
                   </button>
+                  {request.customer?.user?.phone &&
+                <a
+                  href={whatsAppLink(
+                    `Hi ${request.customer.user.fullName || ''}, your Roxaval Travels quotation for ${request.referenceNumber} is ready! View it here: ${window.location.origin}/my-tours/requests/${request._id}/quotation`,
+                    request.customer.user.phone.replace(/\D/g, '')
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1.5 rounded-full bg-emerald px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-emerald-light">
+
+                      <MessageCircleIcon className="h-3.5 w-3.5" /> Send via WhatsApp
+                    </a>
+                }
                   <StatusBadge status={request.itinerary.status} />
                 </div>
               </div>
