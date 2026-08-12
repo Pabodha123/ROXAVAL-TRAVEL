@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BanIcon, CheckCircle2Icon, EyeIcon } from 'lucide-react';
+import { BanIcon, CheckCircle2Icon, EyeIcon, PlusIcon } from 'lucide-react';
 import { useAdminList } from '../../hooks/useAdminList';
 import { DataTable, Column } from '../../components/DataTable';
 import { PageHeader } from '../../components/PageHeader';
@@ -62,7 +62,14 @@ export function AdminCustomersList() {
 
   return (
     <div>
-      <PageHeader title="Customers" subtitle="View profiles, booking history and account status" />
+      <PageHeader
+        title="Customers"
+        subtitle="View profiles, booking history and account status"
+        action={
+        <Link to="/admin/customers/new" className="inline-flex items-center gap-2 rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-cream hover:bg-emerald">
+            <PlusIcon className="h-4 w-4" /> Add Customer
+          </Link>
+        } />
 
       <DataTable columns={columns} rows={items} loading={loading} error={error} meta={meta} page={page} onPageChange={setPage} rowKey={(c) => c._id} emptyMessage="No customers yet." />
     </div>);

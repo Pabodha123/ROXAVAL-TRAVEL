@@ -53,6 +53,7 @@ import { AdminBookingsList } from './admin/pages/bookings/List';
 import { AdminBookingDetail } from './admin/pages/bookings/Detail';
 import { AdminPaymentsList } from './admin/pages/payments/List';
 import { AdminCustomersList } from './admin/pages/customers/List';
+import { AdminCustomerNew } from './admin/pages/customers/New';
 import { AdminCustomerDetail } from './admin/pages/customers/Detail';
 import { AdminReviewsList } from './admin/pages/reviews/List';
 import { AdminBlogList } from './admin/pages/blog/List';
@@ -152,6 +153,7 @@ export function App() {
             <Route path="payments" element={<AdminPaymentsList />} />
 
             <Route path="customers" element={<AdminCustomersList />} />
+            <Route path="customers/new" element={<AdminCustomerNew />} />
             <Route path="customers/:id" element={<AdminCustomerDetail />} />
 
             <Route path="reviews" element={<AdminReviewsList />} />

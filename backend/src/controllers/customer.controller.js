@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { Customer, User } = require('../models');
 const catchAsync = require('../utils/catchAsync');
 const ApiResponse = require('../utils/ApiResponse');
@@ -31,6 +32,31 @@ const getAllCustomers = catchAsync(async (req, res) => {
   const docs = await features.query.populate('user', '-password');
   const meta = await features.getMeta(Customer);
   new ApiResponse(200, docs, 'Customers fetched', meta).send(res);
+});
+
+// Admin: manually add a customer who hasn't self-registered (phone/walk-in
+// lead, or backfilling a pre-existing record) — mirrors auth.service's
+// register() (email uniqueness check + User + Customer) but skips issuing
+// auth tokens/cookies and the "welcome" notification, since this account
+// isn't being logged into right now and may just be a CRM record.
+const createCustomer = catchAsync(async (req, res) => {
+  const { fullName, email, phone, dateOfBirth, passportNumber, country, address, notes } = req.body;
+
+  const existing = await User.findOne({ email });
+  if (existing) throw ApiError.conflict('An account with this email already exists.');
+
+  const user = await User.create({ fullName, email, phone, password: crypto.randomBytes(12).toString('hex'), role: 'customer' });
+  const customer = await Customer.create({
+    user: user._id,
+    dateOfBirth: dateOfBirth || undefined,
+    passportNumber,
+    country,
+    address,
+    notes,
+  });
+  await customer.populate('user', '-password');
+
+  new ApiResponse(201, customer, 'Customer created').send(res);
 });
 
 const getCustomerById = catchAsync(async (req, res) => {
@@ -69,6 +95,7 @@ module.exports = {
   getMyProfile,
   updateMyProfile,
   getAllCustomers,
+  createCustomer,
   getCustomerById,
   setCustomerActive,
   updateNotes,
