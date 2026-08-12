@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CalendarIcon, EyeIcon, FacebookIcon, LinkIcon, TwitterIcon, CheckIcon, HeartIcon } from 'lucide-react';
+import { CalendarIcon, EyeIcon, FacebookIcon, LinkIcon, TwitterIcon, CheckIcon, HeartIcon, MapPinIcon } from 'lucide-react';
 import { PageBanner } from '../components/layout/PageBanner';
 import { LoadingState, ErrorState } from '../components/ui/StatusState';
 import { apiGetOne, apiGetList, API_ORIGIN } from '../lib/api';
@@ -64,34 +64,39 @@ export function BlogDetails() {
 
   if (post.template === 'romantic') {
     return (
-      <main className="min-h-screen bg-[#fbf4ee]">
-        <div className="relative h-[62vh] min-h-[420px] w-full overflow-hidden sm:h-[80vh]">
-          <img src={resolveImage(post.featuredImage)} alt={post.title} className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
-          <div className="absolute inset-0 flex flex-col items-center justify-end px-4 pb-12 text-center sm:pb-16">
-            <span className="text-xs font-semibold uppercase tracking-[0.4em] text-gold">{post.category}</span>
-            <h1 className="mt-4 max-w-3xl font-display text-3xl italic leading-tight text-white sm:text-5xl">{post.title}</h1>
-            <div className="mt-5 flex items-center gap-3 text-gold/80">
-              <span className="h-px w-10 bg-gold/50" />
-              <HeartIcon className="h-4 w-4 fill-gold text-gold" />
-              <span className="h-px w-10 bg-gold/50" />
-            </div>
+      <main className="min-h-screen bg-[#faf3e8]">
+        <div className="px-4 pt-28 pb-8 text-center sm:pt-36">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.4em] text-gold">
+            <MapPinIcon className="h-3.5 w-3.5" /> Sri Lanka
+          </span>
+          <h1 className="mx-auto mt-4 max-w-3xl font-display text-3xl font-bold uppercase leading-tight tracking-wide text-[#3a2b1f] sm:text-5xl">{post.title}</h1>
+          <p className="mt-3 font-display text-xl italic text-gold sm:text-2xl">A Sri Lanka Honeymoon Guide</p>
+          <div className="mx-auto mt-5 flex items-center justify-center gap-3 text-gold/70">
+            <span className="h-px w-10 bg-gold/40" />
+            <HeartIcon className="h-4 w-4 fill-gold text-gold" />
+            <span className="h-px w-10 bg-gold/40" />
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-md px-4 sm:max-w-lg sm:px-6">
+          <div className="overflow-hidden rounded-t-[5rem] rounded-b-[2rem] shadow-2xl ring-8 ring-white sm:rounded-t-[7rem]">
+            <img src={resolveImage(post.featuredImage)} alt={post.title} className="h-[26rem] w-full object-cover sm:h-[32rem]" />
           </div>
         </div>
 
         <article className="mx-auto max-w-2xl px-4 py-14 sm:px-6">
-          <div className="flex flex-wrap items-center justify-center gap-4 border-b border-forest/10 pb-8 text-sm text-forest/45">
+          <div className="flex flex-wrap items-center justify-center gap-4 border-b border-[#3a2b1f]/10 pb-8 text-sm text-[#3a2b1f]/45">
             <span className="flex items-center gap-1.5"><CalendarIcon className="h-4 w-4" /> {formatDate(post.publishedAt || post.createdAt)}</span>
             <span className="flex items-center gap-1.5"><EyeIcon className="h-4 w-4" /> {post.views} views</span>
-            <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noreferrer" aria-label="Share on Facebook" className="text-forest/40 hover:text-forest"><FacebookIcon className="h-4 w-4" /></a>
-            <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.title)}`} target="_blank" rel="noreferrer" aria-label="Share on X" className="text-forest/40 hover:text-forest"><TwitterIcon className="h-4 w-4" /></a>
-            <button onClick={share} aria-label="Copy link" className="flex items-center gap-1.5 text-forest/40 hover:text-forest">
+            <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noreferrer" aria-label="Share on Facebook" className="text-[#3a2b1f]/40 hover:text-gold"><FacebookIcon className="h-4 w-4" /></a>
+            <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.title)}`} target="_blank" rel="noreferrer" aria-label="Share on X" className="text-[#3a2b1f]/40 hover:text-gold"><TwitterIcon className="h-4 w-4" /></a>
+            <button onClick={share} aria-label="Copy link" className="flex items-center gap-1.5 text-[#3a2b1f]/40 hover:text-gold">
               {copied ? <CheckIcon className="h-3.5 w-3.5" /> : <LinkIcon className="h-3.5 w-3.5" />} {copied ? 'Copied!' : 'Share'}
             </button>
           </div>
 
           {post.content &&
-          <div className="mt-10 space-y-5 text-center font-display text-xl italic leading-relaxed text-forest/70">
+          <div className="mt-10 space-y-5 text-center font-display text-xl italic leading-relaxed text-[#3a2b1f]/70">
               {post.content.split(/\n\s*\n/).map((para, i) => <p key={i}>{para}</p>)}
             </div>
           }
@@ -100,7 +105,7 @@ export function BlogDetails() {
             {post.sections.map((s, i) =>
             <motion.div key={i} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.6 }}>
                 {s.image &&
-              <div className="-mx-4 mb-8 overflow-hidden rounded-[1.5rem] shadow-lift sm:-mx-6 sm:rounded-[2rem]">
+              <div className="-mx-4 mb-8 overflow-hidden rounded-[1.5rem] shadow-lift ring-1 ring-gold/20 sm:-mx-6 sm:rounded-[2rem]">
                     <img src={resolveImage(s.image)} alt={s.heading} loading="lazy" className="h-72 w-full object-cover sm:h-[26rem]" />
                   </div>
               }
@@ -110,9 +115,9 @@ export function BlogDetails() {
                     <span className="h-1.5 w-1.5 rounded-full bg-gold" />
                     <span className="h-px w-6 bg-gold/50" />
                   </div>
-                  <h2 className="font-display text-2xl italic font-semibold text-forest sm:text-3xl">{s.heading}</h2>
+                  <h2 className="font-display text-2xl italic font-semibold text-[#3a2b1f] sm:text-3xl">{s.heading}</h2>
                 </div>
-                <div className="prose mx-auto mt-5 max-w-xl text-center text-base leading-relaxed text-forest/70">
+                <div className="prose mx-auto mt-5 max-w-xl text-center text-base leading-relaxed text-[#3a2b1f]/70">
                   {s.body.split(/\n\s*\n/).map((para, pi) => <p key={pi} className="mb-4">{para}</p>)}
                 </div>
               </motion.div>
@@ -120,8 +125,8 @@ export function BlogDetails() {
           </div>
 
           {post.tags?.length > 0 &&
-          <div className="mt-16 flex flex-wrap justify-center gap-2 border-t border-forest/10 pt-8">
-              {post.tags.map((t) => <span key={t} className="rounded-full bg-white px-3 py-1.5 text-xs font-medium text-forest/60 shadow-soft">#{t}</span>)}
+          <div className="mt-16 flex flex-wrap justify-center gap-2 border-t border-[#3a2b1f]/10 pt-8">
+              {post.tags.map((t) => <span key={t} className="rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[#3a2b1f]/60 shadow-soft ring-1 ring-gold/15">#{t}</span>)}
             </div>
           }
         </article>
@@ -129,16 +134,16 @@ export function BlogDetails() {
         {related.length > 0 &&
         <section className="bg-white py-16">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <h2 className="text-center font-display text-2xl italic font-semibold text-forest">More Love Stories</h2>
+              <h2 className="text-center font-display text-2xl italic font-semibold text-[#3a2b1f]">More Love Stories</h2>
               <div className="mt-8 grid gap-6 sm:grid-cols-3">
                 {related.map((p) =>
-              <Link key={p._id} to={`/blog/${p.slug}`} className="group block overflow-hidden rounded-3xl bg-cream shadow-soft transition-shadow hover:shadow-lift">
+              <Link key={p._id} to={`/blog/${p.slug}`} className="group block overflow-hidden rounded-3xl bg-[#faf3e8] shadow-soft transition-shadow hover:shadow-lift">
                     <div className="h-40 overflow-hidden">
                       <img src={resolveImage(p.featuredImage)} alt={p.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
                     <div className="p-5">
-                      <h3 className="font-display text-base font-semibold text-forest transition-colors group-hover:text-emerald line-clamp-2">{p.title}</h3>
-                      <p className="mt-1.5 text-xs text-forest/50">{formatDate(p.publishedAt || p.createdAt)}</p>
+                      <h3 className="font-display text-base font-semibold text-[#3a2b1f] transition-colors group-hover:text-gold line-clamp-2">{p.title}</h3>
+                      <p className="mt-1.5 text-xs text-[#3a2b1f]/50">{formatDate(p.publishedAt || p.createdAt)}</p>
                     </div>
                   </Link>
               )}
