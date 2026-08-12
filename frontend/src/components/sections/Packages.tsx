@@ -15,12 +15,12 @@ export function Packages() {
   useEffect(() => {
     let cancelled = false;
 
-    apiGetList<TourPackage>('/packages', { isFeatured: true, limit: 6, sort: '-rating' }).
+    apiGetList<TourPackage>('/packages', { isFeatured: true, limit: 8, sort: '-rating' }).
     then(async ({ data }) => {
       // Admin hasn't marked anything "Feature on homepage" yet — fall back to
       // the newest published packages so the section is never empty.
       if (!cancelled && data.length === 0) {
-        const fallback = await apiGetList<TourPackage>('/packages', { limit: 6, sort: '-createdAt' });
+        const fallback = await apiGetList<TourPackage>('/packages', { limit: 8, sort: '-createdAt' });
         if (!cancelled) setPackages(fallback.data);
         return;
       }
@@ -51,8 +51,8 @@ export function Packages() {
             <Loader2Icon className="h-6 w-6 animate-spin text-forest/40" />
           </div> :
 
-        <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {packages.map((pkg, i) => <PackageCard key={pkg._id} pkg={pkg} index={i} />)}
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {packages.map((pkg, i) => <PackageCard key={pkg._id} pkg={pkg} index={i} compact />)}
           </div>
         }
 

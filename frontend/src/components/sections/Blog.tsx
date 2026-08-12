@@ -19,7 +19,7 @@ export function Blog() {
   const [posts, setPosts] = useState<BlogListItem[]>([]);
 
   useEffect(() => {
-    apiGetList<BlogListItem>('/blogs', { sort: '-views', limit: 3 }).then(({ data }) => setPosts(data)).catch(() => {});
+    apiGetList<BlogListItem>('/blogs', { sort: '-views', limit: 4 }).then(({ data }) => setPosts(data)).catch(() => {});
   }, []);
 
   if (posts.length === 0) return null;
@@ -39,7 +39,7 @@ export function Blog() {
           </Link>
         </div>
 
-        <div className="mt-14 grid gap-8 md:grid-cols-3">
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {posts.map((b, i) =>
           <motion.article
             key={b._id}
@@ -50,18 +50,18 @@ export function Blog() {
             whileHover={{ y: -8 }}
             className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-soft transition-shadow hover:shadow-lift">
 
-              <Link to={`/blog/${b.slug}`} className="relative h-52 overflow-hidden">
+              <Link to={`/blog/${b.slug}`} className="relative h-36 overflow-hidden">
                 <img src={resolveImage(b.featuredImage)} alt={b.title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                <span className="absolute top-4 left-4 rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold text-emerald">{b.category}</span>
+                <span className="absolute top-3 left-3 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-emerald">{b.category}</span>
               </Link>
-              <div className="flex flex-1 flex-col p-6">
-                <div className="flex items-center gap-1.5 text-xs text-forest/50">
-                  <CalendarIcon className="h-3.5 w-3.5" /> {formatDate(b.publishedAt || b.createdAt)}
+              <div className="flex flex-1 flex-col p-4">
+                <div className="flex items-center gap-1.5 text-[11px] text-forest/50">
+                  <CalendarIcon className="h-3 w-3" /> {formatDate(b.publishedAt || b.createdAt)}
                 </div>
-                <Link to={`/blog/${b.slug}`} className="font-display mt-2 text-lg font-semibold leading-snug text-forest group-hover:text-emerald transition-colors">{b.title}</Link>
-                <p className="mt-2 flex-1 line-clamp-3 text-sm leading-relaxed text-forest/65">{b.excerpt}</p>
-                <Link to={`/blog/${b.slug}`} className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald">
-                  {t('blog.readMore')} <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <Link to={`/blog/${b.slug}`} className="font-display mt-1.5 text-sm font-semibold leading-snug text-forest group-hover:text-emerald transition-colors line-clamp-2">{b.title}</Link>
+                <p className="mt-1.5 flex-1 line-clamp-2 text-xs leading-relaxed text-forest/65">{b.excerpt}</p>
+                <Link to={`/blog/${b.slug}`} className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-emerald">
+                  {t('blog.readMore')} <ArrowRightIcon className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
             </motion.article>
