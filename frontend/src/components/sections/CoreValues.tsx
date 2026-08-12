@@ -4,10 +4,10 @@ import { ShieldCheckIcon, CompassIcon, SparklesIcon, HeartHandshakeIcon } from '
 import { SectionHeading } from '../ui/SectionHeading';
 
 const CORE_VALUES = [
-{ icon: ShieldCheckIcon, title: 'Trust', text: 'Transparent pricing and honest advice, every single time.' },
-{ icon: CompassIcon, title: 'Authenticity', text: 'Real local experiences, not cookie-cutter tours.' },
-{ icon: SparklesIcon, title: 'Excellence', text: 'Meticulous planning so every detail feels effortless.' },
-{ icon: HeartHandshakeIcon, title: 'Care', text: 'Your comfort and safety, looked after from arrival to departure.' }];
+{ icon: ShieldCheckIcon, title: 'Trust', text: 'Transparent pricing and honest advice, every single time.', image: 'https://i.pinimg.com/1200x/74/a5/c5/74a5c5256dff6317fda83322f9ea8076.jpg' },
+{ icon: CompassIcon, title: 'Authenticity', text: 'Real local experiences, not cookie-cutter tours.', image: 'https://i.pinimg.com/1200x/09/04/cc/0904cc5fb13d2d7d30afa341b5138098.jpg' },
+{ icon: SparklesIcon, title: 'Excellence', text: 'Meticulous planning so every detail feels effortless.', image: 'https://i.pinimg.com/736x/c8/93/36/c893364fb36b5860b20672fa52d0d082.jpg' },
+{ icon: HeartHandshakeIcon, title: 'Care', text: 'Your comfort and safety, looked after from arrival to departure.', image: 'https://i.pinimg.com/736x/d2/c3/73/d2c3734879e0f54a15c330f142a92740.jpg' }];
 
 
 export function CoreValues() {
@@ -23,13 +23,21 @@ export function CoreValues() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
-            className="rounded-3xl bg-cream p-7 text-center shadow-soft">
+            className="group relative overflow-hidden rounded-3xl bg-cream p-7 text-center shadow-soft">
 
-              <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-emerald/10 text-emerald">
-                <v.icon className="h-7 w-7" />
+              <img
+              src={v.image}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover object-top opacity-[0.09] grayscale transition-opacity duration-500 group-hover:opacity-20" />
+
+              <div className="relative">
+                <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-emerald/10 text-emerald">
+                  <v.icon className="h-7 w-7" />
+                </div>
+                <h3 className="mt-5 font-display text-lg font-semibold text-forest">{v.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-forest/65">{v.text}</p>
               </div>
-              <h3 className="mt-5 font-display text-lg font-semibold text-forest">{v.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-forest/65">{v.text}</p>
             </motion.div>
           )}
         </div>
