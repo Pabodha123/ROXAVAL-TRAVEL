@@ -276,12 +276,10 @@ export function TourPackageDetails() {
           </div>
 
           {/* Reviews */}
+          {reviews.length > 0 &&
           <div className="mt-10">
-            <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.reviews')}</h2>
-            {reviews.length === 0 ?
-            <p className="mt-3 text-sm text-forest/60">{t('detail.noReviewsYet')}</p> :
-
-            <div className="mt-4 space-y-4">
+              <h2 className="font-display text-2xl font-semibold text-forest">{t('detail.reviews')}</h2>
+              <div className="mt-4 space-y-4">
                 {reviews.map((r) =>
               <div key={r._id} className="rounded-3xl bg-white p-6 shadow-soft">
                     <div className="flex items-center gap-1">
@@ -293,8 +291,8 @@ export function TourPackageDetails() {
                   </div>
               )}
               </div>
-            }
-          </div>
+            </div>
+          }
         </div>
 
         {/* Sidebar CTA */}

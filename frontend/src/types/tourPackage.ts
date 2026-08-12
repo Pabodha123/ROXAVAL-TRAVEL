@@ -67,5 +67,7 @@ export interface Review {
   text: string;
   country?: string;
   customer?: { user?: { fullName?: string } };
+  reviewerName?: string;
+  source?: 'website' | 'tripadvisor';
   createdAt: string;
 }

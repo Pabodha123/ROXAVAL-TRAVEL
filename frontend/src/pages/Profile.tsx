@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Loader2Icon, SaveIcon, CheckIcon } from 'lucide-react';
 import { PageBanner } from '../components/layout/PageBanner';
+import { DateField } from '../components/ui/DateField';
 import { apiGetOne, apiPatch, ApiRequestError } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -86,7 +87,7 @@ export function Profile() {
               </div>
               <div>
                 <label className={labelClass}>Date of Birth</label>
-                <input type="date" value={profile.dateOfBirth} onChange={(e) => update('dateOfBirth', e.target.value)} className={inputClass} />
+                <DateField value={profile.dateOfBirth} onChange={(v) => update('dateOfBirth', v)} className={inputClass} />
               </div>
               <div>
                 <label className={labelClass}>Passport Number</label>

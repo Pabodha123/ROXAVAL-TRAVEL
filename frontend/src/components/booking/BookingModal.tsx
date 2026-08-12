@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CheckCircle2Icon, CreditCardIcon, Loader2Icon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from '../ui/Modal';
+import { DateField } from '../ui/DateField';
 import { apiPost, ApiRequestError } from '../../lib/api';
 import { useToast } from '../../context/ToastContext';
 
@@ -108,12 +109,11 @@ export function BookingModal({ open, onClose, source, onSuccess }: BookingModalP
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-forest">{t('modal.travelDate')}</label>
-          <input
-            type="date"
+          <DateField
             required
             value={travelDate}
             min={new Date().toISOString().split('T')[0]}
-            onChange={(e) => setTravelDate(e.target.value)}
+            onChange={setTravelDate}
             className="w-full rounded-xl border border-forest/15 bg-cream/40 px-4 py-2.5 text-sm outline-none focus:border-emerald" />
 
         </div>

@@ -6,6 +6,7 @@ import { EyeIcon, EyeOffIcon, LockIcon, Loader2Icon, MailIcon, PhoneIcon, UserIc
 import { useAuth } from '../context/AuthContext';
 import { ApiRequestError } from '../lib/api';
 import { BackButton } from '../components/ui/BackButton';
+import { DateField } from '../components/ui/DateField';
 import { COUNTRY_DIAL_CODES, isoToFlag } from '../data/countryCodes';
 
 type Tab = 'login' | 'register';
@@ -259,7 +260,7 @@ export function Auth() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="relative">
                   <CakeIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
-                  <input type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} placeholder={t('dateOfBirthPlaceholder')} className={`${inputClass} text-forest/80`} />
+                  <DateField value={dateOfBirth} onChange={setDateOfBirth} className={`${inputClass} text-forest/80`} />
                 </div>
                 <div className="relative">
                   <IdCardIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />

@@ -7,6 +7,7 @@ import { useToast } from '../../context/ToastContext';
 import { useApiList } from '../../hooks/useApiList';
 import { apiGetOne, apiPost, ApiRequestError } from '../../lib/api';
 import { AutocompleteTagInput } from '../ui/AutocompleteTagInput';
+import { DateField } from '../ui/DateField';
 import type { DestinationRef } from '../../types/activity';
 import type { Activity } from '../../types/activity';
 import type { TourPackage } from '../../types/tourPackage';
@@ -294,7 +295,7 @@ export function CustomTourWizard() {
 
             {step === 0 &&
             <div className="grid gap-6 sm:grid-cols-2">
-                <div><label className="mb-2 block text-sm font-medium text-forest">Arrival Date</label><input type="date" value={formData.arrivalDate} onChange={(e) => setFormData({ ...formData, arrivalDate: e.target.value })} className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" /></div>
+                <div><label className="mb-2 block text-sm font-medium text-forest">Arrival Date</label><DateField value={formData.arrivalDate} onChange={(v) => setFormData({ ...formData, arrivalDate: v })} className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" /></div>
                 <div><label className="mb-2 block text-sm font-medium text-forest">Number of Days</label><input type="number" min={1} value={formData.days} onChange={(e) => setFormData({ ...formData, days: e.target.value })} placeholder="e.g. 10" className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" /></div>
                 <div className="grid grid-cols-3 gap-4">
                   <div><label className="mb-2 block text-sm font-medium text-forest">Adults</label><input type="number" min={1} value={formData.adults} onChange={(e) => setFormData({ ...formData, adults: Number(e.target.value) })} className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" /></div>
