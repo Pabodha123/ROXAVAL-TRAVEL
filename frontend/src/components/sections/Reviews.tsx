@@ -9,6 +9,14 @@ import { SectionHeading } from '../ui/SectionHeading';
 const AUTOPLAY_INTERVAL = 4000;
 const SWIPE_THRESHOLD = 50;
 
+const WELCOME_PHOTOS = [
+'/welcome-photos/welcome-1.jpeg',
+'/welcome-photos/welcome-2.jpeg',
+'/welcome-photos/welcome-3.jpeg',
+'/welcome-photos/welcome-4.jpeg',
+'/welcome-photos/welcome-5.jpeg',
+'/welcome-photos/welcome-6.jpeg'];
+
 export function Reviews() {
   const { t } = useTranslation('home');
   const [index, setIndex] = useState(0);
@@ -100,6 +108,25 @@ export function Reviews() {
             <button onClick={() => go(1)} aria-label={t('reviews.next')} className="grid h-11 w-11 place-items-center rounded-full border border-forest/15 text-forest transition-colors hover:bg-forest hover:text-white">
               <ChevronRightIcon className="h-5 w-5" />
             </button>
+          </div>
+        </div>
+
+        <div className="mt-16">
+          <p className="text-center text-xs font-semibold uppercase tracking-[0.3em] text-emerald/70">Fresh Off the Plane</p>
+          <p className="mx-auto mt-2 max-w-md text-center font-display text-lg text-forest/70">Real guests, welcomed at the airport by our team.</p>
+          <div className="mt-8 grid grid-cols-3 gap-3 sm:grid-cols-6 sm:gap-4">
+            {WELCOME_PHOTOS.map((src, i) =>
+            <motion.div
+              key={src}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.4, delay: i * 0.06 }}
+              className="group aspect-square overflow-hidden rounded-2xl shadow-soft ring-1 ring-forest/5">
+
+                <img src={src} alt="Guest welcomed by Roxaval Travels at the airport" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              </motion.div>
+            )}
           </div>
         </div>
       </div>
