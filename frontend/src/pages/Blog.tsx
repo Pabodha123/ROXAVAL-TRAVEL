@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CalendarIcon, EyeIcon, FlameIcon, ClockIcon, ArrowRightIcon } from 'lucide-react';
-import { FilterBar } from '../components/ui/FilterBar';
 import { Pagination } from '../components/ui/Pagination';
 import { LoadingState, EmptyState, ErrorState } from '../components/ui/StatusState';
 import { useApiList } from '../hooks/useApiList';
@@ -15,13 +14,6 @@ import type { BlogListItem } from '../types/blog';
 function resolveImage(url: string) {
   return url.startsWith('/uploads') ? `${API_ORIGIN}${url}` : url;
 }
-
-const CATEGORY_OPTIONS = ['Travel Guide', 'Food & Culture', 'Adventure', 'Culture', 'Wildlife', 'Tips & Advice'].map((v) => ({ label: v, value: v }));
-const SORT_OPTIONS = [
-{ label: 'Newest', value: '-publishedAt' },
-{ label: 'Oldest', value: 'publishedAt' },
-{ label: 'Most Popular', value: '-views' }];
-
 
 function ArticleCard({ post, large = false }: {post: BlogListItem;large?: boolean;}) {
   return (
@@ -62,16 +54,11 @@ function SidebarList({ title, icon: Icon, posts }: {title: string;icon: React.Co
 }
 
 export function Blog() {
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('');
-  const [sort, setSort] = useState('-publishedAt');
   const [popular, setPopular] = useState<BlogListItem[]>([]);
   const [recent, setRecent] = useState<BlogListItem[]>([]);
 
   const { items, meta, loading, error, hasMore, loadMore } = useApiList<BlogListItem>('/blogs', {
-    q: search || undefined,
-    category: category || undefined,
-    sort
+    sort: '-publishedAt'
   });
 
   useEffect(() => {
@@ -109,19 +96,7 @@ export function Blog() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <FilterBar
-          search={search}
-          onSearchChange={setSearch}
-          searchPlaceholder="Search articles…"
-          filters={[{ key: 'category', label: 'Categories', options: CATEGORY_OPTIONS }]}
-          values={{ category }}
-          onFilterChange={(_key, value) => setCategory(value)}
-          sortOptions={SORT_OPTIONS}
-          sort={sort}
-          onSortChange={setSort} />
-
-
-        <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
           <div>
             {loading && items.length === 0 && <LoadingState title="Loading articles…" />}
             {error && <ErrorState message={error} />}
