@@ -2,6 +2,7 @@ const { Payment, Booking, Customer } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { buildWhatsAppPaymentLink } = require('../utils/whatsapp');
 const { notify, notifyAllAdmins } = require('./notification.service');
+const { formatDate } = require('../utils/dateFormat');
 
 /**
  * Records a payment attempt against a booking. For 'whatsapp' method this
@@ -57,7 +58,7 @@ const createPayment = async (customerUserId, payload) => {
       bookingReference: booking.bookingReference,
       customerName: customerUserId.fullName || 'Customer',
       packageName: booking.tourPackage?.name?.en || 'Customized Tour',
-      travelDate: booking.travelDate.toDateString(),
+      travelDate: formatDate(booking.travelDate),
       totalAmount: booking.pricing.totalAmount,
       advanceAmount: booking.pricing.advanceAmount,
       currency: booking.pricing.currency,

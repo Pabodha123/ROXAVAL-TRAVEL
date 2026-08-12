@@ -4,6 +4,7 @@ const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
 const env = require('../config/env');
 const { t } = require('../i18n/strings');
+const { formatDate } = require('./dateFormat');
 
 const BRAND_COLOR = '#0f766e';
 const GOLD_COLOR = '#c8a24c';
@@ -124,7 +125,7 @@ async function generateHotelVoucherPdf(voucher, outputFileName, lang = 'en') {
       [s.voucherNo, voucher.voucherNumber],
       [s.bookingRef, voucher.bookingReference],
       [s.tourReference, voucher.tourReferenceNumber || '-'],
-      [s.dateIssued, new Date().toLocaleDateString()],
+      [s.dateIssued, formatDate(new Date())],
     ],
     PAGE_WIDTH / 4
   );
@@ -154,8 +155,8 @@ async function generateHotelVoucherPdf(voucher, outputFileName, lang = 'en') {
     doc.y,
     [
       [s.package, voucher.tourPackageName || '-'],
-      [s.tourStart, voucher.tourStartDate ? new Date(voucher.tourStartDate).toDateString() : '-'],
-      [s.tourEnd, voucher.tourEndDate ? new Date(voucher.tourEndDate).toDateString() : '-'],
+      [s.tourStart, voucher.tourStartDate ? formatDate(voucher.tourStartDate) : '-'],
+      [s.tourEnd, voucher.tourEndDate ? formatDate(voucher.tourEndDate) : '-'],
     ],
     PAGE_WIDTH / 3
   );
@@ -190,8 +191,8 @@ async function generateHotelVoucherPdf(voucher, outputFileName, lang = 'en') {
     ],
     rows: [
       {
-        checkIn: new Date(voucher.checkInDate).toDateString(),
-        checkOut: new Date(voucher.checkOutDate).toDateString(),
+        checkIn: formatDate(voucher.checkInDate),
+        checkOut: formatDate(voucher.checkOutDate),
         nights: voucher.nights,
         roomType: voucher.roomType || s.standard,
         rooms: voucher.numberOfRooms,
@@ -242,7 +243,7 @@ async function generateHotelVoucherPdf(voucher, outputFileName, lang = 'en') {
   doc
     .fontSize(7)
     .fillColor(MUTED_COLOR)
-    .text(`${env.COMPANY.name} • ${env.COMPANY.website} • ${s.generatedOn} ${new Date().toLocaleDateString()}`, 40, doc.page.height - 40, {
+    .text(`${env.COMPANY.name} • ${env.COMPANY.website} • ${s.generatedOn} ${formatDate(new Date())}`, 40, doc.page.height - 40, {
       align: 'center',
       width: 515,
     });

@@ -1,5 +1,18 @@
 const env = require('../config/env');
 const { t } = require('../i18n/strings');
+const { formatDate } = require('./dateFormat');
+
+// Shared footer for customer-facing emails: company identity, a real
+// physical address, and a one-line reason-for-contact — all of which spam
+// filters weight favorably for legitimacy versus a bare "unsubscribe-free"
+// bulk-mail footer.
+const emailFooter = (reason, align = 'left') => `
+  <p style="color:#999; font-size:12px; margin-top:32px; line-height:1.6; text-align:${align};">
+    ${env.COMPANY.name}${env.COMPANY.phone ? ` &middot; ${env.COMPANY.phone}` : ''}${env.COMPANY.email ? ` &middot; ${env.COMPANY.email}` : ''}
+    ${env.COMPANY.address ? `<br/>${env.COMPANY.address}` : ''}
+    ${reason ? `<br/>${reason}` : ''}
+  </p>
+`;
 
 /**
  * Generic branded wrapper for every transactional notification email.
@@ -48,7 +61,7 @@ const notificationEmail = ({ title, message, link, itinerary, lang = 'en' }) => 
       <p style="color:#333; line-height:1.6;">${message}</p>
       ${itineraryTable(itinerary, lang)}
       ${url ? `<p style="margin-top:20px;"><a href="${url}" style="background:#c8a24c; color:#0f3d2e; padding:12px 24px; border-radius:999px; text-decoration:none; font-weight:600; display:inline-block;">${s.viewDetails}</a></p>` : ''}
-      <p style="color:#999; font-size:12px; margin-top:32px;">${env.COMPANY.name}${env.COMPANY.phone ? ` &middot; ${env.COMPANY.phone}` : ''}${env.COMPANY.email ? ` &middot; ${env.COMPANY.email}` : ''}</p>
+      ${emailFooter("You're receiving this email because you have an account with " + env.COMPANY.name + '.')}
     </div>
   `;
 };
@@ -61,7 +74,7 @@ const notificationEmail = ({ title, message, link, itinerary, lang = 'en' }) => 
  */
 const hotelVoucherEmail = ({ voucher, audience, lang = 'en' }) => {
   const s = t(lang, 'email');
-  const stayLine = `${new Date(voucher.checkInDate).toDateString()} &rarr; ${new Date(voucher.checkOutDate).toDateString()} (${s.nights(voucher.nights)})`;
+  const stayLine = `${formatDate(voucher.checkInDate)} &rarr; ${formatDate(voucher.checkOutDate)} (${s.nights(voucher.nights)})`;
   const intro = audience === 'hotel' ? s.hotelConfirmIntro : s.customerVoucherIntro(voucher.hotelSnapshot.name);
 
   return `
@@ -78,7 +91,7 @@ const hotelVoucherEmail = ({ voucher, audience, lang = 'en' }) => {
           <tr><td style="padding:6px 0; color:#999;">${s.room}</td><td style="padding:6px 0; color:#333;">${voucher.numberOfRooms} &times; ${voucher.roomType || s.standard} (${voucher.mealPlan})</td></tr>
         </tbody>
       </table>
-      <p style="color:#999; font-size:12px; margin-top:32px;">${env.COMPANY.name}${env.COMPANY.phone ? ` &middot; ${env.COMPANY.phone}` : ''}${env.COMPANY.email ? ` &middot; ${env.COMPANY.email}` : ''}</p>
+      ${emailFooter(audience === 'hotel' ? 'You\'re receiving this because your property is a partner accommodation for ' + env.COMPANY.name + '.' : "You're receiving this email because you have an upcoming booking with " + env.COMPANY.name + '.')}
     </div>
   `;
 };
@@ -175,7 +188,7 @@ const birthdayEmail = ({ firstName, subject, message, backgroundImageUrl, coupon
           <a href="${env.CLIENT_URL}/packages" style="background:#c8a24c; color:#0f1210; padding:13px 32px; border-radius:999px; text-decoration:none; font-weight:700; font-size:14px; display:inline-block;">Plan Your Next Adventure</a>
         </div>
       </div>
-      <p style="color:#999; font-size:12px; text-align:center; margin-top:20px;">${env.COMPANY.name}${env.COMPANY.phone ? ` &middot; ${env.COMPANY.phone}` : ''}${env.COMPANY.email ? ` &middot; ${env.COMPANY.email}` : ''}</p>
+      ${emailFooter("You're receiving this birthday greeting because you have an account with " + env.COMPANY.name + '.', 'center')}
     </div>
   `;
 };

@@ -6,6 +6,7 @@ const { notify } = require('./notification.service');
 const generateReference = require('../utils/generateReference');
 const { localizeValue } = require('../utils/localize');
 const { t } = require('../i18n/strings');
+const { formatDate } = require('../utils/dateFormat');
 
 // `days` here can come from a TourPackage (title is now `{en,de,fr}`) or a
 // customer Itinerary (title is still a plain string) — normalize both.
@@ -56,7 +57,7 @@ const generateItineraryDocument = async (bookingId, generatedBy) => {
       customerEmail: customerUser.email,
       customerPhone: customerUser.phone,
       packageName: displayText(booking.tourPackage?.name) || displayText(booking.itinerary?.title),
-      travelDate: booking.travelDate.toDateString(),
+      travelDate: formatDate(booking.travelDate),
       tableColumns,
       tableRows,
       notes: 'Itinerary is subject to minor changes due to weather or local conditions.',
@@ -92,7 +93,7 @@ const generateBookingConfirmation = async (bookingId, generatedBy) => {
       customerEmail: customerUser.email,
       customerPhone: customerUser.phone,
       packageName: displayText(booking.tourPackage?.name) || displayText(booking.itinerary?.title),
-      travelDate: booking.travelDate.toDateString(),
+      travelDate: formatDate(booking.travelDate),
       amountSummary: {
         'Total Amount': `${booking.pricing.currency} ${booking.pricing.totalAmount}`,
         'Advance Paid': `${booking.pricing.currency} ${booking.pricing.advanceAmount}`,
@@ -132,7 +133,7 @@ const generateInvoice = async (bookingId, generatedBy) => {
       customerEmail: customerUser.email,
       customerPhone: customerUser.phone,
       packageName: displayText(booking.tourPackage?.name) || displayText(booking.itinerary?.title),
-      travelDate: booking.travelDate.toDateString(),
+      travelDate: formatDate(booking.travelDate),
       amountSummary: {
         Subtotal: `${booking.pricing.currency} ${booking.pricing.subtotal}`,
         Discount: `${booking.pricing.currency} ${booking.pricing.discount}`,

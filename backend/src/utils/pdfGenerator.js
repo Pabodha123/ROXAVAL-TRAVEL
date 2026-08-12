@@ -3,6 +3,7 @@ const path = require('path');
 const PDFDocument = require('pdfkit');
 const env = require('../config/env');
 const { t } = require('../i18n/strings');
+const { formatDate } = require('./dateFormat');
 
 const BRAND_COLOR = '#0f766e';
 const TEXT_COLOR = '#1f2937';
@@ -50,7 +51,7 @@ function drawFooter(doc, s) {
     .fontSize(8)
     .fillColor(MUTED_COLOR)
     .text(
-      `${env.COMPANY.name} \u2022 ${env.COMPANY.website} \u2022 ${s.generatedOn} ${new Date().toLocaleDateString()}`,
+      `${env.COMPANY.name} \u2022 ${env.COMPANY.website} \u2022 ${s.generatedOn} ${formatDate(new Date())}`,
       40,
       bottom,
       { align: 'center', width: 515 }
@@ -131,7 +132,7 @@ async function generatePdfDocument(type, data, outputFileName, lang = 'en') {
     [s.customerName, data.customerName],
     [s.email, data.customerEmail],
     [s.phone, data.customerPhone],
-    [s.dateIssued, new Date().toLocaleDateString()],
+    [s.dateIssued, formatDate(new Date())],
   ];
   if (data.packageName) summaryPairs.push([s.package, data.packageName]);
   if (data.travelDate) summaryPairs.push([s.travelDate, data.travelDate]);
