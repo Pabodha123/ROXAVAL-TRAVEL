@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CakeIcon, CalendarClockIcon, Loader2Icon, MailCheckIcon, RefreshCwIcon, SaveIcon, SendIcon } from 'lucide-react';
+import { CakeIcon, CalendarClockIcon, Loader2Icon, MailCheckIcon, MessageCircleIcon, RefreshCwIcon, SaveIcon, SendIcon } from 'lucide-react';
 import { PageHeader } from '../../components/PageHeader';
 import { StatCard } from '../../components/StatCard';
 import { StatusBadge } from '../../components/StatusBadge';
@@ -9,10 +9,11 @@ import { useAdminList } from '../../hooks/useAdminList';
 import { useToast } from '../../components/ToastProvider';
 import { apiGetOne, apiGetList, apiPatch, apiPost, ApiRequestError } from '../../../lib/api';
 import { formatDateTime } from '../../../lib/date';
+import { whatsAppLink } from '../../../lib/contact';
 
 interface CustomerRef {
   _id: string;
-  user?: { fullName?: string; email?: string };
+  user?: { fullName?: string; email?: string; phone?: string };
   dateOfBirth?: string;
 }
 
@@ -21,7 +22,9 @@ interface BirthdayLogEntry {
   customer?: CustomerRef;
   status: 'sent' | 'failed';
   method: 'auto' | 'manual';
+  channel: 'email' | 'whatsapp';
   emailTo: string;
+  whatsappTo?: string;
   couponCode?: string;
   errorMessage?: string;
   resendCount: number;
@@ -31,6 +34,7 @@ interface BirthdayLogEntry {
 interface TodayEntry {
   customer: CustomerRef;
   log: BirthdayLogEntry | null;
+  whatsappLog: BirthdayLogEntry | null;
 }
 
 interface UpcomingEntry {
@@ -62,6 +66,7 @@ export function AdminBirthdaysList() {
   const [loadingLists, setLoadingLists] = useState(true);
   const [running, setRunning] = useState(false);
   const [resendingId, setResendingId] = useState<string | null>(null);
+  const [whatsappingId, setWhatsappingId] = useState<string | null>(null);
 
   const loadLists = () => {
     setLoadingLists(true);
@@ -104,13 +109,26 @@ export function AdminBirthdaysList() {
     }
   };
 
-  const sentTodayCount = today.filter((t) => t.log?.status === 'sent').length;
+  const sendWhatsApp = async (customerId: string) => {
+    setWhatsappingId(customerId);
+    try {
+      const { phone, message } = await apiPost<{ phone: string; message: string }>(`/birthdays/whatsapp/${customerId}`);
+      window.open(whatsAppLink(message, phone.replace(/\D/g, '')), '_blank', 'noreferrer');
+      loadLists();
+    } catch (err) {
+      toast(err instanceof ApiRequestError ? err.message : 'Failed to prepare the WhatsApp message.', 'error');
+    } finally {
+      setWhatsappingId(null);
+    }
+  };
+
+  const sentTodayCount = today.filter((t) => t.log?.status === 'sent' || t.whatsappLog?.status === 'sent').length;
 
   return (
     <div>
       <PageHeader
         title="Birthday Wishes"
-        subtitle="Automatic birthday emails, cards and offers for your customers"
+        subtitle="Automatic birthday emails, plus one-click WhatsApp wishes, for your customers"
         action={
         <button onClick={runNow} disabled={running} className="flex items-center gap-2 rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-cream hover:bg-emerald disabled:opacity-70">
             {running ? <Loader2Icon className="h-4 w-4 animate-spin" /> : <RefreshCwIcon className="h-4 w-4" />}
@@ -139,7 +157,7 @@ export function AdminBirthdaysList() {
       </div>
 
       {tab === 'today' &&
-      <TodayPanel entries={today} loading={loadingLists} resendingId={resendingId} onResend={resend} />
+      <TodayPanel entries={today} loading={loadingLists} resendingId={resendingId} onResend={resend} whatsappingId={whatsappingId} onSendWhatsApp={sendWhatsApp} />
       }
       {tab === 'upcoming' &&
       <UpcomingPanel entries={upcoming} loading={loadingLists} />
@@ -148,39 +166,52 @@ export function AdminBirthdaysList() {
       <SettingsPanel />
       }
       {tab === 'log' &&
-      <LogPanel onResend={resend} resendingId={resendingId} />
+      <LogPanel onResend={resend} resendingId={resendingId} onSendWhatsApp={sendWhatsApp} whatsappingId={whatsappingId} />
       }
     </div>);
 
 }
 
-function TodayPanel({ entries, loading, resendingId, onResend }: {entries: TodayEntry[];loading: boolean;resendingId: string | null;onResend: (id: string) => void;}) {
+function TodayPanel({ entries, loading, resendingId, onResend, whatsappingId, onSendWhatsApp }: {entries: TodayEntry[];loading: boolean;resendingId: string | null;onResend: (id: string) => void;whatsappingId: string | null;onSendWhatsApp: (id: string) => void;}) {
   if (loading) return <div className="grid h-40 place-items-center"><Loader2Icon className="h-6 w-6 animate-spin text-forest/40" /></div>;
   if (entries.length === 0) return <div className="rounded-2xl bg-white p-10 text-center text-sm text-forest/50 shadow-soft">No birthdays today.</div>;
 
   return (
     <div className="overflow-hidden rounded-2xl bg-white shadow-soft">
       <div className="divide-y divide-forest/5">
-        {entries.map(({ customer, log }) =>
+        {entries.map(({ customer, log, whatsappLog }) =>
         <div key={customer._id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
             <div>
               <p className="text-sm font-semibold text-forest">{customer.user?.fullName || 'Customer'}</p>
               <p className="text-xs text-forest/50">{customer.user?.email}</p>
             </div>
-            <div className="flex items-center gap-3">
-              {log ?
-            <StatusBadge status={log.status} /> :
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2">
+                {log ? <StatusBadge status={log.status} /> : <span className="inline-flex items-center rounded-full bg-forest/8 px-2.5 py-1 text-xs font-semibold text-forest/50">Email not sent yet</span>}
+                <button
+                onClick={() => onResend(customer._id)}
+                disabled={resendingId === customer._id}
+                className="flex items-center gap-1.5 rounded-full border border-forest/15 px-4 py-2 text-xs font-semibold text-forest hover:bg-cream disabled:opacity-60">
 
-            <span className="inline-flex items-center rounded-full bg-forest/8 px-2.5 py-1 text-xs font-semibold text-forest/50">Not sent yet</span>
-            }
+                  {resendingId === customer._id ? <Loader2Icon className="h-3.5 w-3.5 animate-spin" /> : <SendIcon className="h-3.5 w-3.5" />}
+                  {log ? 'Resend' : 'Send Now'}
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
+                {whatsappLog && <StatusBadge status={whatsappLog.status} />}
+                {customer.user?.phone ?
               <button
-              onClick={() => onResend(customer._id)}
-              disabled={resendingId === customer._id}
-              className="flex items-center gap-1.5 rounded-full border border-forest/15 px-4 py-2 text-xs font-semibold text-forest hover:bg-cream disabled:opacity-60">
+                onClick={() => onSendWhatsApp(customer._id)}
+                disabled={whatsappingId === customer._id}
+                className="flex items-center gap-1.5 rounded-full bg-emerald px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-light disabled:opacity-60">
 
-                {resendingId === customer._id ? <Loader2Icon className="h-3.5 w-3.5 animate-spin" /> : <SendIcon className="h-3.5 w-3.5" />}
-                {log ? 'Resend' : 'Send Now'}
-              </button>
+                    {whatsappingId === customer._id ? <Loader2Icon className="h-3.5 w-3.5 animate-spin" /> : <MessageCircleIcon className="h-3.5 w-3.5" />}
+                    {whatsappLog ? 'Resend via WhatsApp' : 'Send via WhatsApp'}
+                  </button> :
+
+              <span className="inline-flex items-center rounded-full bg-forest/8 px-2.5 py-1 text-xs font-semibold text-forest/40">No phone on file</span>
+              }
+              </div>
             </div>
           </div>
         )}
@@ -284,12 +315,20 @@ function SettingsPanel() {
 
 }
 
-function LogPanel({ onResend, resendingId }: {onResend: (id: string) => void;resendingId: string | null;}) {
+function LogPanel({ onResend, resendingId, onSendWhatsApp, whatsappingId }: {onResend: (id: string) => void;resendingId: string | null;onSendWhatsApp: (id: string) => void;whatsappingId: string | null;}) {
   const { items, meta, loading, error, page, setPage, refetch } = useAdminList<BirthdayLogEntry>('/birthdays/logs', {});
 
   const columns: Column<BirthdayLogEntry>[] = [
   { header: 'Customer', render: (r) => r.customer?.user?.fullName || '-' },
-  { header: 'Email', render: (r) => r.emailTo },
+  {
+    header: 'Channel',
+    render: (r) => r.channel === 'whatsapp' ?
+    <span className="inline-flex items-center gap-1 rounded-full bg-emerald/10 px-2.5 py-1 text-xs font-semibold text-emerald"><MessageCircleIcon className="h-3 w-3" /> WhatsApp</span> :
+
+    <span className="inline-flex items-center gap-1 rounded-full bg-forest/8 px-2.5 py-1 text-xs font-semibold text-forest/60"><MailCheckIcon className="h-3 w-3" /> Email</span>
+
+  },
+  { header: 'Sent To', render: (r) => r.channel === 'whatsapp' ? r.whatsappTo : r.emailTo },
   { header: 'Status', render: (r) => r.status === 'failed' ? <span className="inline-flex items-center rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-600">Failed</span> : <StatusBadge status={r.status} /> },
   { header: 'Method', render: (r) => <span className="capitalize">{r.method}</span> },
   { header: 'Coupon', render: (r) => r.couponCode || '-' },
@@ -297,30 +336,45 @@ function LogPanel({ onResend, resendingId }: {onResend: (id: string) => void;res
   { header: 'Sent', render: (r) => formatDateTime(r.sentAt) },
   {
     header: 'Actions',
-    render: (r) => r.customer ?
-    <button
-      onClick={() => onResend(r.customer!._id)}
-      disabled={resendingId === r.customer!._id}
-      className="flex items-center gap-1.5 rounded-full border border-forest/15 px-3 py-1.5 text-xs font-semibold text-forest hover:bg-cream disabled:opacity-60">
+    render: (r) => {
+      if (!r.customer) return '-';
+      if (r.channel === 'whatsapp') {
+        return (
+          <button
+            onClick={() => onSendWhatsApp(r.customer!._id)}
+            disabled={whatsappingId === r.customer!._id}
+            className="flex items-center gap-1.5 rounded-full border border-forest/15 px-3 py-1.5 text-xs font-semibold text-forest hover:bg-cream disabled:opacity-60">
+
+            {whatsappingId === r.customer!._id ? <Loader2Icon className="h-3.5 w-3.5 animate-spin" /> : <MessageCircleIcon className="h-3.5 w-3.5" />}
+            Resend
+          </button>);
+
+      }
+      return (
+        <button
+          onClick={() => onResend(r.customer!._id)}
+          disabled={resendingId === r.customer!._id}
+          className="flex items-center gap-1.5 rounded-full border border-forest/15 px-3 py-1.5 text-xs font-semibold text-forest hover:bg-cream disabled:opacity-60">
 
           {resendingId === r.customer!._id ? <Loader2Icon className="h-3.5 w-3.5 animate-spin" /> : <SendIcon className="h-3.5 w-3.5" />}
           Resend
-        </button> :
-    '-'
+        </button>);
+
+    }
   }];
 
 
   const mounted = useRef(false);
   useEffect(() => {
-    // Refresh the log whenever a resend elsewhere completes (resendingId flips
-    // back to null) — skip the very first render, useAdminList already fetches then.
+    // Refresh the log whenever a resend/whatsapp-send elsewhere completes —
+    // skip the very first render, useAdminList already fetches then.
     if (!mounted.current) {
       mounted.current = true;
       return;
     }
-    if (resendingId === null) refetch();
+    if (resendingId === null && whatsappingId === null) refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resendingId]);
+  }, [resendingId, whatsappingId]);
 
-  return <DataTable columns={columns} rows={items} loading={loading} error={error} meta={meta} page={page} onPageChange={setPage} rowKey={(r) => r._id} emptyMessage="No birthday emails sent yet." />;
+  return <DataTable columns={columns} rows={items} loading={loading} error={error} meta={meta} page={page} onPageChange={setPage} rowKey={(r) => r._id} emptyMessage="No birthday wishes sent yet." />;
 }

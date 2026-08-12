@@ -20,7 +20,7 @@ const generateCouponCode = (firstName) => {
  * (name/email) — the shared base query for both "today" and "upcoming".
  */
 const customersWithBirthdays = () =>
-  Customer.find({ dateOfBirth: { $ne: null } }).populate('user', 'fullName email');
+  Customer.find({ dateOfBirth: { $ne: null } }).populate('user', 'fullName email phone');
 
 // Days from "today" (UTC, midnight-normalized) to this customer's next
 // birthday — 0 if it's today, otherwise 1..365/366 counting forward,
@@ -111,7 +111,7 @@ const sendBirthdayWish = async (customer, { method = 'auto' } = {}) => {
   }
 
   const log = await BirthdayLog.findOneAndUpdate(
-    { customer: customer._id, year },
+    { customer: customer._id, year, channel: 'email' },
     {
       $set: { emailTo: user.email, status, method, errorMessage, sentAt: new Date(), ...(couponCode ? { couponCode } : {}) },
       $inc: { resendCount: method === 'manual' ? 1 : 0 },
@@ -120,6 +120,50 @@ const sendBirthdayWish = async (customer, { method = 'auto' } = {}) => {
   );
 
   return log;
+};
+
+/**
+ * Builds the WhatsApp birthday message for one customer (plain text, same
+ * template/coupon config as the email) and logs it as sent — there's no
+ * WhatsApp Business API wired up, so "sending" means handing an admin a
+ * pre-filled wa.me link to open and send themselves (same pattern already
+ * used for the quotation "Send via WhatsApp" button). Reuses this year's
+ * coupon code if one was already generated (e.g. by the email send) so the
+ * customer only ever gets one discount code per birthday, regardless of
+ * which channel(s) it went out on.
+ */
+const prepareWhatsAppWish = async (customer) => {
+  const year = new Date().getUTCFullYear();
+  const user = customer.user;
+  if (!user?.phone) {
+    throw new Error('This customer has no phone number on file');
+  }
+
+  const firstName = firstNameOf(user.fullName);
+  const config = await BirthdayConfig.getSingleton();
+
+  let couponCode = '';
+  if (config.couponEnabled) {
+    const existing = await BirthdayLog.findOne({ customer: customer._id, year, couponCode: { $ne: '' } });
+    couponCode = existing?.couponCode || generateCouponCode(firstName);
+  }
+
+  let message = applyTemplate(config.messageTemplate, firstName);
+  if (couponCode) {
+    message += `\n\nUse code ${couponCode} for ${config.couponDiscountPercent}% off your next booking (valid ${config.couponValidDays} days).`;
+  }
+
+  const existingLog = await BirthdayLog.findOne({ customer: customer._id, year, channel: 'whatsapp' });
+  const log = await BirthdayLog.findOneAndUpdate(
+    { customer: customer._id, year, channel: 'whatsapp' },
+    {
+      $set: { whatsappTo: user.phone, status: 'sent', method: 'manual', errorMessage: '', sentAt: new Date(), ...(couponCode ? { couponCode } : {}) },
+      $inc: { resendCount: existingLog ? 1 : 0 },
+    },
+    { new: true, upsert: true }
+  );
+
+  return { phone: user.phone, message, log };
 };
 
 /**
@@ -149,5 +193,6 @@ module.exports = {
   getTodayBirthdays,
   getUpcomingBirthdays,
   sendBirthdayWish,
+  prepareWhatsAppWish,
   runDailyBirthdayJob,
 };

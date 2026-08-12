@@ -20,6 +20,7 @@ router.get('/config', controller.getConfig);
 router.patch('/config', validate({ body: updateConfigSchema }), controller.updateConfig);
 router.get('/logs', controller.getLogs);
 router.post('/resend/:customerId', controller.resend);
+router.post('/whatsapp/:customerId', controller.getWhatsAppMessage);
 router.post('/run-now', controller.runNow);
 
 module.exports = router;

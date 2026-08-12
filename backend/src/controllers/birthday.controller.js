@@ -6,13 +6,20 @@ const ApiFeatures = require('../utils/ApiFeatures');
 const env = require('../config/env');
 const birthdayService = require('../services/birthday.service');
 
-// Admin: today's birthdays, annotated with this year's send status (if any)
+// Admin: today's birthdays, annotated with this year's send status per
+// channel (email is sent automatically by the daily job; WhatsApp is always
+// admin-triggered, see getWhatsAppMessage).
 const getToday = catchAsync(async (req, res) => {
   const year = new Date().getUTCFullYear();
   const customers = await birthdayService.getTodayBirthdays();
   const logs = await BirthdayLog.find({ year, customer: { $in: customers.map((c) => c._id) } });
-  const logByCustomer = new Map(logs.map((l) => [String(l.customer), l]));
-  const data = customers.map((c) => ({ customer: c, log: logByCustomer.get(String(c._id)) || null }));
+  const emailLogByCustomer = new Map(logs.filter((l) => l.channel === 'email').map((l) => [String(l.customer), l]));
+  const whatsappLogByCustomer = new Map(logs.filter((l) => l.channel === 'whatsapp').map((l) => [String(l.customer), l]));
+  const data = customers.map((c) => ({
+    customer: c,
+    log: emailLogByCustomer.get(String(c._id)) || null,
+    whatsappLog: whatsappLogByCustomer.get(String(c._id)) || null,
+  }));
   new ApiResponse(200, data, "Today's birthdays fetched").send(res);
 });
 
@@ -49,6 +56,18 @@ const resend = catchAsync(async (req, res) => {
     throw ApiError.badRequest(`Failed to send birthday email: ${log.errorMessage}`);
   }
   new ApiResponse(200, log, 'Birthday wish sent').send(res);
+});
+
+// Admin: builds the WhatsApp birthday message for one customer and logs it
+// as sent — returns the phone + message text for the admin to open as a
+// wa.me link (no WhatsApp Business API is wired up, see prepareWhatsAppWish).
+const getWhatsAppMessage = catchAsync(async (req, res) => {
+  const customer = await Customer.findById(req.params.customerId).populate('user', 'fullName phone');
+  if (!customer) throw ApiError.notFound('Customer not found');
+  if (!customer.user?.phone) throw ApiError.badRequest('This customer has no phone number on file');
+
+  const { phone, message } = await birthdayService.prepareWhatsAppWish(customer);
+  new ApiResponse(200, { phone, message }, 'WhatsApp birthday message ready').send(res);
 });
 
 // Admin: paginated delivery log (email status history)
@@ -114,6 +133,7 @@ module.exports = {
   getConfig,
   updateConfig,
   resend,
+  getWhatsAppMessage,
   getLogs,
   runNow,
   runDailyCron,
