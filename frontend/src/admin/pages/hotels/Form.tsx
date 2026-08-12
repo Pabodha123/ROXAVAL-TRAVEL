@@ -40,6 +40,12 @@ interface RoomType {
 
 const CURRENCY_OPTIONS = ['USD', 'EUR', 'GBP', 'AED'];
 
+interface ContactPerson {
+  name: string;
+  phone: string;
+  email: string;
+}
+
 interface HotelDetail {
   name: LocalizedString;
   category: string;
@@ -53,6 +59,7 @@ interface HotelDetail {
   contactPerson: string;
   contactPhone: string;
   contactEmail: string;
+  contactPersons?: ContactPerson[];
   isPartner: boolean;
   status: string;
 }
@@ -61,6 +68,14 @@ const emptyOccupancyPricing = (): RoomOccupancyPricing => ({ single: 0, double: 
 
 const emptyRoomType = (): RoomType => ({ name: emptyLocalizedString(), maxOccupancy: 2, pricePerNight: 0, mealPlan: 'Bed & Breakfast', pricing: emptyOccupancyPricing(), seasonalRates: [], amenities: [] });
 const emptySeasonalRate = (): SeasonalRate => ({ validFrom: '', validTo: '', currency: 'USD', pricing: emptyOccupancyPricing() });
+const emptyContactPerson = (): ContactPerson => ({ name: '', phone: '', email: '' });
+// Always pad/truncate to exactly 3 rows for a fixed, predictable form layout —
+// none of the 3 are required, empty ones are dropped again before submit.
+const toThreeContactPersons = (list?: ContactPerson[]): ContactPerson[] => {
+  const base = (list || []).slice(0, 3).map((c) => ({ name: c.name || '', phone: c.phone || '', email: c.email || '' }));
+  while (base.length < 3) base.push(emptyContactPerson());
+  return base;
+};
 
 export function AdminHotelForm() {
   const { id } = useParams<{id: string;}>();
@@ -85,6 +100,7 @@ export function AdminHotelForm() {
   const [contactPerson, setContactPerson] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [contactEmail, setContactEmail] = useState('');
+  const [contactPersons, setContactPersons] = useState<ContactPerson[]>(toThreeContactPersons());
   const [isPartner, setIsPartner] = useState(true);
   const [status, setStatus] = useState('active');
 
@@ -127,6 +143,7 @@ export function AdminHotelForm() {
       setContactPerson(h.contactPerson || '');
       setContactPhone(h.contactPhone || '');
       setContactEmail(h.contactEmail || '');
+      setContactPersons(toThreeContactPersons(h.contactPersons));
       setIsPartner(h.isPartner);
       setStatus(h.status);
     }).
@@ -150,6 +167,10 @@ export function AdminHotelForm() {
     setRoomTypes((prev) => prev.map((r, i) => i === roomIndex ? { ...r, seasonalRates: (r.seasonalRates || []).filter((_, si) => si !== rateIndex) } : r));
   };
 
+  const updateContactPerson = (index: number, patch: Partial<ContactPerson>) => {
+    setContactPersons((prev) => prev.map((c, i) => i === index ? { ...c, ...patch } : c));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -166,6 +187,7 @@ export function AdminHotelForm() {
       contactPerson,
       contactPhone,
       contactEmail,
+      contactPersons: contactPersons.filter((c) => c.name.trim() || c.phone.trim() || c.email.trim()),
       isPartner,
       status
     };
@@ -314,6 +336,20 @@ export function AdminHotelForm() {
             <TextField label="Contact Person" value={contactPerson} onChange={setContactPerson} />
             <TextField label="Phone" value={contactPhone} onChange={setContactPhone} />
             <TextField label="Email" value={contactEmail} onChange={setContactEmail} type="email" />
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-white p-6 shadow-soft">
+          <p className="mb-1 font-display text-sm font-semibold text-forest">Contact Persons</p>
+          <p className="mb-4 text-xs text-forest/45">Up to 3 named contacts at the property (reservations, manager, duty desk, etc). None are required — leave any row blank.</p>
+          <div className="space-y-4">
+            {contactPersons.map((c, i) =>
+            <div key={i} className="grid gap-3 sm:grid-cols-3">
+                <TextField label={`Contact ${i + 1} Name`} value={c.name} onChange={(v) => updateContactPerson(i, { name: v })} />
+                <TextField label={`Contact ${i + 1} Phone`} value={c.phone} onChange={(v) => updateContactPerson(i, { phone: v })} />
+                <TextField label={`Contact ${i + 1} Email`} value={c.email} onChange={(v) => updateContactPerson(i, { email: v })} type="email" />
+              </div>
+            )}
           </div>
         </div>
 

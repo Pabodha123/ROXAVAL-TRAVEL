@@ -69,6 +69,11 @@ const createHotelSchema = z.object({
   contactPerson: z.string().optional(),
   contactPhone: z.string().optional(),
   contactEmail: z.string().email().optional(),
+  contactPersons: z.array(z.object({
+    name: z.string().optional(),
+    phone: z.string().optional(),
+    email: z.string().email().optional().or(z.literal('')),
+  })).max(3).optional(),
   isPartner: z.boolean().optional(),
   status: z.enum(['active', 'inactive']).optional(),
 });

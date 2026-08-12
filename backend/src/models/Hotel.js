@@ -71,6 +71,14 @@ const hotelSchema = new mongoose.Schema(
     contactPerson: { type: String, default: '' },
     contactPhone: { type: String, default: '' },
     contactEmail: { type: String, default: '' },
+    // Up to 3 named contacts at the property (reservations, manager, duty
+    // desk, etc.) — additive to the single legacy contact* fields above,
+    // which stay authoritative for the hotel-voucher PDF/email until those
+    // are updated to read from here too.
+    contactPersons: {
+      type: [{ name: { type: String, default: '' }, phone: { type: String, default: '' }, email: { type: String, default: '' } }],
+      default: [],
+    },
     isPartner: { type: Boolean, default: true },
     status: { type: String, enum: ['active', 'inactive'], default: 'active' },
     averageRating: { type: Number, default: 0 },
