@@ -21,6 +21,7 @@ export interface BlogSection {
 export interface BlogPost extends BlogListItem {
   content: string;
   sections: BlogSection[];
+  template?: 'default' | 'romantic';
   gallery: string[];
   author?: { _id: string; user?: { fullName?: string } };
   seo?: { metaTitle?: string; metaDescription?: string; keywords?: string[] };

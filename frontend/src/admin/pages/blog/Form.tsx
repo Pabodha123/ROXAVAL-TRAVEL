@@ -18,6 +18,7 @@ interface BlogPostDetail {
   excerpt: LocalizedString;
   content: LocalizedString;
   sections?: BlogSectionForm[];
+  template?: string;
   featuredImage: string;
   gallery: string[];
   category: string;
@@ -40,6 +41,7 @@ export function AdminBlogForm() {
   const [excerpt, setExcerpt] = useState<LocalizedString>(emptyLocalizedString());
   const [content, setContent] = useState<LocalizedString>(emptyLocalizedString());
   const [sections, setSections] = useState<BlogSectionForm[]>([]);
+  const [template, setTemplate] = useState('default');
   const [featuredImage, setFeaturedImage] = useState<string[]>([]);
   const [gallery, setGallery] = useState<string[]>([]);
   const [category, setCategory] = useState('');
@@ -54,6 +56,7 @@ export function AdminBlogForm() {
       setExcerpt(p.excerpt);
       setContent(p.content);
       setSections(p.sections || []);
+      setTemplate(p.template || 'default');
       setFeaturedImage(p.featuredImage ? [p.featuredImage] : []);
       setGallery(p.gallery || []);
       setCategory(p.category);
@@ -70,7 +73,7 @@ export function AdminBlogForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    const payload = { title, excerpt, content, sections, featuredImage: featuredImage[0] || '', gallery, category, tags, status };
+    const payload = { title, excerpt, content, sections, template, featuredImage: featuredImage[0] || '', gallery, category, tags, status };
     try {
       if (isEdit) {
         await apiPatch(`/blogs/${id}`, payload);
@@ -115,6 +118,16 @@ export function AdminBlogForm() {
         <div className="rounded-2xl bg-white p-6 shadow-soft">
           <p className="mb-1 font-display text-sm font-semibold text-forest">Sections</p>
           <p className="mb-4 text-xs text-forest/45">Optional numbered, illustrated sections (e.g. "1. Minneriya", "2. Pinnawala") shown instead of the plain Content above when at least one is added.</p>
+          <div className="mb-4 max-w-xs">
+            <SelectField
+            label="Layout"
+            value={template}
+            onChange={setTemplate}
+            options={[
+            { label: 'Default (numbered magazine grid)', value: 'default' },
+            { label: 'Romantic (soft, full-bleed — honeymoon/romance posts)', value: 'romantic' }]} />
+
+          </div>
           <RepeatSection label="" onAdd={() => setSections((prev) => [...prev, emptySection()])} addLabel="Add Section">
             {sections.map((s, i) =>
             <div key={i} className="rounded-xl border border-forest/10 p-4">

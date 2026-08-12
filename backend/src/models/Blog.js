@@ -23,6 +23,11 @@ const blogSchema = new mongoose.Schema(
     excerpt: localizedString('Excerpt is required'),
     content: localizedString('Content is required'),
     sections: { type: [blogSectionSchema], default: [] },
+    // Which sectioned layout to render — 'default' is the numbered magazine
+    // grid; 'romantic' is a softer, full-bleed editorial layout for
+    // honeymoon/romance-themed posts. Purely a rendering switch, doesn't
+    // change how content/sections are authored or stored.
+    template: { type: String, enum: ['default', 'romantic'], default: 'default' },
     featuredImage: { type: String, required: true },
     gallery: { type: [String], default: [] },
     category: { type: String, required: true, trim: true },
