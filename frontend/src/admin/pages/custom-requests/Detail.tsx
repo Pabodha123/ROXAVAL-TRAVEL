@@ -204,7 +204,7 @@ interface ItineraryDetail {
 interface RequestDetail {
   _id: string;
   referenceNumber: string;
-  customer?: { user?: { fullName?: string; email?: string; phone?: string } };
+  customer?: { user?: { fullName?: string; email?: string; phone?: string }; country?: string; dateOfBirth?: string; passportNumber?: string };
   travelDates: { startDate: string; endDate: string; isFlexible: boolean };
   travelers: { adults: number; children: number; infants: number; childAges?: number[]; infantAges?: number[] };
   leadSource?: string;
@@ -765,8 +765,28 @@ export function AdminCustomRequestDetail() {
         action={<button onClick={() => navigate('/admin/custom-requests')} className="rounded-full border border-forest/15 px-5 py-2.5 text-sm font-semibold text-forest hover:bg-cream">Back to list</button>} />
 
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_1.6fr]">
+      <div className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-6">
+          <div className="rounded-2xl bg-white p-6 shadow-soft">
+            <p className="font-display text-sm font-semibold text-forest">Customer</p>
+            <p className="mt-3 text-sm font-medium text-forest">{request.customer?.user?.fullName}</p>
+            <p className="text-xs text-forest/60">{request.customer?.user?.email}</p>
+            <p className="text-xs text-forest/60">{request.customer?.user?.phone}</p>
+            {(request.customer?.country || request.customer?.dateOfBirth || request.customer?.passportNumber) &&
+            <dl className="mt-3 space-y-1.5 border-t border-forest/10 pt-3 text-xs">
+                {request.customer?.country &&
+              <div className="flex justify-between"><dt className="text-forest/50">Country</dt><dd className="text-forest">{request.customer.country}</dd></div>
+              }
+                {request.customer?.dateOfBirth &&
+              <div className="flex justify-between"><dt className="text-forest/50">Date of Birth</dt><dd className="text-forest">{new Date(request.customer.dateOfBirth).toLocaleDateString()}</dd></div>
+              }
+                {request.customer?.passportNumber &&
+              <div className="flex justify-between"><dt className="text-forest/50">Passport No.</dt><dd className="text-forest">{request.customer.passportNumber}</dd></div>
+              }
+              </dl>
+            }
+          </div>
+
           <div className="rounded-2xl bg-white p-6 shadow-soft">
             <div className="flex items-center justify-between">
               <p className="font-display text-sm font-semibold text-forest">Request Details</p>
@@ -853,13 +873,6 @@ export function AdminCustomRequestDetail() {
                 <p className="mt-1 text-sm text-forest/70">{request.specialRequests}</p>
               </div>
             }
-          </div>
-
-          <div className="rounded-2xl bg-white p-6 shadow-soft">
-            <p className="font-display text-sm font-semibold text-forest">Customer</p>
-            <p className="mt-3 text-sm font-medium text-forest">{request.customer?.user?.fullName}</p>
-            <p className="text-xs text-forest/60">{request.customer?.user?.email}</p>
-            <p className="text-xs text-forest/60">{request.customer?.user?.phone}</p>
           </div>
 
           {!request.assignedAdmin &&
