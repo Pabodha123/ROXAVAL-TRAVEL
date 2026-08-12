@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CalendarIcon, EyeIcon, FlameIcon, ClockIcon } from 'lucide-react';
-import { PageBanner } from '../components/layout/PageBanner';
+import { CalendarIcon, EyeIcon, FlameIcon, ClockIcon, ArrowRightIcon } from 'lucide-react';
 import { FilterBar } from '../components/ui/FilterBar';
 import { Pagination } from '../components/ui/Pagination';
 import { LoadingState, EmptyState, ErrorState } from '../components/ui/StatusState';
@@ -22,6 +21,17 @@ const SORT_OPTIONS = [
 { label: 'Newest', value: '-publishedAt' },
 { label: 'Oldest', value: 'publishedAt' },
 { label: 'Most Popular', value: '-views' }];
+
+// One illustrative tile per category — a quick, colourful way into the
+// archive that a plain dropdown filter doesn't give you. Each gets its own
+// tint so the row reads as a curated set rather than a repeated pattern.
+const CATEGORY_TILES = [
+{ label: 'Travel Guide', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Sigiriya_Fortress%2C_Sri_Lanka.jpg/640px-Sigiriya_Fortress%2C_Sri_Lanka.jpg', from: 'from-forest/85' },
+{ label: 'Wildlife', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Elephants_of_Minneriya_National_Park%2C_Sri_Lanka.jpg/640px-Elephants_of_Minneriya_National_Park%2C_Sri_Lanka.jpg', from: 'from-yellow-900/80' },
+{ label: 'Culture', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Traditional_masks_-_Ambalangoda_01.jpg/640px-Traditional_masks_-_Ambalangoda_01.jpg', from: 'from-purple-900/80' },
+{ label: 'Food & Culture', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/SL-rice_and_curry.jpg/640px-SL-rice_and_curry.jpg', from: 'from-orange-800/80' },
+{ label: 'Tips & Advice', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Bentota_Sunset_-_panoramio.jpg/640px-Bentota_Sunset_-_panoramio.jpg', from: 'from-rose-800/80' },
+{ label: 'Adventure', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Nine_Arches_Bridge_in_Ella.jpg/640px-Nine_Arches_Bridge_in_Ella.jpg', from: 'from-emerald/85' }];
 
 
 function ArticleCard({ post, large = false }: {post: BlogListItem;large?: boolean;}) {
@@ -85,14 +95,49 @@ export function Blog() {
 
   return (
     <main className="min-h-screen bg-cream pt-16">
-      <PageBanner
-        eyebrow="Stories & Guides"
-        title="The Roxaval Blog"
-        subtitle="Travel guides, culture, food and inspiration for your next Sri Lankan adventure."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Blog' }]} />
+      <section className="border-b border-forest/10 bg-white py-14 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-xs font-semibold uppercase tracking-[0.35em] text-gold">Stories &amp; Guides</p>
+          <h1 className="mt-3 text-center font-display text-4xl font-semibold text-forest sm:text-5xl">The Roxaval Journal</h1>
+          <p className="mx-auto mt-3 max-w-xl text-center font-display text-base italic text-forest/55">Travel guides, culture, food and inspiration for your next Sri Lankan adventure.</p>
 
+          {featured &&
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mt-12 grid gap-8 overflow-hidden rounded-[2rem] bg-cream shadow-lift lg:grid-cols-2">
+              <Link to={`/blog/${featured.slug}`} className="block h-64 overflow-hidden lg:h-full">
+                <img src={resolveImage(featured.featuredImage)} alt={featured.title} className="h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
+              </Link>
+              <div className="flex flex-col justify-center p-8 sm:p-12">
+                <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-gold/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-forest"><FlameIcon className="h-3.5 w-3.5 text-gold" /> Featured Story</span>
+                <Link to={`/blog/${featured.slug}`} className="mt-4 font-display text-2xl font-semibold leading-snug text-forest transition-colors hover:text-emerald sm:text-3xl">{featured.title}</Link>
+                <p className="mt-3 font-display text-base italic leading-relaxed text-forest/60">{featured.excerpt}</p>
+                <Link to={`/blog/${featured.slug}`} className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-semibold text-cream transition-colors hover:bg-emerald">
+                  Read the Full Story <ArrowRightIcon className="h-4 w-4" />
+                </Link>
+              </div>
+            </motion.div>
+          }
 
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+          <div className="mt-14">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.3em] text-forest/40">Explore by Interest</p>
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+              {CATEGORY_TILES.map((c) =>
+              <button
+                key={c.label}
+                type="button"
+                onClick={() => { setCategory(c.label); document.getElementById('blog-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+                className="group relative h-24 overflow-hidden rounded-2xl text-left shadow-soft sm:h-28">
+
+                  <img src={c.image} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <div className={`absolute inset-0 bg-gradient-to-t ${c.from} to-transparent`} />
+                  <span className="absolute bottom-2.5 left-3 right-3 font-display text-sm font-semibold text-white">{c.label}</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="blog-results" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <FilterBar
           search={search}
           onSearchChange={setSearch}
@@ -111,13 +156,6 @@ export function Blog() {
             {error && <ErrorState message={error} />}
             {!loading && !error && items.length === 0 &&
             <EmptyState title="No articles found" message="Try a different search term or category." />
-            }
-
-            {featured &&
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8">
-                <span className="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-gold"><FlameIcon className="h-3.5 w-3.5" /> Featured</span>
-                <ArticleCard post={featured} large />
-              </motion.div>
             }
 
             <div className="grid gap-6 sm:grid-cols-2">
