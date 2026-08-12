@@ -266,7 +266,6 @@ export function Auth() {
                   <input type="text" value={passportNumber} onChange={(e) => setPassportNumber(e.target.value)} placeholder={t('passportNumberPlaceholder')} className={inputClass} />
                 </div>
               </div>
-              <p className="-mt-2 px-1 text-xs text-forest/40">{t('birthdayHint')}</p>
               <div className="relative">
                 <LockIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
                 <input

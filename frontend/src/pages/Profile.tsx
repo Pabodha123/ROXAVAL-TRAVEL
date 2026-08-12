@@ -67,7 +67,7 @@ export function Profile() {
       <PageBanner
         eyebrow="My Account"
         title="Your Profile"
-        subtitle="Keep your details up to date — including your birthday, so we can send you something special every year."
+        subtitle="Keep your details up to date - including your birthday, so we can send you something special every year."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Profile' }]} />
 
       <section className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
@@ -87,7 +87,6 @@ export function Profile() {
               <div>
                 <label className={labelClass}>Date of Birth</label>
                 <input type="date" value={profile.dateOfBirth} onChange={(e) => update('dateOfBirth', e.target.value)} className={inputClass} />
-                <p className="mt-1.5 text-xs text-forest/45">We'll send you a birthday surprise every year 🎉</p>
               </div>
               <div>
                 <label className={labelClass}>Passport Number</label>
