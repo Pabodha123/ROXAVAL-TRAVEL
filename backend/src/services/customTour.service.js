@@ -116,7 +116,11 @@ const assignAdmin = async (requestId, adminId) => {
 const buildAndSendItinerary = async (requestId, adminId, itineraryPayload) => {
   const request = await CustomTourRequest.findById(requestId).populate({ path: 'customer', populate: 'user' });
   if (!request) throw ApiError.notFound('Custom tour request not found.');
-  if (!['Pending', 'Under Review', 'Rejected'].includes(request.status)) {
+  // 'Awaiting Customer Approval' is included so an admin can revise and
+  // resend an already-sent itinerary on their own initiative (e.g. the
+  // customer asks for a change informally via chat) without first needing
+  // the customer to formally reject it or request changes.
+  if (!['Pending', 'Under Review', 'Rejected', 'Awaiting Customer Approval'].includes(request.status)) {
     throw ApiError.badRequest(`Cannot build an itinerary for a request in '${request.status}' status.`);
   }
 
