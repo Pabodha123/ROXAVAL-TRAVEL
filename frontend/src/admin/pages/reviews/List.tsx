@@ -11,6 +11,8 @@ import { apiDelete, apiPatch, ApiRequestError } from '../../../lib/api';
 interface AdminReview {
   _id: string;
   customer?: { user?: { fullName?: string } };
+  reviewerName?: string;
+  source?: string;
   tourPackage?: { name: string };
   rating: number;
   title?: string;
@@ -58,7 +60,7 @@ export function AdminReviewsList() {
   };
 
   const columns: Column<AdminReview>[] = [
-  { header: 'Customer', render: (r) => r.customer?.user?.fullName || '-' },
+  { header: 'Customer', render: (r) => r.customer?.user?.fullName || r.reviewerName || '-' },
   { header: 'Package', render: (r) => r.tourPackage?.name || '-' },
   { header: 'Rating', render: (r) => <span className="inline-flex items-center gap-1"><StarIcon className="h-3.5 w-3.5 fill-gold text-gold" /> {r.rating}</span> },
   { header: 'Review', className: 'max-w-xs truncate', render: (r) => r.text },

@@ -2,7 +2,13 @@ const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema(
   {
-    customer: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer', required: true },
+    // Required for reviews submitted through the site (tied to a real
+    // customer + completed booking). Reviews imported from an external
+    // platform (see `source`) have no Roxaval account, so this is optional
+    // and `reviewerName` is used for display instead.
+    customer: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer' },
+    reviewerName: { type: String, default: '' },
+    source: { type: String, enum: ['website', 'tripadvisor'], default: 'website' },
     tourPackage: { type: mongoose.Schema.Types.ObjectId, ref: 'TourPackage' },
     booking: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking' },
     rating: { type: Number, required: true, min: 1, max: 5 },

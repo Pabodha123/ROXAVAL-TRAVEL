@@ -26,19 +26,24 @@ function Stars({ rating, size = 'h-4 w-4' }: {rating: number;size?: string;}) {
 }
 
 function ReviewCard({ review, index }: {review: Review;index: number;}) {
-  const name = review.customer?.user?.fullName || 'Verified Traveler';
+  const name = review.customer?.user?.fullName || review.reviewerName || 'Verified Traveler';
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.4, delay: (index % 6) * 0.06 }} className="rounded-3xl bg-white p-6 shadow-soft">
-      <div className="flex items-center gap-3">
-        {review.images?.[0] ?
-        <img src={review.images[0]} alt={name} className="h-11 w-11 rounded-full object-cover" /> :
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          {review.images?.[0] ?
+          <img src={review.images[0]} alt={name} className="h-11 w-11 rounded-full object-cover" /> :
 
-        <span className="grid h-11 w-11 place-items-center rounded-full bg-emerald/10 text-sm font-bold text-emerald">{name.charAt(0).toUpperCase()}</span>
-        }
-        <div>
-          <p className="text-sm font-semibold text-forest">{name}</p>
-          {review.country && <p className="text-xs text-forest/50">{review.country}</p>}
+          <span className="grid h-11 w-11 place-items-center rounded-full bg-emerald/10 text-sm font-bold text-emerald">{name.charAt(0).toUpperCase()}</span>
+          }
+          <div>
+            <p className="text-sm font-semibold text-forest">{name}</p>
+            {review.country && <p className="text-xs text-forest/50">{review.country}</p>}
+          </div>
         </div>
+        {review.source === 'tripadvisor' &&
+        <span className="shrink-0 rounded-full bg-[#34e0a1]/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#00695c]">via Tripadvisor</span>
+        }
       </div>
       <div className="mt-3"><Stars rating={review.rating} /></div>
       {review.title && <p className="mt-2 font-display text-base font-semibold text-forest">{review.title}</p>}

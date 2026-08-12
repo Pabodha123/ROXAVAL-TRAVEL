@@ -1,6 +1,8 @@
 export interface Review {
   _id: string;
   customer?: { _id: string; user?: { fullName?: string } };
+  reviewerName?: string;
+  source?: 'website' | 'tripadvisor';
   tourPackage?: { _id: string; name: string; heroImage?: string };
   booking?: string;
   rating: number;

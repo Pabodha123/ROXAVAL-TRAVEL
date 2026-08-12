@@ -151,7 +151,7 @@ export function AboutUs() {
                   {Array.from({ length: 5 }).map((_, s) => <StarIcon key={s} className={`h-4 w-4 ${s < r.rating ? 'fill-gold' : 'fill-none text-forest/20'}`} />)}
                 </div>
                 <p className="mt-4 text-sm leading-relaxed text-forest/70">&ldquo;{r.text}&rdquo;</p>
-                <p className="mt-4 text-sm font-semibold text-forest">{r.customer?.user?.fullName || 'Verified Traveler'}</p>
+                <p className="mt-4 text-sm font-semibold text-forest">{r.customer?.user?.fullName || r.reviewerName || 'Verified Traveler'}</p>
                 {r.country && <p className="text-xs text-forest/50">{r.country}</p>}
               </motion.div>
           )}

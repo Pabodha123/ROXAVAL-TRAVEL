@@ -289,7 +289,7 @@ export function TourPackageDetails() {
                     </div>
                     {r.title && <p className="mt-2 font-semibold text-forest">{r.title}</p>}
                     <p className="mt-1.5 text-sm leading-relaxed text-forest/70">{r.text}</p>
-                    <p className="mt-2 text-xs text-forest/50">{r.customer?.user?.fullName || t('detail.verifiedTraveler')}{r.country ? ` • ${r.country}` : ''}</p>
+                    <p className="mt-2 text-xs text-forest/50">{r.customer?.user?.fullName || r.reviewerName || t('detail.verifiedTraveler')}{r.country ? ` • ${r.country}` : ''}</p>
                   </div>
               )}
               </div>
