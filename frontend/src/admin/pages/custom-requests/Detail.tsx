@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, DownloadIcon, Loader2Icon, MessageCircleIcon, PencilIcon, PlusIcon, SendIcon, TrashIcon, UserCheckIcon, WandSparklesIcon, XIcon } from 'lucide-react';
+import { AlertTriangleIcon, BedDoubleIcon, ChevronDownIcon, ChevronUpIcon, DownloadIcon, Loader2Icon, MessageCircleIcon, PencilIcon, PlusIcon, SendIcon, TrashIcon, UserCheckIcon, WandSparklesIcon, XIcon } from 'lucide-react';
 import { apiGetList, apiGetOne, apiPatch, apiPost, ApiRequestError, API_ORIGIN } from '../../../lib/api';
 import { whatsAppLink } from '../../../lib/contact';
+import { formatDate, formatDateTime } from '../../../lib/date';
 import { useToast } from '../../components/ToastProvider';
 import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
@@ -242,6 +243,13 @@ const emptyDay = (n: number): ItineraryDayForm => ({
   arrivalTime: '', departureTime: '', travelTime: '', notes: ''
 });
 
+const shiftDateString = (iso: string, days: number) => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+};
+
 const dayCostOf = (d: Pick<ItineraryDayForm, 'roomCost' | 'activityPricing' | 'transfers' | 'flights'>, opts: { excludeSightseeing?: boolean } = {}) =>
 (d.roomCost || 0) +
 (opts.excludeSightseeing ? 0 : (d.activityPricing || []).filter((a) => a.selected !== false).reduce((s, a) => s + (a.cost || 0), 0)) +
@@ -479,6 +487,38 @@ export function AdminCustomRequestDetail() {
       return [...prev, newDay];
     });
   };
+  // Inserts an extra night right after `index`, carrying over the same
+  // destination/hotel (the common "customer wants to stay another night
+  // here" case) so the admin doesn't have to re-pick them. Every day's date
+  // after the insertion point is pushed forward by one day so the
+  // itinerary's dates, departure date, and voucher night-counts (which are
+  // derived from contiguous same-hotel dayNumber runs) all stay correct.
+  const addNight = (index: number) => {
+    setDays((prev) => {
+      const source = prev[index];
+      const newDay: ItineraryDayForm = {
+        ...emptyDay(0),
+        date: source.date ? shiftDateString(source.date, 1) : '',
+        title: source.title,
+        destinations: [...source.destinations],
+        customDestinations: [...source.customDestinations],
+        hotel: source.hotel,
+        roomType: source.roomType,
+        numberOfRooms: source.numberOfRooms,
+        roomOccupancy: { ...source.roomOccupancy },
+        roomCost: source.roomCost,
+        hotelOptions: source.hotelOptions.map((h) => ({ ...h })),
+        meals: [...source.meals],
+        transport: source.transport,
+      };
+      newDay.dayCost = dayCostOf(newDay);
+      const withNewDay = [...prev.slice(0, index + 1), newDay, ...prev.slice(index + 1)];
+      const withShiftedDates = withNewDay.map((d, i) => i <= index + 1 || !d.date ? d : { ...d, date: shiftDateString(d.date, 1) });
+      const renumbered = withShiftedDates.map((d, i) => ({ ...d, dayNumber: i + 1 }));
+      setExpandedDays((exp) => new Set(exp).add(newDay._key));
+      return renumbered;
+    });
+  };
   const removeDay = (index: number) => setDays((prev) => prev.filter((_, i) => i !== index).map((d, i) => ({ ...d, dayNumber: i + 1 })));
   const moveDay = (index: number, dir: -1 | 1) => {
     setDays((prev) => {
@@ -703,8 +743,22 @@ export function AdminCustomRequestDetail() {
     }
   };
 
+  // Every night needs a hotel except the last day, which is the departure
+  // day — the client flies home rather than checking in anywhere. Blocks
+  // sending so an itinerary never goes to the customer with a silent gap.
+  const findMissingHotelDay = (list: ItineraryDayForm[]) => {
+    if (list.length === 0) return null;
+    const lastDayNumber = Math.max(...list.map((d) => d.dayNumber));
+    return list.find((d) => d.dayNumber !== lastDayNumber && !d.hotel) || null;
+  };
+
   const sendItinerary = async (e: React.FormEvent) => {
     e.preventDefault();
+    const missingHotelDay = findMissingHotelDay(days);
+    if (missingHotelDay) {
+      toast(`Please select a hotel for Day ${missingHotelDay.dayNumber}.`, 'error');
+      return;
+    }
     setSending(true);
     try {
       await apiPost(`/custom-tours/${id}/itinerary`, {
@@ -761,7 +815,7 @@ export function AdminCustomRequestDetail() {
     <div>
       <PageHeader
         title={`Request ${request.referenceNumber}`}
-        subtitle={`Submitted ${new Date(request.travelDates.startDate).toLocaleDateString()}`}
+        subtitle={`Submitted ${formatDate(request.travelDates.startDate)}`}
         action={<button onClick={() => navigate('/admin/custom-requests')} className="rounded-full border border-forest/15 px-5 py-2.5 text-sm font-semibold text-forest hover:bg-cream">Back to list</button>} />
 
 
@@ -778,7 +832,7 @@ export function AdminCustomRequestDetail() {
               <div className="flex justify-between"><dt className="text-forest/50">Country</dt><dd className="text-forest">{request.customer.country}</dd></div>
               }
                 {request.customer?.dateOfBirth &&
-              <div className="flex justify-between"><dt className="text-forest/50">Date of Birth</dt><dd className="text-forest">{new Date(request.customer.dateOfBirth).toLocaleDateString()}</dd></div>
+              <div className="flex justify-between"><dt className="text-forest/50">Date of Birth</dt><dd className="text-forest">{formatDate(request.customer.dateOfBirth)}</dd></div>
               }
                 {request.customer?.passportNumber &&
               <div className="flex justify-between"><dt className="text-forest/50">Passport No.</dt><dd className="text-forest">{request.customer.passportNumber}</dd></div>
@@ -807,7 +861,7 @@ export function AdminCustomRequestDetail() {
               {request.company &&
               <div className="flex justify-between"><dt className="text-forest/50">Company</dt><dd className="text-forest">{request.company}</dd></div>
               }
-              <div className="flex justify-between"><dt className="text-forest/50">Travel Dates</dt><dd className="text-forest">{new Date(request.travelDates.startDate).toLocaleDateString()} – {new Date(request.travelDates.endDate).toLocaleDateString()}</dd></div>
+              <div className="flex justify-between"><dt className="text-forest/50">Travel Dates</dt><dd className="text-forest">{formatDate(request.travelDates.startDate)} – {formatDate(request.travelDates.endDate)}</dd></div>
               <div className="flex justify-between"><dt className="text-forest/50">Travelers</dt><dd className="text-forest">{request.travelers.adults} Adults, {request.travelers.children} Children, {request.travelers.infants} Infants</dd></div>
               {(request.travelers.childAges?.length ?? 0) > 0 &&
               <div className="flex justify-between"><dt className="text-forest/50">Child Ages</dt><dd className="text-forest">{request.travelers.childAges?.join(', ')}</dd></div>
@@ -890,7 +944,7 @@ export function AdminCustomRequestDetail() {
               <div key={i} className="border-b border-forest/5 pb-2.5 last:border-0">
                     <p className="text-xs font-semibold capitalize text-forest">{h.action.replace(/_/g, ' ')}</p>
                     {h.note && <p className="mt-0.5 text-xs text-forest/60">{h.note}</p>}
-                    <p className="mt-0.5 text-[11px] text-forest/40">{new Date(h.at).toLocaleString()}</p>
+                    <p className="mt-0.5 text-[11px] text-forest/40">{formatDateTime(h.at)}</p>
                   </div>
               )}
               </div>
@@ -910,7 +964,7 @@ export function AdminCustomRequestDetail() {
                       <p className="text-xs font-semibold text-forest">Version {v.version}: {v.title}</p>
                       <p className="mt-0.5 text-[11px] text-forest/40">
                         {v.changedBy?.user?.fullName ? `Edited by ${v.changedBy.user.fullName} · ` : ''}
-                        {new Date(v.changedAt).toLocaleString()}
+                        {formatDateTime(v.changedAt)}
                       </p>
                     </div>
               )}
@@ -960,7 +1014,7 @@ export function AdminCustomRequestDetail() {
               <div className="mt-4 space-y-3">
                 {request.itinerary.days.map((d) =>
               <div key={d.dayNumber} className="rounded-xl bg-cream/50 p-4">
-                    <p className="text-sm font-semibold text-forest">Day {d.dayNumber}{d.date ? ` · ${new Date(d.date).toLocaleDateString()}` : ''}: {d.title}</p>
+                    <p className="text-sm font-semibold text-forest">Day {d.dayNumber}{d.date ? ` · ${formatDate(d.date)}` : ''}: {d.title}</p>
                     <p className="mt-1 text-xs text-forest/60">{d.schedule}</p>
                     {d.hotel &&
                 <p className="mt-1.5 text-xs text-forest/50">{d.hotel.name}{d.roomType ? ` (${d.roomType})` : ''}</p>
@@ -1038,10 +1092,10 @@ export function AdminCustomRequestDetail() {
                     <AlertTriangleIcon className="mt-0.5 h-5 w-5 shrink-0 text-gold" />
                     <div className="flex-1">
                       <p className="font-display text-sm font-semibold text-forest">Can't make this change?</p>
-                      <p className="mt-1 text-xs text-forest/60">If the requested change isn't possible, explain why instead of editing below — the customer will see your note and the original itinerary again.</p>
+                      <p className="mt-1 text-xs text-forest/60">If the requested change isn't possible, explain why instead of editing below - the customer will see your note and the original itinerary again.</p>
                       {!cannotModifyOpen ?
                   <button type="button" onClick={() => setCannotModifyOpen(true)} className="mt-3 rounded-full border border-forest/20 px-4 py-2 text-xs font-semibold text-forest hover:bg-white">
-                          Cannot Modify — Explain Why
+                          Cannot Modify - Explain Why
                         </button> :
 
                   <div className="mt-3 space-y-2">
@@ -1070,7 +1124,7 @@ export function AdminCustomRequestDetail() {
 
               <div className="rounded-2xl bg-white p-6 shadow-soft">
                 <p className="mb-1 font-display text-sm font-semibold text-forest">Route Builder</p>
-                <p className="mb-4 text-xs text-forest/50">Quickly lay out the day-by-day route — each leg you add creates the matching day cards below, ready to fill in one by one.</p>
+                <p className="mb-4 text-xs text-forest/50">Quickly lay out the day-by-day route - each leg you add creates the matching day cards below, ready to fill in one by one.</p>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end">
                   <TextField label="Departure Destination" value={legDeparture} onChange={setLegDeparture} placeholder="e.g. Colombo Airport" />
                   <div>
@@ -1103,8 +1157,8 @@ export function AdminCustomRequestDetail() {
                     <tr key={leg.id} className="border-t border-forest/5">
                             <td className="py-2 pr-3 text-forest">{leg.departure}</td>
                             <td className="py-2 pr-3 text-forest">{leg.arrival}</td>
-                            <td className="py-2 pr-3 text-forest/70">{new Date(leg.fromDate).toLocaleDateString()}</td>
-                            <td className="py-2 pr-3 text-forest/70">{new Date(leg.toDate).toLocaleDateString()}</td>
+                            <td className="py-2 pr-3 text-forest/70">{formatDate(leg.fromDate)}</td>
+                            <td className="py-2 pr-3 text-forest/70">{formatDate(leg.toDate)}</td>
                             <td className="py-2 pr-3 text-forest/70">{leg.nights}</td>
                             <td className="py-2 text-right">
                               <button type="button" onClick={() => removeRouteLeg(leg.id)} className="text-forest/30 hover:text-red-500"><XIcon className="h-4 w-4" /></button>
@@ -1126,7 +1180,7 @@ export function AdminCustomRequestDetail() {
                   onToggle={() => toggleDayExpanded(day._key)}
                   summary={
                   <>
-                        Day {day.dayNumber}{day.date ? ` · ${new Date(day.date).toLocaleDateString()}` : ''} · {day.title || '(untitled)'}
+                        Day {day.dayNumber}{day.date ? ` · ${formatDate(day.date)}` : ''} · {day.title || '(untitled)'}
                         {day.hotel ? ` · ${hotelOptions.find((h) => h.value === day.hotel)?.label || ''}` : ''}
                       </>}
 
@@ -1134,6 +1188,7 @@ export function AdminCustomRequestDetail() {
                   <>
                         <button type="button" disabled={i === 0} onClick={() => moveDay(i, -1)} className="text-forest/40 hover:text-forest disabled:opacity-20"><ChevronUpIcon className="h-4 w-4" /></button>
                         <button type="button" disabled={i === days.length - 1} onClick={() => moveDay(i, 1)} className="text-forest/40 hover:text-forest disabled:opacity-20"><ChevronDownIcon className="h-4 w-4" /></button>
+                        <button type="button" title="Add another night at this same destination/hotel" onClick={() => addNight(i)} className="ml-1 flex items-center gap-1 rounded-full bg-emerald/10 px-2 py-1 text-xs font-semibold text-emerald hover:bg-emerald/20"><BedDoubleIcon className="h-3.5 w-3.5" /> Add Night</button>
                         {days.length > 1 &&
                     <button type="button" onClick={() => removeDay(i)} className="ml-1 text-red-500 hover:text-red-700"><TrashIcon className="h-4 w-4" /></button>
                     }
@@ -1154,7 +1209,7 @@ export function AdminCustomRequestDetail() {
                           <div key={hi} className={`flex items-center justify-between rounded-lg p-2 text-sm ${ho.selected ? 'bg-emerald/10 text-forest' : 'text-forest/60'}`}>
                                   <label className="flex flex-1 cursor-pointer items-center gap-2">
                                     <input type="radio" checked={ho.selected} onChange={() => setPrimaryHotelOption(i, hi)} className="h-3.5 w-3.5 text-emerald focus:ring-emerald" />
-                                    <span>{ho.hotelName || hotelOptions.find((h) => h.value === ho.hotel)?.label} — {ho.roomType} ({ho.numberOfRooms} room{ho.numberOfRooms > 1 ? 's' : ''}){ho.selected ? '' : ' · alternate'}</span>
+                                    <span>{ho.hotelName || hotelOptions.find((h) => h.value === ho.hotel)?.label} - {ho.roomType} ({ho.numberOfRooms} room{ho.numberOfRooms > 1 ? 's' : ''}){ho.selected ? '' : ' · alternate'}</span>
                                   </label>
                                   <span className="flex items-center gap-2">
                                     <span>${ho.roomCost.toLocaleString()}</span>
@@ -1278,7 +1333,7 @@ export function AdminCustomRequestDetail() {
                     <p className="mt-1 text-xs text-forest/60">
                       {sightseeingIncluded ?
                     "Sum of every day's hotel, sightseeing and transfer costs, plus guide/vehicle day rates." :
-                    "Sum of every day's hotel and transfer costs, plus guide/vehicle day rates — sightseeing/activity costs excluded."}
+                    "Sum of every day's hotel and transfer costs, plus guide/vehicle day rates - sightseeing/activity costs excluded."}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
