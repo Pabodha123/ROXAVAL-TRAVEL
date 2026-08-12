@@ -214,7 +214,7 @@ export function AdminPackageForm() {
 
   return (
     <div>
-      <PageHeader title={isEdit ? 'Edit Package' : 'Add Package'} subtitle="Craft the full journey — itinerary, pricing and media" />
+      <PageHeader title={isEdit ? 'Edit Package' : 'Add Package'} subtitle="Craft the full journey - itinerary, pricing and media" />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="rounded-2xl bg-white p-6 shadow-soft">

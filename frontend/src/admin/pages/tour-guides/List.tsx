@@ -60,7 +60,7 @@ export function AdminTourGuidesList() {
 
   const columns: Column<AdminTourGuide>[] = [
   { header: 'Guide', render: (g) => <div className="flex items-center gap-3">{g.photo ? <img src={g.photo} alt="" className="h-10 w-10 rounded-full object-cover bg-cream" /> : <span className="grid h-10 w-10 place-items-center rounded-full bg-cream text-forest/40"><UserIcon className="h-4 w-4" /></span>}<span className="font-medium">{g.name}</span></div> },
-  { header: 'Languages', render: (g) => g.languages?.join(', ') || '—' },
+  { header: 'Languages', render: (g) => g.languages?.join(', ') || '-' },
   { header: 'Experience', render: (g) => `${g.yearsExperience} yrs` },
   { header: 'Price / Day', render: (g) => `$${g.pricePerDay}` },
   { header: 'Status', render: (g) => <StatusBadge status={g.status} /> },

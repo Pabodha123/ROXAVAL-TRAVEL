@@ -59,7 +59,7 @@ export function TranslatedInput({ label, value, onChange, required, placeholder 
         required={required && lang === 'en'}
         className={baseInput}
       />
-      {lang !== 'en' && !value[lang] && <p className="mt-1 text-[11px] text-forest/40">Not translated yet — the English text is shown instead.</p>}
+      {lang !== 'en' && !value[lang] && <p className="mt-1 text-[11px] text-forest/40">Not translated yet - the English text is shown instead.</p>}
     </div>
   );
 }
@@ -87,7 +87,7 @@ export function TranslatedTextarea({ label, value, onChange, required, rows = 4 
         required={required && lang === 'en'}
         className={`${baseInput} resize-y`}
       />
-      {lang !== 'en' && !value[lang] && <p className="mt-1 text-[11px] text-forest/40">Not translated yet — the English text is shown instead.</p>}
+      {lang !== 'en' && !value[lang] && <p className="mt-1 text-[11px] text-forest/40">Not translated yet - the English text is shown instead.</p>}
     </div>
   );
 }

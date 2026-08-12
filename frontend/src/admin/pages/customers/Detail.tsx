@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Loader2Icon, SaveIcon } from 'lucide-react';
 import { apiGetList, apiGetOne, apiPatch, ApiRequestError } from '../../../lib/api';
+import { formatDate } from '../../../lib/date';
 import { useToast } from '../../components/ToastProvider';
 import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
@@ -108,7 +109,7 @@ export function AdminCustomerDetail() {
               <div key={b._id} className="flex items-center justify-between gap-3 py-3">
                   <div>
                     <p className="text-sm font-semibold text-forest">{b.tourPackage?.name || 'Customized Tour'}</p>
-                    <p className="text-xs text-forest/50">{b.bookingReference} · {new Date(b.travelDate).toLocaleDateString()} · ${b.pricing.totalAmount.toLocaleString()}</p>
+                    <p className="text-xs text-forest/50">{b.bookingReference} · {formatDate(b.travelDate)} · ${b.pricing.totalAmount.toLocaleString()}</p>
                   </div>
                   <StatusBadge status={b.status} />
                 </div>
@@ -130,15 +131,15 @@ export function AdminCustomerDetail() {
           <div className="rounded-2xl bg-white p-6 shadow-soft">
             <p className="font-display text-sm font-semibold text-forest">Contact Details</p>
             <div className="mt-3 space-y-2 text-sm">
-              <p><span className="text-forest/50">Phone:</span> {customer.user?.phone || '—'}</p>
-              <p><span className="text-forest/50">Country:</span> {customer.country || '—'}</p>
-              <p><span className="text-forest/50">Address:</span> {customer.address || '—'}</p>
-              <p><span className="text-forest/50">Language:</span> {customer.preferredLanguage || '—'}</p>
+              <p><span className="text-forest/50">Phone:</span> {customer.user?.phone || '-'}</p>
+              <p><span className="text-forest/50">Country:</span> {customer.country || '-'}</p>
+              <p><span className="text-forest/50">Address:</span> {customer.address || '-'}</p>
+              <p><span className="text-forest/50">Language:</span> {customer.preferredLanguage || '-'}</p>
             </div>
           </div>
           <div className="rounded-2xl bg-white p-6 shadow-soft">
             <p className="font-display text-sm font-semibold text-forest">Passport &amp; Birthday</p>
-            <p className="mt-1 text-xs text-forest/45">Captured from a passport scan or booking form — powers the Birthday Wishes system.</p>
+            <p className="mt-1 text-xs text-forest/45">Captured from a passport scan or booking form - powers the Birthday Wishes system.</p>
             <div className="mt-3 space-y-3">
               <TextField label="Date of Birth" type="date" value={dateOfBirth} onChange={setDateOfBirth} />
               <TextField label="Passport Number" value={passportNumber} onChange={setPassportNumber} />

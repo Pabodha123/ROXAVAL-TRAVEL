@@ -8,6 +8,7 @@ import { StatusBadge } from '../../components/StatusBadge';
 import { PriorityBadge } from '../../components/PriorityBadge';
 import { useToast } from '../../components/ToastProvider';
 import { apiPatch, ApiRequestError } from '../../../lib/api';
+import { formatDate } from '../../../lib/date';
 
 interface AdminCustomRequest {
   _id: string;
@@ -65,9 +66,9 @@ export function AdminCustomRequestsList() {
 
   const columns: Column<AdminCustomRequest>[] = [
   { header: 'Inquiry ID', render: (r) => <span className="font-mono text-xs font-semibold">{r.referenceNumber}</span> },
-  { header: 'Customer', render: (r) => r.customer?.user?.fullName || '—' },
-  { header: 'Submitted', render: (r) => new Date(r.createdAt).toLocaleDateString() },
-  { header: 'Arrival Date', render: (r) => new Date(r.travelDates.startDate).toLocaleDateString() },
+  { header: 'Customer', render: (r) => r.customer?.user?.fullName || '-' },
+  { header: 'Submitted', render: (r) => formatDate(r.createdAt) },
+  { header: 'Arrival Date', render: (r) => formatDate(r.travelDates.startDate) },
   { header: 'Days', render: (r) => tripDays(r) },
   { header: 'Status', render: (r) => <StatusBadge status={r.status} /> },
   { header: 'Priority', render: (r) => <PriorityBadge priority={r.priority} /> },

@@ -5,16 +5,13 @@ import { CalendarIcon, EyeIcon, FacebookIcon, LinkIcon, TwitterIcon, CheckIcon }
 import { PageBanner } from '../components/layout/PageBanner';
 import { LoadingState, ErrorState } from '../components/ui/StatusState';
 import { apiGetOne, apiGetList, API_ORIGIN } from '../lib/api';
+import { formatDateLong as formatDate } from '../lib/date';
 import type { BlogPost, BlogListItem } from '../types/blog';
 
 // Admin-uploaded images are stored as backend-relative paths (/uploads/images/...);
 // seeded/static images already live in the frontend's own /public folder.
 function resolveImage(url: string) {
   return url.startsWith('/uploads') ? `${API_ORIGIN}${url}` : url;
-}
-
-function formatDate(d?: string) {
-  return d ? new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : '';
 }
 
 export function BlogDetails() {

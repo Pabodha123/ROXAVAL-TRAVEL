@@ -9,6 +9,7 @@ import {
 import { useAdminList } from '../admin/hooks/useAdminList';
 import { StatusBadge } from '../admin/components/StatusBadge';
 import { apiGetList, apiGetOne, apiPatch, apiPost, apiPostForm, ApiRequestError, API_ORIGIN } from '../lib/api';
+import { formatDate } from '../lib/date';
 import { useToast } from '../context/ToastContext';
 import { useUnreadCount } from '../hooks/useUnreadCount';
 import { BookingModal, BookingSource } from '../components/booking/BookingModal';
@@ -206,7 +207,7 @@ function PayNowPanel({ booking, onPaid }: {booking: BookingItem;onPaid: () => vo
         window.open(link, '_blank');
       }
 
-      toast('Payment submitted — our team will verify it shortly.');
+      toast('Payment submitted - our team will verify it shortly.');
       onPaid();
     } catch (err) {
       toast(err instanceof ApiRequestError ? err.message : 'Failed to submit payment.', 'error');
@@ -288,7 +289,7 @@ function ReviewPanel({ booking, myReview, onSubmitted }: {booking: BookingItem;m
     setSubmitting(true);
     try {
       await apiPost('/reviews', { booking: booking._id, tourPackage: booking.tourPackage?._id, rating, title, text, country });
-      toast('Thank you — your review has been submitted for approval.');
+      toast('Thank you - your review has been submitted for approval.');
       setOpen(false);
       onSubmitted();
     } catch (err) {
@@ -349,7 +350,7 @@ function BookingsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
 
   if (loading) return <div className="grid h-64 place-items-center"><Loader2Icon className="h-6 w-6 animate-spin text-forest/40" /></div>;
   if (error) return <p className="text-sm text-red-600">{error}</p>;
-  if (items.length === 0) return <p className="rounded-2xl bg-white p-10 text-center text-sm text-forest/50 shadow-soft">You have no bookings yet — book a package to see it here.</p>;
+  if (items.length === 0) return <p className="rounded-2xl bg-white p-10 text-center text-sm text-forest/50 shadow-soft">You have no bookings yet - book a package to see it here.</p>;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr]">
@@ -365,7 +366,7 @@ function BookingsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
               <StatusBadge status={b.status} />
             </div>
             <p className="mt-1.5 text-sm font-semibold text-forest">{b.tourPackage?.name || b.itinerary?.title || 'Customized Tour'}</p>
-            <p className="mt-1 text-xs text-forest/50">{new Date(b.travelDate).toLocaleDateString()}</p>
+            <p className="mt-1 text-xs text-forest/50">{formatDate(b.travelDate)}</p>
           </button>
         )}
       </div>
@@ -378,7 +379,7 @@ function BookingsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
               <StatusBadge status={selected.status} />
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2 text-sm">
-              <p className="flex items-center gap-1.5 text-forest/70"><CalendarIcon className="h-4 w-4" /> {new Date(selected.travelDate).toLocaleDateString()}</p>
+              <p className="flex items-center gap-1.5 text-forest/70"><CalendarIcon className="h-4 w-4" /> {formatDate(selected.travelDate)}</p>
               <p className="flex items-center gap-1.5 text-forest/70"><UsersIcon className="h-4 w-4" /> {selected.travelers.adults} Adults, {selected.travelers.children} Children</p>
             </div>
             {selected.specialRequests && <p className="mt-3 text-sm text-forest/60">{selected.specialRequests}</p>}
@@ -394,7 +395,7 @@ function BookingsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
           <div className="rounded-2xl bg-white p-6 shadow-soft">
             <p className="font-display text-sm font-semibold text-forest">Tour Progress</p>
             {/* Once a Booking exists, its parent CustomTourRequest is always 'Booking Confirmed'
-                (see booking.service.js) — package-sourced bookings never have a request at all —
+                (see booking.service.js) - package-sourced bookings never have a request at all -
                 so the pre-booking stages are always treated as already passed here. */}
             <Timeline
               className="mt-4"
@@ -408,7 +409,7 @@ function BookingsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
                 {selected.statusHistory.map((h, i) =>
               <div key={i} className="flex items-center justify-between border-b border-forest/5 pb-2 last:border-0">
                     <StatusBadge status={h.status} />
-                    <span className="text-xs text-forest/40">{new Date(h.at).toLocaleDateString()}</span>
+                    <span className="text-xs text-forest/40">{formatDate(h.at)}</span>
                   </div>
               )}
               </div>
@@ -458,7 +459,7 @@ function RequestsTab({ initialSelectedId, onBookingCreated }: {initialSelectedId
     setActing(true);
     try {
       await apiPatch(`/custom-tours/${selected._id}/accept`);
-      toast('Itinerary accepted — you can now book it.');
+      toast('Itinerary accepted - you can now book it.');
       refetch();
     } catch (err) {
       toast(err instanceof ApiRequestError ? err.message : 'Failed to accept itinerary.', 'error');
@@ -525,7 +526,7 @@ function RequestsTab({ initialSelectedId, onBookingCreated }: {initialSelectedId
               <p className="font-mono text-xs font-semibold text-forest/60">{r.referenceNumber}</p>
               <StatusBadge status={r.status} />
             </div>
-            <p className="mt-1.5 text-xs text-forest/50">{new Date(r.travelDates.startDate).toLocaleDateString()} — {r.travelers.adults + r.travelers.children} travelers</p>
+            <p className="mt-1.5 text-xs text-forest/50">{formatDate(r.travelDates.startDate)} - {r.travelers.adults + r.travelers.children} travelers</p>
           </button>
         )}
       </div>
@@ -542,7 +543,7 @@ function RequestsTab({ initialSelectedId, onBookingCreated }: {initialSelectedId
               {...resolveRequestStage({ requestStatus: selected.status, itineraryStatus: itin?.status })} />
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2 text-sm">
-              <p className="flex items-center gap-1.5 text-forest/70"><CalendarIcon className="h-4 w-4" /> {new Date(selected.travelDates.startDate).toLocaleDateString()} – {new Date(selected.travelDates.endDate).toLocaleDateString()}</p>
+              <p className="flex items-center gap-1.5 text-forest/70"><CalendarIcon className="h-4 w-4" /> {formatDate(selected.travelDates.startDate)} – {formatDate(selected.travelDates.endDate)}</p>
               <p className="flex items-center gap-1.5 text-forest/70"><UsersIcon className="h-4 w-4" /> {selected.travelers.adults} Adults, {selected.travelers.children} Children</p>
               <p className="text-forest/70">Hotel: {selected.hotelCategory}</p>
               <p className="text-forest/70">Style: {selected.travelStyle}</p>

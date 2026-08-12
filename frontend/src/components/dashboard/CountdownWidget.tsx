@@ -48,7 +48,7 @@ export function CountdownWidget() {
       <div>
         <p className="text-lg font-semibold">Hello {user?.fullName?.split(' ')[0] || 'there'} 👋</p>
         <p className="mt-1 text-cream/85">
-          Your next adventure — <span className="font-semibold text-white">{tourName}</span> — starts in{' '}
+          Your next adventure - <span className="font-semibold text-white">{tourName}</span> - starts in{' '}
           <span className="font-display text-2xl font-bold text-gold">{days}</span> {days === 1 ? 'Day' : 'Days'}
         </p>
       </div>

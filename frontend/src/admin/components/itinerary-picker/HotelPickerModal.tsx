@@ -186,7 +186,7 @@ export function HotelPickerModal({ open, onClose, destinationOptions, defaultDes
                     <td className="p-2 text-forest">{h.name} {h.starRating ? `(${h.starRating}★)` : ''}</td>
                     <td className="p-2 text-forest">{rt.name}</td>
                     <td className="p-2 text-forest/60">
-                      {rt.mealPlan || '—'}
+                      {rt.mealPlan || '-'}
                       {rowRate.seasonal && <span className="ml-1 rounded-full bg-emerald/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald" title="Rate for this day's travel date">SEASON</span>}
                       {rowRate.currency !== 'USD' && <span className="ml-1 text-[9px] font-semibold text-forest/40">{rowRate.currency}</span>}
                     </td>
@@ -207,7 +207,7 @@ export function HotelPickerModal({ open, onClose, destinationOptions, defaultDes
 
       {pickedHotel && pickedRoomType &&
       <div className="mt-4 rounded-xl border border-emerald/20 bg-emerald/5 p-4">
-          <p className="text-sm font-semibold text-forest">{pickedHotel.name} — {pickedRoomType.name}</p>
+          <p className="text-sm font-semibold text-forest">{pickedHotel.name} - {pickedRoomType.name}</p>
           <p className="mt-1 text-xs text-forest/50">Set how many of each occupancy type to book for this day.</p>
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {OCCUPANCY_FIELDS.map((f) =>

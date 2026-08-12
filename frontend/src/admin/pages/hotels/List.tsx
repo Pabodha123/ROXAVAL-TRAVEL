@@ -60,7 +60,7 @@ export function AdminHotelsList() {
 
   const columns: Column<AdminHotel>[] = [
   { header: 'Hotel', render: (h) => <div className="flex items-center gap-3"><img src={h.images?.[0]} alt="" className="h-10 w-10 rounded-lg object-cover bg-cream" /><span className="font-medium">{h.name}</span></div> },
-  { header: 'Destination', render: (h) => h.destination?.name || '—' },
+  { header: 'Destination', render: (h) => h.destination?.name || '-' },
   { header: 'Category', render: (h) => h.category },
   { header: 'Rating', render: (h) => <span className="inline-flex items-center gap-1"><StarIcon className="h-3.5 w-3.5 fill-gold text-gold" /> {h.starRating}</span> },
   { header: 'Status', render: (h) => <StatusBadge status={h.status} /> },

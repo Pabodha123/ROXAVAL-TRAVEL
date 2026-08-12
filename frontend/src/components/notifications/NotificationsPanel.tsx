@@ -5,6 +5,7 @@ import { apiPatch } from '../../lib/api';
 import { Pagination } from '../ui/Pagination';
 import { LoadingState, EmptyState, ErrorState } from '../ui/StatusState';
 import { notificationTypeMeta } from '../../lib/notificationTypes';
+import { formatDateTime } from '../../lib/date';
 
 interface NotificationItem {
   _id: string;
@@ -62,7 +63,7 @@ export function NotificationsPanel() {
               <div className="min-w-0 flex-1">
                 <p className="font-display text-sm font-semibold text-forest">{n.title}</p>
                 <p className="mt-1.5 text-sm text-forest/60">{n.message}</p>
-                <p className="mt-2 text-xs text-forest/40">{new Date(n.createdAt).toLocaleString()}</p>
+                <p className="mt-2 text-xs text-forest/40">{formatDateTime(n.createdAt)}</p>
               </div>
             </div>);
 

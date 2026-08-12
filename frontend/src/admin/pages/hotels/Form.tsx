@@ -250,7 +250,7 @@ export function AdminHotelForm() {
                     <TranslatedTagListInput label="Room Amenities" value={r.amenities} onChange={(v) => updateRoomType(i, { amenities: v })} />
                   </div>
                   <div className="sm:col-span-4">
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-forest/60">Default Pricing (USD/night) — used when no seasonal period below covers the stay date</p>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-forest/60">Default Pricing (USD/night) - used when no seasonal period below covers the stay date</p>
                     <div className="grid gap-3 sm:grid-cols-4">
                       <NumberField label="Single" value={r.pricing?.single ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, single: v } })} min={0} />
                       <NumberField label="Double" value={r.pricing?.double ?? 0} onChange={(v) => updateRoomType(i, { pricing: { ...emptyOccupancyPricing(), ...r.pricing, double: v } })} min={0} />
@@ -267,7 +267,7 @@ export function AdminHotelForm() {
                       <p className="text-xs font-semibold uppercase tracking-wide text-forest/60">Seasonal Rate Periods {r.seasonalRates?.length ? `(${r.seasonalRates.length})` : ''}</p>
                       <button type="button" onClick={() => addSeasonalRate(i)} className="text-xs font-semibold text-emerald hover:underline">+ Add Season</button>
                     </div>
-                    {!r.seasonalRates?.length && <p className="text-xs text-forest/40">No seasonal periods — the default pricing above always applies.</p>}
+                    {!r.seasonalRates?.length && <p className="text-xs text-forest/40">No seasonal periods - the default pricing above always applies.</p>}
                     <div className="space-y-3">
                       {(r.seasonalRates || []).map((s, si) =>
                       <div key={si} className="rounded-lg border border-forest/10 bg-white p-3">

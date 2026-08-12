@@ -42,12 +42,12 @@ export function AboutUs() {
           <SectionHeading eyebrow="Who we are" title="Your Trusted Local Travel Partner" align="left" />
           <p className="mt-6 text-base leading-relaxed text-forest/70">
             Roxaval Travels is a Sri Lanka-based travel agency dedicated to crafting luxurious, fully customized journeys across
-            the island — from ancient kingdoms to golden beaches. We believe travel should feel personal, so every itinerary we
+            the island - from ancient kingdoms to golden beaches. We believe travel should feel personal, so every itinerary we
             build is designed around you: your pace, your interests and your budget.
           </p>
           <p className="mt-4 text-base leading-relaxed text-forest/70">
             From the moment you reach out to the moment you land back home, our local experts handle every hotel, guide,
-            vehicle and detail — so all you have to do is show up and explore.
+            vehicle and detail - so all you have to do is show up and explore.
           </p>
         </motion.div>
         <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }} className="overflow-hidden rounded-[2rem] shadow-lift">
@@ -64,12 +64,12 @@ export function AboutUs() {
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }} className="order-1 lg:order-2">
             <SectionHeading eyebrow="Our Story" title="Built on a Love for This Island" align="left" />
             <p className="mt-6 text-base leading-relaxed text-forest/70">
-              Roxaval Travels began with a simple idea — that visitors deserve to experience Sri Lanka the way locals do,
+              Roxaval Travels began with a simple idea - that visitors deserve to experience Sri Lanka the way locals do,
               not through a rigid, one-size-fits-all package. Over more than a decade, that idea grew into a full-service
               travel agency built around custom itineraries, trusted local guides and genuine care for every traveler.
             </p>
             <p className="mt-4 text-base leading-relaxed text-forest/70">
-              Today, thousands of travelers have explored the island with us — from the ancient cities of the Cultural
+              Today, thousands of travelers have explored the island with us - from the ancient cities of the Cultural
               Triangle to the misty tea trails of the hill country and the sun-soaked shores of the south coast.
             </p>
           </motion.div>

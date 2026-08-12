@@ -2,7 +2,7 @@
   "breadcrumb": { "home": "Accueil", "packages": "Circuits" },
   "eyebrow": "Voyages sélectionnés",
   "title": "Circuits",
-  "subtitle": "Des itinéraires soigneusement conçus — ou la base d'un voyage que nous adaptons entièrement à vos envies.",
+  "subtitle": "Des itinéraires soigneusement conçus - ou la base d'un voyage que nous adaptons entièrement à vos envies.",
   "searchPlaceholder": "Rechercher des circuits…",
   "filters": { "categories": "Catégories", "types": "Types" },
   "sort": {
@@ -41,7 +41,7 @@
     "startingFrom": "À partir de",
     "perPerson": "par personne, {{min}}-{{max}} voyageurs",
     "reviews": "Avis",
-    "noReviewsYet": "Pas encore d'avis — soyez le premier à partager votre expérience.",
+    "noReviewsYet": "Pas encore d'avis - soyez le premier à partager votre expérience.",
     "verifiedTraveler": "Voyageur vérifié",
     "gallery": "Galerie",
     "destinations": "Destinations",

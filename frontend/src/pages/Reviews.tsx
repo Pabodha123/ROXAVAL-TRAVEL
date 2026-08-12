@@ -7,6 +7,7 @@ import { Pagination } from '../components/ui/Pagination';
 import { LoadingState, EmptyState, ErrorState } from '../components/ui/StatusState';
 import { useApiList } from '../hooks/useApiList';
 import { apiGetOne } from '../lib/api';
+import { formatDate } from '../lib/date';
 import type { Review, ReviewStats } from '../types/review';
 
 const RATING_OPTIONS = [5, 4, 3, 2, 1];
@@ -44,7 +45,7 @@ function ReviewCard({ review, index }: {review: Review;index: number;}) {
       <p className="mt-2 text-sm leading-relaxed text-forest/65">{review.text}</p>
       <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-forest/5 pt-3 text-xs text-forest/45">
         {review.tourPackage?.name && <span className="flex items-center gap-1.5"><PackageIcon className="h-3.5 w-3.5" /> {review.tourPackage.name}</span>}
-        <span className="flex items-center gap-1.5"><CalendarIcon className="h-3.5 w-3.5" /> {new Date(review.createdAt).toLocaleDateString()}</span>
+        <span className="flex items-center gap-1.5"><CalendarIcon className="h-3.5 w-3.5" /> {formatDate(review.createdAt)}</span>
       </div>
     </motion.div>);
 

@@ -58,8 +58,8 @@ export function AdminReviewsList() {
   };
 
   const columns: Column<AdminReview>[] = [
-  { header: 'Customer', render: (r) => r.customer?.user?.fullName || '—' },
-  { header: 'Package', render: (r) => r.tourPackage?.name || '—' },
+  { header: 'Customer', render: (r) => r.customer?.user?.fullName || '-' },
+  { header: 'Package', render: (r) => r.tourPackage?.name || '-' },
   { header: 'Rating', render: (r) => <span className="inline-flex items-center gap-1"><StarIcon className="h-3.5 w-3.5 fill-gold text-gold" /> {r.rating}</span> },
   { header: 'Review', className: 'max-w-xs truncate', render: (r) => r.text },
   { header: 'Status', render: (r) => <StatusBadge status={r.status} /> },

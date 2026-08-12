@@ -2,7 +2,7 @@
   "breadcrumb": { "home": "Home", "packages": "Tour Packages" },
   "eyebrow": "Curated journeys",
   "title": "Tour Packages",
-  "subtitle": "Thoughtfully designed itineraries — or the foundation for a trip we tailor entirely around you.",
+  "subtitle": "Thoughtfully designed itineraries - or the foundation for a trip we tailor entirely around you.",
   "searchPlaceholder": "Search tour packages…",
   "filters": { "categories": "Categories", "types": "Types" },
   "sort": {
@@ -41,7 +41,7 @@
     "startingFrom": "Starting from",
     "perPerson": "per person, {{min}}-{{max}} travelers",
     "reviews": "Reviews",
-    "noReviewsYet": "No reviews yet — be the first to share your experience.",
+    "noReviewsYet": "No reviews yet - be the first to share your experience.",
     "verifiedTraveler": "Verified traveler",
     "gallery": "Gallery",
     "destinations": "Destinations",

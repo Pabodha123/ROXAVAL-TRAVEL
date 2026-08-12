@@ -262,7 +262,7 @@ export function CustomTourWizard() {
       <div className="flex items-center justify-between gap-3 bg-emerald/10 px-8 py-3 text-sm text-emerald">
           <span className="flex items-center gap-2">
             <SparklesIcon className="h-4 w-4 shrink-0" />
-            Pre-filled from <strong className="font-semibold">{prefillPackage.name}</strong> — feel free to adjust anything below.
+            Pre-filled from <strong className="font-semibold">{prefillPackage.name}</strong> - feel free to adjust anything below.
           </span>
           <button type="button" onClick={() => setPrefillPackage(null)} aria-label="Dismiss" className="shrink-0 text-emerald/60 hover:text-emerald">
             <XIcon className="h-4 w-4" />
@@ -274,7 +274,7 @@ export function CustomTourWizard() {
       <div className="flex items-center justify-between gap-3 bg-emerald/10 px-8 py-3 text-sm text-emerald">
           <span className="flex items-center gap-2">
             <SparklesIcon className="h-4 w-4 shrink-0" />
-            <strong className="font-semibold">{prefillDestinationName}</strong> has been added to your destinations — feel free to adjust anything below.
+            <strong className="font-semibold">{prefillDestinationName}</strong> has been added to your destinations - feel free to adjust anything below.
           </span>
           <button type="button" onClick={() => setPrefillDestinationName(null)} aria-label="Dismiss" className="shrink-0 text-emerald/60 hover:text-emerald">
             <XIcon className="h-4 w-4" />
@@ -395,7 +395,7 @@ export function CustomTourWizard() {
                 </div>
                 {activitiesLoading ? <p className="text-sm text-forest/50">Loading activities…</p> :
               activitiesForSelectedDestinations.length === 0 ?
-              <p className="text-sm text-forest/50">No catalog activities found for your selected destinations yet — you can still add one by typing its name above.</p> :
+              <p className="text-sm text-forest/50">No catalog activities found for your selected destinations yet - you can still add one by typing its name above.</p> :
 
               <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-4">
                   {activitiesForSelectedDestinations.map((a) =>
@@ -447,7 +447,7 @@ export function CustomTourWizard() {
                 </div>
                 <div>
                   <label className="mb-3 block font-semibold text-forest">Does this budget include sightseeing &amp; activities?</label>
-                  <p className="mb-3 text-sm text-forest/50">This helps us quote you accurately — you can arrange your own sightseeing to lower the cost, or have us include it all.</p>
+                  <p className="mb-3 text-sm text-forest/50">This helps us quote you accurately - you can arrange your own sightseeing to lower the cost, or have us include it all.</p>
                   <div className="flex flex-wrap gap-3">
                     {SIGHTSEEING_PREFERENCE_OPTIONS.map((opt) =>
                   <button type="button" key={opt} onClick={() => setFormData({ ...formData, sightseeingPreference: opt })} className={`rounded-full px-6 py-2.5 text-sm font-medium transition-colors ${formData.sightseeingPreference === opt ? 'bg-emerald text-white' : 'bg-cream text-forest hover:bg-emerald/10'}`}>{opt}</button>
@@ -494,16 +494,16 @@ export function CustomTourWizard() {
                   <p className="text-sm text-forest/60">{user.email}</p>
                 </div>
                 <dl className="grid gap-3 sm:grid-cols-2 text-sm">
-                  <div><dt className="text-forest/50">Arrival</dt><dd className="font-medium text-forest">{formData.arrivalDate || '—'} · {formData.days} days</dd></div>
+                  <div><dt className="text-forest/50">Arrival</dt><dd className="font-medium text-forest">{formData.arrivalDate || '-'} · {formData.days} days</dd></div>
                   <div><dt className="text-forest/50">Travelers</dt><dd className="font-medium text-forest">{formData.adults} adults, {formData.children} children, {formData.infants} infants</dd></div>
                   <div><dt className="text-forest/50">Destinations</dt><dd className="font-medium text-forest">{formData.selectedDestinations.length + formData.customDestinations.length} selected</dd></div>
                   <div><dt className="text-forest/50">Activities</dt><dd className="font-medium text-forest">{formData.selectedActivities.length + formData.customActivities.length} selected</dd></div>
                   <div><dt className="text-forest/50">Hotel Category</dt><dd className="font-medium text-forest">{HOTEL_CATEGORIES.find((c) => c.value === formData.hotelCategory)?.label || formData.hotelCategory}</dd></div>
-                  <div><dt className="text-forest/50">Room Type</dt><dd className="font-medium text-forest">{formData.roomTypePreference || '—'}</dd></div>
+                  <div><dt className="text-forest/50">Room Type</dt><dd className="font-medium text-forest">{formData.roomTypePreference || '-'}</dd></div>
                   <div><dt className="text-forest/50">Travel Style</dt><dd className="font-medium text-forest">{formData.travelStyle}</dd></div>
                   <div><dt className="text-forest/50">Vehicle Type</dt><dd className="font-medium text-forest">{formData.transportPreference}</dd></div>
                   <div><dt className="text-forest/50">Guide Required</dt><dd className="font-medium text-forest">{formData.guideRequired ? 'Yes' : 'No'}</dd></div>
-                  <div><dt className="text-forest/50">Budget</dt><dd className="font-medium text-forest">{formData.budget ? `$${formData.budget} ${formData.perPerson ? 'per person' : 'total'}` : '—'}</dd></div>
+                  <div><dt className="text-forest/50">Budget</dt><dd className="font-medium text-forest">{formData.budget ? `$${formData.budget} ${formData.perPerson ? 'per person' : 'total'}` : '-'}</dd></div>
                   <div><dt className="text-forest/50">Sightseeing in Budget</dt><dd className="font-medium text-forest">{formData.sightseeingPreference}</dd></div>
                 </dl>
 

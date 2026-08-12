@@ -5,6 +5,7 @@ import { useAdminList } from '../../hooks/useAdminList';
 import { DataTable, Column } from '../../components/DataTable';
 import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
+import { formatDate } from '../../../lib/date';
 
 interface AdminBooking {
   _id: string;
@@ -29,9 +30,9 @@ export function AdminBookingsList() {
 
   const columns: Column<AdminBooking>[] = [
   { header: 'Reference', render: (b) => <span className="font-mono text-xs font-semibold">{b.bookingReference}</span> },
-  { header: 'Customer', render: (b) => b.customer?.user?.fullName || '—' },
+  { header: 'Customer', render: (b) => b.customer?.user?.fullName || '-' },
   { header: 'Package', render: (b) => b.tourPackage?.name || 'Customized Tour' },
-  { header: 'Travel Date', render: (b) => new Date(b.travelDate).toLocaleDateString() },
+  { header: 'Travel Date', render: (b) => formatDate(b.travelDate) },
   { header: 'Amount', render: (b) => `$${b.pricing.totalAmount.toLocaleString()}` },
   { header: 'Status', render: (b) => <StatusBadge status={b.status} /> },
   { header: '', render: (b) => <Link to={`/admin/bookings/${b._id}`} className="grid h-8 w-8 place-items-center rounded-lg text-forest/60 hover:bg-cream hover:text-forest"><EyeIcon className="h-4 w-4" /></Link> }];

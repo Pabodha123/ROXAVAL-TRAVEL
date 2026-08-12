@@ -8,6 +8,7 @@ import { Pagination } from '../components/ui/Pagination';
 import { LoadingState, EmptyState, ErrorState } from '../components/ui/StatusState';
 import { useApiList } from '../hooks/useApiList';
 import { apiGetList, API_ORIGIN } from '../lib/api';
+import { formatDate } from '../lib/date';
 import type { BlogListItem } from '../types/blog';
 
 // Admin-uploaded images are stored as backend-relative paths (/uploads/images/...);
@@ -22,10 +23,6 @@ const SORT_OPTIONS = [
 { label: 'Oldest', value: 'publishedAt' },
 { label: 'Most Popular', value: '-views' }];
 
-
-function formatDate(d?: string) {
-  return d ? new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '';
-}
 
 function ArticleCard({ post, large = false }: {post: BlogListItem;large?: boolean;}) {
   return (

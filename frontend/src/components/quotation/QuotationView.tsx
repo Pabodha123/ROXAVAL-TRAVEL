@@ -188,7 +188,7 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
                 <div className="flex items-center gap-3 print:break-inside-avoid">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald text-sm font-bold text-white">{d.dayNumber}</div>
                   <div>
-                    <p className="font-display text-base font-semibold text-forest">Day {d.dayNumber}{d.destinations?.[0]?.name ? ` — ${d.destinations[0].name}` : ''}</p>
+                    <p className="font-display text-base font-semibold text-forest">Day {d.dayNumber}{d.destinations?.[0]?.name ? ` - ${d.destinations[0].name}` : ''}</p>
                     {d.date && <p className="text-xs text-forest/50">{fmtDate(d.date)}</p>}
                   </div>
                 </div>

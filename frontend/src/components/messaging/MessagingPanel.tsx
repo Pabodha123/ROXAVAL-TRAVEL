@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Loader2Icon, MessageCircleIcon, SendIcon } from 'lucide-react';
 import { useMessages } from '../../hooks/useMessages';
 import { useAuth } from '../../context/AuthContext';
+import { formatDate } from '../../lib/date';
 
 interface MessagingPanelProps {
   requestId: string;
@@ -15,7 +16,7 @@ function dayLabel(iso: string): string {
   const sameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString();
   if (sameDay(date, today)) return 'Today';
   if (sameDay(date, yesterday)) return 'Yesterday';
-  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  return formatDate(date);
 }
 
 /**
@@ -54,7 +55,7 @@ export function MessagingPanel({ requestId }: MessagingPanelProps) {
         <div className="grid h-24 place-items-center"><Loader2Icon className="h-5 w-5 animate-spin text-forest/30" /></div>
         }
         {!loading && messages.length === 0 &&
-        <p className="py-6 text-center text-sm text-forest/40">No messages yet — say hello!</p>
+        <p className="py-6 text-center text-sm text-forest/40">No messages yet - say hello!</p>
         }
         {messages.map((m) => {
           const isMine = m.senderRole === viewerRole;

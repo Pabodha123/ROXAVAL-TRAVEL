@@ -54,8 +54,8 @@ export function AdminPaymentsList() {
 
   const columns: Column<AdminPayment>[] = [
   { header: 'Reference', render: (p) => <span className="font-mono text-xs font-semibold">{p.paymentReference}</span> },
-  { header: 'Customer', render: (p) => p.customer?.user?.fullName || '—' },
-  { header: 'Booking', render: (p) => p.booking?.bookingReference || '—' },
+  { header: 'Customer', render: (p) => p.customer?.user?.fullName || '-' },
+  { header: 'Booking', render: (p) => p.booking?.bookingReference || '-' },
   { header: 'Type', render: (p) => <span className="capitalize">{p.paymentType}</span> },
   { header: 'Method', render: (p) => <span className="capitalize">{p.method.replace('_', ' ')}</span> },
   { header: 'Amount', render: (p) => `$${p.amount.toLocaleString()}` },

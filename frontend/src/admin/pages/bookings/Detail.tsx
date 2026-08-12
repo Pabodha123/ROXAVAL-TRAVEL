@@ -5,6 +5,7 @@ import {
   MailIcon, PencilIcon, RefreshCwIcon, SparklesIcon, UsersIcon } from
 'lucide-react';
 import { apiGetOne, apiPatch, apiPost, ApiRequestError, API_ORIGIN } from '../../../lib/api';
+import { formatDate, formatDateTime } from '../../../lib/date';
 import { useToast } from '../../components/ToastProvider';
 import { useConfirm } from '../../components/ConfirmDialog';
 import { PageHeader } from '../../components/PageHeader';
@@ -114,7 +115,7 @@ function VoucherCard({
           <p className="font-mono text-xs font-semibold text-forest/60">{voucher.voucherNumber}</p>
           <p className="mt-1 text-sm font-semibold text-forest">{voucher.hotelSnapshot.name}</p>
           <p className="mt-0.5 text-xs text-forest/50">
-            {new Date(voucher.checkInDate).toLocaleDateString()} → {new Date(voucher.checkOutDate).toLocaleDateString()} · {voucher.nights} night{voucher.nights === 1 ? '' : 's'}
+            {formatDate(voucher.checkInDate)} → {formatDate(voucher.checkOutDate)} · {voucher.nights} night{voucher.nights === 1 ? '' : 's'}
           </p>
           <p className="mt-0.5 text-xs text-forest/50">{voucher.numberOfRooms} × {voucher.roomType || 'Room'} · {voucher.mealPlan}</p>
         </div>
@@ -285,7 +286,7 @@ export function AdminBookingDetail() {
     <div>
       <PageHeader
         title={`Booking ${booking.bookingReference}`}
-        subtitle={`Created ${new Date(booking.createdAt).toLocaleString()}`}
+        subtitle={`Created ${formatDateTime(booking.createdAt)}`}
         action={<button onClick={() => navigate('/admin/bookings')} className="rounded-full border border-forest/15 px-5 py-2.5 text-sm font-semibold text-forest hover:bg-cream">Back to list</button>} />
 
 
@@ -307,7 +308,7 @@ export function AdminBookingDetail() {
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase text-forest/50">Travel Date</p>
-                <p className="mt-1 flex items-center gap-1.5 text-sm text-forest"><CalendarIcon className="h-3.5 w-3.5" /> {new Date(booking.travelDate).toLocaleDateString()}</p>
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-forest"><CalendarIcon className="h-3.5 w-3.5" /> {formatDate(booking.travelDate)}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase text-forest/50">Travelers</p>
@@ -344,7 +345,7 @@ export function AdminBookingDetail() {
                     <StatusBadge status={h.status} />
                     {h.note && <p className="mt-1 text-xs text-forest/60">{h.note}</p>}
                   </div>
-                  <span className="shrink-0 text-xs text-forest/40">{new Date(h.at).toLocaleString()}</span>
+                  <span className="shrink-0 text-xs text-forest/40">{formatDateTime(h.at)}</span>
                 </div>
               )}
             </div>
@@ -461,7 +462,7 @@ export function AdminBookingDetail() {
                           <div>
                             <p className="font-mono text-xs font-semibold text-forest/50">{v.voucherNumber}</p>
                             <p className="mt-1 text-sm font-medium text-forest/70">{v.hotelSnapshot.name}</p>
-                            <p className="mt-0.5 text-xs text-forest/40">{new Date(v.checkInDate).toLocaleDateString()} → {new Date(v.checkOutDate).toLocaleDateString()}</p>
+                            <p className="mt-0.5 text-xs text-forest/40">{formatDate(v.checkInDate)} → {formatDate(v.checkOutDate)}</p>
                           </div>
                           <StatusBadge status={v.status} />
                         </div>

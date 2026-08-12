@@ -7,6 +7,7 @@ import { StatusBadge } from '../../components/StatusBadge';
 import { useConfirm } from '../../components/ConfirmDialog';
 import { useToast } from '../../components/ToastProvider';
 import { apiDelete, apiPatch, ApiRequestError } from '../../../lib/api';
+import { formatDate } from '../../../lib/date';
 
 interface AdminContact {
   _id: string;
@@ -68,7 +69,7 @@ export function AdminContactList() {
   { header: 'Name', render: (c) => c.name },
   { header: 'Email', render: (c) => <a href={`mailto:${c.email}`} className="text-emerald hover:underline">{c.email}</a> },
   { header: 'Subject', className: 'max-w-xs truncate', render: (c) => c.subject },
-  { header: 'Submitted', render: (c) => new Date(c.createdAt).toLocaleDateString() },
+  { header: 'Submitted', render: (c) => formatDate(c.createdAt) },
   { header: 'Status', render: (c) => <StatusBadge status={c.status} /> },
   {
     header: 'Actions',

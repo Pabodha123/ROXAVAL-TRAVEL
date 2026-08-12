@@ -10,9 +10,9 @@
     "confirmBooking": "Confirm Booking",
     "selectDateError": "Please select a travel date.",
     "createError": "Could not create booking. Please try again.",
-    "successToast": "Booking {{reference}} created — proceed to payment in My Tours.",
+    "successToast": "Booking {{reference}} created - proceed to payment in My Tours.",
     "bookingConfirmedTitle": "Booking Confirmed",
-    "bookingConfirmedBody": "Your booking {{reference}} has been created. You're one step away — head to the Bookings tab to complete your payment.",
+    "bookingConfirmedBody": "Your booking {{reference}} has been created. You're one step away - head to the Bookings tab to complete your payment.",
     "goToPayment": "Go to Payment"
   },
   "payment": {
@@ -26,6 +26,6 @@
     "uploadReceipt": "Upload Receipt",
     "submitPayment": "Submit Payment",
     "submitError": "Could not submit payment. Please try again.",
-    "successToast": "Payment submitted — we'll confirm shortly."
+    "successToast": "Payment submitted - we'll confirm shortly."
   }
 }

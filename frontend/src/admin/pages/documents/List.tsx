@@ -4,6 +4,7 @@ import { useAdminList } from '../../hooks/useAdminList';
 import { DataTable, Column } from '../../components/DataTable';
 import { PageHeader } from '../../components/PageHeader';
 import { API_ORIGIN } from '../../../lib/api';
+import { formatDate } from '../../../lib/date';
 
 interface AdminDocument {
   _id: string;
@@ -35,8 +36,8 @@ export function AdminDocumentsList() {
   const columns: Column<AdminDocument>[] = [
   { header: 'Reference', render: (d) => <span className="font-mono text-xs font-semibold">{d.referenceNumber}</span> },
   { header: 'Type', render: (d) => TYPE_LABELS[d.type] || d.type },
-  { header: 'Booking', render: (d) => d.booking?.bookingReference || '—' },
-  { header: 'Generated', render: (d) => new Date(d.createdAt).toLocaleDateString() },
+  { header: 'Booking', render: (d) => d.booking?.bookingReference || '-' },
+  { header: 'Generated', render: (d) => formatDate(d.createdAt) },
   {
     header: '', render: (d) =>
     <a href={`${API_ORIGIN}${d.fileUrl}`} target="_blank" rel="noreferrer" className="grid h-8 w-8 place-items-center rounded-lg text-forest/60 hover:bg-cream hover:text-forest">

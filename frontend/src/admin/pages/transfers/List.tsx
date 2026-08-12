@@ -67,10 +67,10 @@ export function AdminTransfersList() {
 
   const columns: Column<AdminTransfer>[] = [
   { header: 'Transfer', render: (t) => <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-lg bg-cream text-forest/40"><ArrowLeftRightIcon className="h-4 w-4" /></span><span className="font-medium">{t.name}</span></div> },
-  { header: 'Destination', render: (t) => t.destination?.name || '—' },
-  { header: 'Supplier', render: (t) => t.supplier || '—' },
+  { header: 'Destination', render: (t) => t.destination?.name || '-' },
+  { header: 'Supplier', render: (t) => t.supplier || '-' },
   { header: 'Type', render: (t) => t.type },
-  { header: 'Vehicle', render: (t) => t.vehicle?.name || '—' },
+  { header: 'Vehicle', render: (t) => t.vehicle?.name || '-' },
   { header: 'Cost (w/ driver)', render: (t) => `${t.currency} ${t.costWithDriver}` },
   { header: 'Status', render: (t) => <StatusBadge status={t.status} /> },
   {

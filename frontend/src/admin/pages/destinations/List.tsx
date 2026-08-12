@@ -60,7 +60,7 @@ export function AdminDestinationsList() {
 
   const columns: Column<AdminDestination>[] = [
   { header: 'Destination', render: (d) => <div className="flex items-center gap-3"><img src={d.heroImage} alt="" className="h-10 w-10 rounded-lg object-cover" /><span className="font-medium">{d.name}</span></div> },
-  { header: 'Region', render: (d) => d.region || '—' },
+  { header: 'Region', render: (d) => d.region || '-' },
   { header: 'Tag', render: (d) => d.tag },
   { header: 'Status', render: (d) => <StatusBadge status={d.status} /> },
   {

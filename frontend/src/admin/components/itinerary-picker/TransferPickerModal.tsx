@@ -108,8 +108,8 @@ export function TransferPickerModal({ open, onClose, destinationOptions, default
               {transfers.map((t) =>
             <tr key={t._id} className={`border-t border-forest/5 ${pickedTransfer?._id === t._id ? 'bg-emerald/10' : ''}`}>
                   <td className="p-2 text-forest">{t.name}</td>
-                  <td className="p-2 text-forest/60">{t.supplier || '—'}</td>
-                  <td className="p-2 text-forest/60">{t.vehicle?.name || '—'}</td>
+                  <td className="p-2 text-forest/60">{t.supplier || '-'}</td>
+                  <td className="p-2 text-forest/60">{t.vehicle?.name || '-'}</td>
                   <td className="p-2 text-forest/60">{t.type}</td>
                   <td className="p-2 text-right text-forest/70">{t.currency} {t.costWithDriver}</td>
                   <td className="p-2 text-right text-forest/70">{t.currency} {t.costWithoutDriver}</td>

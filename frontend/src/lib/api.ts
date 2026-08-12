@@ -105,7 +105,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<{
     map((e) => `${e.field.replace(/^body\./, '')}: ${e.message}`).
     join('; ') :
     '';
-    throw new ApiRequestError(detail ? `${baseMessage} — ${detail}` : baseMessage, res.status, envelope.errors);
+    throw new ApiRequestError(detail ? `${baseMessage} - ${detail}` : baseMessage, res.status, envelope.errors);
   }
   return { data: envelope.data, meta: envelope.meta };
 }

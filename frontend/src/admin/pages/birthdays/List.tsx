@@ -8,6 +8,7 @@ import { TextField, TextAreaField, NumberField, CheckboxField, ImageUploader } f
 import { useAdminList } from '../../hooks/useAdminList';
 import { useToast } from '../../components/ToastProvider';
 import { apiGetOne, apiGetList, apiPatch, apiPost, ApiRequestError } from '../../../lib/api';
+import { formatDateTime } from '../../../lib/date';
 
 interface CustomerRef {
   _id: string;
@@ -49,7 +50,7 @@ interface BirthdayConfig {
 type Tab = 'today' | 'upcoming' | 'settings' | 'log';
 
 function fmtDate(iso?: string) {
-  if (!iso) return '—';
+  if (!iso) return '-';
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 }
 
@@ -287,13 +288,13 @@ function LogPanel({ onResend, resendingId }: {onResend: (id: string) => void;res
   const { items, meta, loading, error, page, setPage, refetch } = useAdminList<BirthdayLogEntry>('/birthdays/logs', {});
 
   const columns: Column<BirthdayLogEntry>[] = [
-  { header: 'Customer', render: (r) => r.customer?.user?.fullName || '—' },
+  { header: 'Customer', render: (r) => r.customer?.user?.fullName || '-' },
   { header: 'Email', render: (r) => r.emailTo },
   { header: 'Status', render: (r) => r.status === 'failed' ? <span className="inline-flex items-center rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-600">Failed</span> : <StatusBadge status={r.status} /> },
   { header: 'Method', render: (r) => <span className="capitalize">{r.method}</span> },
-  { header: 'Coupon', render: (r) => r.couponCode || '—' },
+  { header: 'Coupon', render: (r) => r.couponCode || '-' },
   { header: 'Resends', render: (r) => r.resendCount },
-  { header: 'Sent', render: (r) => new Date(r.sentAt).toLocaleString() },
+  { header: 'Sent', render: (r) => formatDateTime(r.sentAt) },
   {
     header: 'Actions',
     render: (r) => r.customer ?
@@ -305,7 +306,7 @@ function LogPanel({ onResend, resendingId }: {onResend: (id: string) => void;res
           {resendingId === r.customer!._id ? <Loader2Icon className="h-3.5 w-3.5 animate-spin" /> : <SendIcon className="h-3.5 w-3.5" />}
           Resend
         </button> :
-    '—'
+    '-'
   }];
 
 

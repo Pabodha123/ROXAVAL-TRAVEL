@@ -41,9 +41,9 @@ export function AdminCustomersList() {
   };
 
   const columns: Column<AdminCustomer>[] = [
-  { header: 'Customer', render: (c) => <span className="font-medium">{c.user?.fullName || '—'}</span> },
-  { header: 'Email', render: (c) => c.user?.email || '—' },
-  { header: 'Country', render: (c) => c.country || '—' },
+  { header: 'Customer', render: (c) => <span className="font-medium">{c.user?.fullName || '-'}</span> },
+  { header: 'Email', render: (c) => c.user?.email || '-' },
+  { header: 'Country', render: (c) => c.country || '-' },
   { header: 'Bookings', render: (c) => c.totalBookings },
   { header: 'Total Spend', render: (c) => `$${(c.totalSpend || 0).toLocaleString()}` },
   { header: 'Status', render: (c) => c.user?.active === false ? <span className="text-xs font-semibold text-red-600">Blocked</span> : <span className="text-xs font-semibold text-emerald">Active</span> },

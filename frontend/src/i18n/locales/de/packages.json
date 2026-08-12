@@ -2,7 +2,7 @@
   "breadcrumb": { "home": "Startseite", "packages": "Reisepakete" },
   "eyebrow": "Kuratierte Reisen",
   "title": "Reisepakete",
-  "subtitle": "Durchdacht gestaltete Reiserouten — oder die Grundlage für eine Reise, die wir ganz nach Ihren Wünschen anpassen.",
+  "subtitle": "Durchdacht gestaltete Reiserouten - oder die Grundlage für eine Reise, die wir ganz nach Ihren Wünschen anpassen.",
   "searchPlaceholder": "Reisepakete durchsuchen…",
   "filters": { "categories": "Kategorien", "types": "Typen" },
   "sort": {
@@ -41,7 +41,7 @@
     "startingFrom": "Ab",
     "perPerson": "pro Person, {{min}}-{{max}} Reisende",
     "reviews": "Bewertungen",
-    "noReviewsYet": "Noch keine Bewertungen — teilen Sie als Erste(r) Ihre Erfahrung.",
+    "noReviewsYet": "Noch keine Bewertungen - teilen Sie als Erste(r) Ihre Erfahrung.",
     "verifiedTraveler": "Verifizierter Reisender",
     "gallery": "Galerie",
     "destinations": "Reiseziele",
