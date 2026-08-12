@@ -40,6 +40,9 @@ const tourPackageSchema = new mongoose.Schema(
     price: { type: Number, required: [true, 'Price is required'] },
     discountPrice: { type: Number },
     currency: { type: String, default: 'USD' },
+    // What a child pays as a percentage of the adult price (e.g. 50 = half
+    // price). Infants remain free/uncharged, matching travel-industry norm.
+    childPricePercent: { type: Number, default: 50, min: 0, max: 100 },
     minTravelers: { type: Number, default: 1 },
     maxTravelers: { type: Number, default: 20 },
     rating: { type: Number, default: 0, min: 0, max: 5 },

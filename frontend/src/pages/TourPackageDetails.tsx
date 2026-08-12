@@ -326,7 +326,7 @@ export function TourPackageDetails() {
       <BookingModal
         open={bookingOpen}
         onClose={() => setBookingOpen(false)}
-        source={{ type: 'package', id: pkg._id, name: pkg.name, price: displayPrice, currency: pkg.currency, minTravelers: pkg.minTravelers, maxTravelers: pkg.maxTravelers }}
+        source={{ type: 'package', id: pkg._id, name: pkg.name, price: displayPrice, currency: pkg.currency, minTravelers: pkg.minTravelers, maxTravelers: pkg.maxTravelers, childPricePercent: pkg.childPricePercent }}
         onSuccess={() => {
           setBookingOpen(false);
           navigate('/my-tours');

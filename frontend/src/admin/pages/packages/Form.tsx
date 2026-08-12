@@ -62,6 +62,7 @@ interface AdminTourPackageRaw {
   highlights: LocalizedString[];
   price: number;
   discountPrice?: number;
+  childPricePercent?: number;
   minTravelers: number;
   maxTravelers: number;
   status: string;
@@ -99,6 +100,7 @@ export function AdminPackageForm() {
   const [highlights, setHighlights] = useState<LocalizedString[]>([]);
   const [price, setPrice] = useState<number>(0);
   const [discountPrice, setDiscountPrice] = useState<number | ''>('');
+  const [childPricePercent, setChildPricePercent] = useState<number>(50);
   const [minTravelers, setMinTravelers] = useState(1);
   const [maxTravelers, setMaxTravelers] = useState(20);
   const [status, setStatus] = useState('draft');
@@ -149,6 +151,7 @@ export function AdminPackageForm() {
       setHighlights(p.highlights || []);
       setPrice(p.price);
       setDiscountPrice(p.discountPrice ?? '');
+      setChildPricePercent(p.childPricePercent ?? 50);
       setMinTravelers(p.minTravelers);
       setMaxTravelers(p.maxTravelers);
       setStatus(p.status);
@@ -185,6 +188,7 @@ export function AdminPackageForm() {
       highlights,
       price,
       discountPrice: discountPrice === '' ? undefined : discountPrice,
+      childPricePercent,
       minTravelers,
       maxTravelers,
       status,
@@ -301,6 +305,7 @@ export function AdminPackageForm() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <NumberField label="Price (USD)" value={price} onChange={setPrice} min={0} required />
             <NumberField label="Discount Price (optional)" value={discountPrice} onChange={setDiscountPrice} min={0} />
+            <NumberField label="Child Price (% of adult)" value={childPricePercent} onChange={setChildPricePercent} min={0} />
             <NumberField label="Min Travelers" value={minTravelers} onChange={setMinTravelers} min={1} />
             <NumberField label="Max Travelers" value={maxTravelers} onChange={setMaxTravelers} min={1} />
           </div>

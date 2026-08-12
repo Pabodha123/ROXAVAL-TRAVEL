@@ -21,7 +21,7 @@ interface BookingDetail {
   travelDate: string;
   returnDate?: string;
   travelers: { adults: number; children: number; infants: number };
-  pricing: { subtotal: number; discount: number; totalAmount: number; advanceAmount: number; balanceAmount: number; currency: string };
+  pricing: { subtotal: number; discount: number; totalAmount: number; advanceAmount: number; balanceAmount: number; amountPaid: number; currency: string };
   status: string;
   specialRequests: string;
   statusHistory: { status: string; note: string; at: string }[];
@@ -328,8 +328,9 @@ export function AdminBookingDetail() {
               <div className="flex justify-between"><span className="text-forest/60">Subtotal</span><span className="text-forest">${booking.pricing.subtotal.toLocaleString()}</span></div>
               <div className="flex justify-between"><span className="text-forest/60">Discount</span><span className="text-forest">-${booking.pricing.discount.toLocaleString()}</span></div>
               <div className="flex justify-between border-t border-forest/10 pt-2 font-semibold"><span className="text-forest">Total</span><span className="text-forest">${booking.pricing.totalAmount.toLocaleString()}</span></div>
-              <div className="flex justify-between"><span className="text-forest/60">Advance Paid</span><span className="text-forest">${booking.pricing.advanceAmount.toLocaleString()}</span></div>
-              <div className="flex justify-between"><span className="text-forest/60">Balance Due</span><span className="text-forest">${booking.pricing.balanceAmount.toLocaleString()}</span></div>
+              <div className="flex justify-between"><span className="text-forest/60">Required Advance (30%)</span><span className="text-forest">${booking.pricing.advanceAmount.toLocaleString()}</span></div>
+              <div className="flex justify-between border-t border-forest/10 pt-2"><span className="text-forest/60">Paid so far</span><span className="font-semibold text-emerald">${(booking.pricing.amountPaid || 0).toLocaleString()}</span></div>
+              <div className="flex justify-between"><span className="text-forest/60">Remaining</span><span className="font-semibold text-forest">${Math.max(Math.round((booking.pricing.totalAmount - (booking.pricing.amountPaid || 0)) * 100) / 100, 0).toLocaleString()}</span></div>
             </div>
           </div>
 

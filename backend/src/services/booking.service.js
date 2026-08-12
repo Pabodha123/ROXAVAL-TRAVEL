@@ -6,13 +6,24 @@ const documentService = require('./document.service');
 
 const ADVANCE_PERCENTAGE = 0.3; // 30% advance payment by default
 
-const computePricing = (unitPrice, travelers, discount = 0) => {
-  const totalTravelers = (travelers.adults || 0) + (travelers.children || 0);
-  const subtotal = unitPrice * Math.max(totalTravelers, 1);
-  const totalAmount = Math.max(subtotal - discount, 0);
+// Single source of truth for the advance/balance split, used by both
+// booking-creation paths — balance is always `total - advance` (never
+// independently rounded), so the two always sum back to the total exactly.
+const splitAdvanceBalance = (totalAmount) => {
   const advanceAmount = Math.round(totalAmount * ADVANCE_PERCENTAGE * 100) / 100;
   const balanceAmount = Math.round((totalAmount - advanceAmount) * 100) / 100;
-  return { subtotal, discount, totalAmount, advanceAmount, balanceAmount };
+  return { advanceAmount, balanceAmount };
+};
+
+// unitPrice is the adult per-traveler price; children are charged
+// `childPricePercent` of that (default 50%), infants stay free.
+const computePricing = (unitPrice, travelers, discount = 0, childPricePercent = 50) => {
+  const adults = Math.max(travelers.adults || 0, 1);
+  const children = travelers.children || 0;
+  const subtotal = unitPrice * adults + unitPrice * (childPricePercent / 100) * children;
+  const totalAmount = Math.max(Math.round((subtotal - discount) * 100) / 100, 0);
+  const { advanceAmount, balanceAmount } = splitAdvanceBalance(totalAmount);
+  return { subtotal: Math.round(subtotal * 100) / 100, discount, totalAmount, advanceAmount, balanceAmount, amountPaid: 0 };
 };
 
 /**
@@ -26,7 +37,7 @@ const createFromPackage = async (customerUserId, { tourPackage: packageId, trave
   if (!pkg) throw ApiError.notFound('Tour package not found or not available for booking.');
 
   const unitPrice = pkg.discountPrice || pkg.price;
-  const pricing = { ...computePricing(unitPrice, travelers), currency: pkg.currency };
+  const pricing = { ...computePricing(unitPrice, travelers, 0, pkg.childPricePercent), currency: pkg.currency };
 
   const booking = await Booking.create({
     customer: customer._id,
@@ -63,12 +74,17 @@ const createFromItinerary = async (customerUserId, { itineraryId, travelDate, tr
   const itinerary = await Itinerary.findOne({ _id: itineraryId, customer: customer._id, status: 'Accepted' });
   if (!itinerary) throw ApiError.notFound('Accepted itinerary not found for this customer.');
 
+  // itinerary.pricing.totalPrice is always the flat group total set by the
+  // admin (the "per person" checkbox is display-only — see QuotationView),
+  // so it's used as-is with no traveler-count multiplication here.
+  const { advanceAmount, balanceAmount } = splitAdvanceBalance(itinerary.pricing.totalPrice);
   const pricing = {
     subtotal: itinerary.pricing.basePrice,
     discount: itinerary.pricing.discount || 0,
     totalAmount: itinerary.pricing.totalPrice,
-    advanceAmount: Math.round(itinerary.pricing.totalPrice * ADVANCE_PERCENTAGE * 100) / 100,
-    balanceAmount: Math.round(itinerary.pricing.totalPrice * (1 - ADVANCE_PERCENTAGE) * 100) / 100,
+    advanceAmount,
+    balanceAmount,
+    amountPaid: 0,
     currency: itinerary.pricing.currency,
   };
 

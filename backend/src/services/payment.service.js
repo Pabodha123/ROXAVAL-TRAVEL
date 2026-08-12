@@ -19,6 +19,25 @@ const createPayment = async (customerUserId, payload) => {
   });
   if (!booking) throw ApiError.notFound('Booking not found for this customer.');
 
+  // Count what's already been claimed (verified, or submitted and awaiting
+  // verification) so a customer can't stack multiple payments that together
+  // over- or under-shoot what's actually owed.
+  const priorPayments = await Payment.find({ booking: booking._id, status: { $in: ['Submitted', 'Verified'] } });
+  const amountClaimed = priorPayments.reduce((sum, p) => sum + p.amount, 0);
+  const remaining = Math.round((booking.pricing.totalAmount - amountClaimed) * 100) / 100;
+
+  const minimumRequired = payload.paymentType === 'advance' ? Math.min(booking.pricing.advanceAmount, Math.max(remaining, 0)) : Math.max(remaining, 0);
+  if (payload.amount < minimumRequired - 0.01) {
+    throw ApiError.badRequest(
+      `A '${payload.paymentType}' payment for this booking must be at least ${booking.pricing.currency} ${minimumRequired.toLocaleString()}.`
+    );
+  }
+  if (amountClaimed + payload.amount > booking.pricing.totalAmount + 0.01) {
+    throw ApiError.badRequest(
+      `This payment would exceed the total owed. Remaining balance: ${booking.pricing.currency} ${Math.max(remaining, 0).toLocaleString()}.`
+    );
+  }
+
   const payment = await Payment.create({
     booking: booking._id,
     customer: customer._id,
@@ -84,6 +103,7 @@ const verifyPayment = async (paymentId, adminId, { status, verificationNote }) =
   const payment = await Payment.findById(paymentId);
   if (!payment) throw ApiError.notFound('Payment not found.');
 
+  const wasAlreadyVerified = payment.status === 'Verified';
   payment.status = status;
   payment.verifiedBy = adminId;
   payment.verifiedAt = new Date();
@@ -91,15 +111,27 @@ const verifyPayment = async (paymentId, adminId, { status, verificationNote }) =
   await payment.save();
 
   const booking = await Booking.findById(payment.booking);
+  let fullyPaid = false;
   if (booking) {
+    // Only add to the running total the first time this specific payment is
+    // verified — re-verifying an already-verified payment (or rejecting one)
+    // must never double-count or subtract.
+    if (status === 'Verified' && !wasAlreadyVerified) {
+      booking.pricing.amountPaid = Math.round(((booking.pricing.amountPaid || 0) + payment.amount) * 100) / 100;
+    }
+    fullyPaid = booking.pricing.amountPaid >= booking.pricing.totalAmount - 0.01;
+
     booking.status = status === 'Verified' ? 'Confirmed' : 'Payment Pending';
     booking.statusHistory.push({
       status: booking.status,
-      note: status === 'Verified' ? 'Payment verified by admin' : `Payment rejected: ${verificationNote || ''}`,
+      note: status === 'Verified' ?
+        `Payment verified by admin (${booking.pricing.currency} ${booking.pricing.amountPaid.toLocaleString()} of ${booking.pricing.totalAmount.toLocaleString()} paid${fullyPaid ? ' — paid in full' : ''})` :
+        `Payment rejected: ${verificationNote || ''}`,
     });
     await booking.save();
   }
 
+  const remaining = booking ? Math.max(Math.round((booking.pricing.totalAmount - booking.pricing.amountPaid) * 100) / 100, 0) : 0;
   const customer = await Customer.findById(payment.customer).populate('user');
   if (customer?.user) {
     await notify({
@@ -107,9 +139,11 @@ const verifyPayment = async (paymentId, adminId, { status, verificationNote }) =
       type: 'payment_verified',
       title: status === 'Verified' ? 'Payment Verified' : 'Payment Rejected',
       message:
-        status === 'Verified'
-          ? `Your payment for booking ${booking?.bookingReference} has been verified. Your booking is now confirmed!`
-          : `Your payment for booking ${booking?.bookingReference} could not be verified. ${verificationNote || ''}`,
+        status === 'Verified' ?
+        fullyPaid ?
+        `Your payment for booking ${booking?.bookingReference} has been verified. You've paid in full — your booking is confirmed!` :
+        `Your payment for booking ${booking?.bookingReference} has been verified. Your booking is confirmed. Remaining balance: ${booking?.pricing.currency} ${remaining.toLocaleString()}.` :
+        `Your payment for booking ${booking?.bookingReference} could not be verified. ${verificationNote || ''}`,
       link: `/my-tours/bookings/${payment.booking}`,
       relatedModel: 'Booking',
       relatedId: payment.booking,

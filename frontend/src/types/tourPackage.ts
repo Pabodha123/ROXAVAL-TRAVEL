@@ -48,6 +48,7 @@ export interface TourPackage {
   highlights: string[];
   price: number;
   discountPrice?: number;
+  childPricePercent?: number;
   currency: string;
   minTravelers: number;
   maxTravelers: number;

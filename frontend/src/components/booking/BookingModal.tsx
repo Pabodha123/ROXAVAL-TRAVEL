@@ -9,10 +9,15 @@ export interface BookingSource {
   type: 'package' | 'itinerary';
   id: string;
   name: string;
+  // For a package, this is the per-adult price. For an itinerary, this is
+  // already the flat group total quoted to the customer — never multiplied
+  // by traveler count.
   price: number;
   currency: string;
   minTravelers?: number;
   maxTravelers?: number;
+  // What a child pays as a percentage of the adult price (package bookings only).
+  childPricePercent?: number;
   // Known from the accepted custom tour request — pre-fills the form instead
   // of asking the customer to re-enter what they already told us.
   defaultTravelDate?: string;
@@ -38,7 +43,11 @@ export function BookingModal({ open, onClose, source, onSuccess }: BookingModalP
   const [error, setError] = useState<string | null>(null);
   const [createdBooking, setCreatedBooking] = useState<{ _id: string; bookingReference: string } | null>(null);
 
-  const estimatedTotal = source.price * Math.max(adults + children, 1);
+  // Itinerary price is already the flat group total — never multiply it by
+  // traveler count. Only package prices are per-adult unit prices.
+  const estimatedTotal = source.type === 'itinerary' ?
+  source.price :
+  source.price * Math.max(adults, 1) + source.price * ((source.childPricePercent ?? 50) / 100) * children;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

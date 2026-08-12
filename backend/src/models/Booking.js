@@ -29,6 +29,10 @@ const bookingSchema = new mongoose.Schema(
       totalAmount: { type: Number, required: true },
       advanceAmount: { type: Number, required: true },
       balanceAmount: { type: Number, required: true },
+      // Running total of verified payments against this booking — kept in
+      // sync by payment.service.js's verifyPayment(), not recomputed on
+      // read, so it reflects exactly what's been confirmed as paid.
+      amountPaid: { type: Number, default: 0 },
       currency: { type: String, default: 'USD' },
     },
 

@@ -31,6 +31,7 @@ const createTourPackageSchema = z.object({
   highlights: localizedFieldArray().optional(),
   price: z.number().positive(),
   discountPrice: z.number().positive().optional(),
+  childPricePercent: z.number().min(0).max(100).optional(),
   currency: z.string().optional(),
   minTravelers: z.number().int().min(1).optional(),
   maxTravelers: z.number().int().min(1).optional(),

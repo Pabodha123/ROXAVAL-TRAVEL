@@ -30,7 +30,7 @@ interface BookingItem {
   itinerary?: { _id: string; title?: string; pricing?: { totalPrice: number } };
   travelDate: string;
   travelers: { adults: number; children: number; infants: number };
-  pricing: { subtotal: number; discount: number; totalAmount: number; advanceAmount: number; balanceAmount: number; currency: string };
+  pricing: { subtotal: number; discount: number; totalAmount: number; advanceAmount: number; balanceAmount: number; amountPaid: number; currency: string };
   status: string;
   specialRequests: string;
   statusHistory: { status: string; note: string; at: string }[];
@@ -166,17 +166,21 @@ function BookingDocuments({ bookingId }: { bookingId: string }) {
 
 function PayNowPanel({ booking, onPaid }: {booking: BookingItem;onPaid: () => void;}) {
   const toast = useToast();
+  const remaining = Math.max(Math.round((booking.pricing.totalAmount - (booking.pricing.amountPaid || 0)) * 100) / 100, 0);
   const [method, setMethod] = useState<'bank_transfer' | 'whatsapp' | 'cash'>('bank_transfer');
   const [paymentType, setPaymentType] = useState<'advance' | 'balance' | 'full'>('advance');
-  const [amount, setAmount] = useState(booking.pricing.advanceAmount);
+  const [amount, setAmount] = useState(Math.min(booking.pricing.advanceAmount, remaining));
   const [bankReference, setBankReference] = useState('');
   const [receipt, setReceipt] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
 
+  // 'balance' and 'full' both mean "pay off what's left" — using the actual
+  // remaining amount (not the static at-booking-time balanceAmount) so this
+  // stays correct even after a partial payment has already been verified.
   const handlePaymentTypeChange = (type: 'advance' | 'balance' | 'full') => {
     setPaymentType(type);
-    setAmount(type === 'advance' ? booking.pricing.advanceAmount : type === 'balance' ? booking.pricing.balanceAmount : booking.pricing.totalAmount);
+    setAmount(type === 'advance' ? Math.min(booking.pricing.advanceAmount, remaining) : remaining);
   };
 
   const submit = async () => {
@@ -381,8 +385,9 @@ function BookingsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
 
             <div className="mt-5 space-y-1.5 border-t border-forest/10 pt-4 text-sm">
               <div className="flex justify-between"><span className="text-forest/60">Total</span><span className="font-semibold text-forest">{selected.pricing.currency} {selected.pricing.totalAmount.toLocaleString()}</span></div>
-              <div className="flex justify-between"><span className="text-forest/60">Advance</span><span className="text-forest">{selected.pricing.currency} {selected.pricing.advanceAmount.toLocaleString()}</span></div>
-              <div className="flex justify-between"><span className="text-forest/60">Balance</span><span className="text-forest">{selected.pricing.currency} {selected.pricing.balanceAmount.toLocaleString()}</span></div>
+              <div className="flex justify-between"><span className="text-forest/60">Advance (30%)</span><span className="text-forest">{selected.pricing.currency} {selected.pricing.advanceAmount.toLocaleString()}</span></div>
+              <div className="flex justify-between border-t border-forest/10 pt-1.5"><span className="text-forest/60">Paid so far</span><span className="font-semibold text-emerald">{selected.pricing.currency} {(selected.pricing.amountPaid || 0).toLocaleString()}</span></div>
+              <div className="flex justify-between"><span className="text-forest/60">Remaining</span><span className="font-semibold text-forest">{selected.pricing.currency} {Math.max(Math.round((selected.pricing.totalAmount - (selected.pricing.amountPaid || 0)) * 100) / 100, 0).toLocaleString()}</span></div>
             </div>
           </div>
 
