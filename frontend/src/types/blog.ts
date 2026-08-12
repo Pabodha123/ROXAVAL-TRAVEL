@@ -12,8 +12,15 @@ export interface BlogListItem {
   createdAt: string;
 }
 
+export interface BlogSection {
+  heading: string;
+  body: string;
+  image: string;
+}
+
 export interface BlogPost extends BlogListItem {
   content: string;
+  sections: BlogSection[];
   gallery: string[];
   author?: { _id: string; user?: { fullName?: string } };
   seo?: { metaTitle?: string; metaDescription?: string; keywords?: string[] };

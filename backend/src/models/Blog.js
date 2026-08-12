@@ -1,6 +1,20 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const { localizedString } = require('./shared/localizedField');
+const { localizedString, localizedStringSchema } = require('./shared/localizedField');
+
+// Optional magazine-style breakdown of a post into numbered, illustrated
+// sections (e.g. "1. Minneriya", "2. Pinnawala") — additive to `content`,
+// which stays as the plain-paragraph fallback for posts that don't use it
+// and for search indexing. When present, the frontend renders these
+// instead of the flat `content` paragraphs.
+const blogSectionSchema = new mongoose.Schema(
+  {
+    heading: localizedStringSchema,
+    body: localizedStringSchema,
+    image: { type: String, default: '' },
+  },
+  { _id: false }
+);
 
 const blogSchema = new mongoose.Schema(
   {
@@ -8,6 +22,7 @@ const blogSchema = new mongoose.Schema(
     slug: { type: String, unique: true, index: true },
     excerpt: localizedString('Excerpt is required'),
     content: localizedString('Content is required'),
+    sections: { type: [blogSectionSchema], default: [] },
     featuredImage: { type: String, required: true },
     gallery: { type: [String], default: [] },
     category: { type: String, required: true, trim: true },

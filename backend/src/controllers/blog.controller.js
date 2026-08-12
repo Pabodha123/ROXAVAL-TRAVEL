@@ -5,7 +5,7 @@ const ApiError = require('../utils/ApiError');
 const factory = require('./factory');
 const { localizeDoc } = require('../utils/localize');
 
-const translatableFields = ['title', 'excerpt', 'content'];
+const translatableFields = ['title', 'excerpt', 'content', 'sections.heading', 'sections.body'];
 const base = factory(Blog, { searchableFields: ['title', 'content', 'tags'], populate: ['author'], translatableFields });
 
 const create = catchAsync(async (req, res) => {

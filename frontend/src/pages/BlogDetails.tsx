@@ -93,9 +93,42 @@ export function BlogDetails() {
           </div>
         </div>
 
+        {post.sections?.length > 0 ?
+        <div className="space-y-16 sm:space-y-24">
+            {post.content &&
+          <div className="prose max-w-none text-base leading-relaxed text-forest/75">
+                {post.content.split(/\n\s*\n/).map((para, i) => <p key={i} className="mb-5">{para}</p>)}
+              </div>
+          }
+            {post.sections.map((s, i) =>
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.6 }}
+            className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+
+                <div className={s.image ? '' : 'lg:col-span-2'}>
+                  <span className="block font-display text-6xl font-bold leading-none text-forest/10 sm:text-8xl">{String(i + 1).padStart(2, '0')}</span>
+                  <h2 className="-mt-4 font-display text-xl font-semibold text-forest sm:-mt-6 sm:text-2xl">{s.heading}</h2>
+                  <div className="prose mt-4 max-w-none text-base leading-relaxed text-forest/70">
+                    {s.body.split(/\n\s*\n/).map((para, pi) => <p key={pi} className="mb-4">{para}</p>)}
+                  </div>
+                </div>
+                {s.image &&
+            <div className={`overflow-hidden rounded-[2rem] shadow-soft ${i % 2 === 1 ? 'lg:order-first' : ''}`}>
+                    <img src={resolveImage(s.image)} alt={s.heading} loading="lazy" className="h-64 w-full object-cover sm:h-96" />
+                  </div>
+            }
+              </motion.div>
+          )}
+          </div> :
+
         <div className="prose max-w-none text-base leading-relaxed text-forest/75">
-          {post.content.split(/\n\s*\n/).map((para, i) => <p key={i} className="mb-5">{para}</p>)}
-        </div>
+            {post.content.split(/\n\s*\n/).map((para, i) => <p key={i} className="mb-5">{para}</p>)}
+          </div>
+        }
 
         {post.gallery?.length > 0 &&
         <div className="grid gap-4 sm:grid-cols-3">

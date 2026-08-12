@@ -138,10 +138,16 @@ const moderateReviewSchema = z.object({
 });
 
 // ---------- Blog ----------
+const blogSectionSchema = z.object({
+  heading: localizedField(2),
+  body: localizedField(10),
+  image: z.string().optional(),
+});
 const createBlogSchema = z.object({
   title: localizedField(3),
   excerpt: localizedField(10),
   content: localizedField(20),
+  sections: z.array(blogSectionSchema).optional(),
   featuredImage: z.string().min(1),
   gallery: z.array(z.string()).optional(),
   category: z.string().min(2),
