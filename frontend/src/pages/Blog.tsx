@@ -22,17 +22,6 @@ const SORT_OPTIONS = [
 { label: 'Oldest', value: 'publishedAt' },
 { label: 'Most Popular', value: '-views' }];
 
-// One illustrative tile per category — a quick, colourful way into the
-// archive that a plain dropdown filter doesn't give you. Each gets its own
-// tint so the row reads as a curated set rather than a repeated pattern.
-const CATEGORY_TILES = [
-{ label: 'Travel Guide', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Sigiriya_Fortress%2C_Sri_Lanka.jpg/640px-Sigiriya_Fortress%2C_Sri_Lanka.jpg', from: 'from-forest/85' },
-{ label: 'Wildlife', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Elephants_of_Minneriya_National_Park%2C_Sri_Lanka.jpg/640px-Elephants_of_Minneriya_National_Park%2C_Sri_Lanka.jpg', from: 'from-yellow-900/80' },
-{ label: 'Culture', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Traditional_masks_-_Ambalangoda_01.jpg/640px-Traditional_masks_-_Ambalangoda_01.jpg', from: 'from-purple-900/80' },
-{ label: 'Food & Culture', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/SL-rice_and_curry.jpg/640px-SL-rice_and_curry.jpg', from: 'from-orange-800/80' },
-{ label: 'Tips & Advice', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Bentota_Sunset_-_panoramio.jpg/640px-Bentota_Sunset_-_panoramio.jpg', from: 'from-rose-800/80' },
-{ label: 'Adventure', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Nine_Arches_Bridge_in_Ella.jpg/640px-Nine_Arches_Bridge_in_Ella.jpg', from: 'from-emerald/85' }];
-
 
 function ArticleCard({ post, large = false }: {post: BlogListItem;large?: boolean;}) {
   return (
@@ -116,28 +105,10 @@ export function Blog() {
               </div>
             </motion.div>
           }
-
-          <div className="mt-14">
-            <p className="text-center text-xs font-semibold uppercase tracking-[0.3em] text-forest/40">Explore by Interest</p>
-            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-              {CATEGORY_TILES.map((c) =>
-              <button
-                key={c.label}
-                type="button"
-                onClick={() => { setCategory(c.label); document.getElementById('blog-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
-                className="group relative h-24 overflow-hidden rounded-2xl text-left shadow-soft sm:h-28">
-
-                  <img src={c.image} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  <div className={`absolute inset-0 bg-gradient-to-t ${c.from} to-transparent`} />
-                  <span className="absolute bottom-2.5 left-3 right-3 font-display text-sm font-semibold text-white">{c.label}</span>
-                </button>
-              )}
-            </div>
-          </div>
         </div>
       </section>
 
-      <section id="blog-results" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <FilterBar
           search={search}
           onSearchChange={setSearch}
