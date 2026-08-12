@@ -34,9 +34,9 @@ export function CoreValues() {
               alt=""
               aria-hidden="true"
               style={{ objectPosition: v.objectPosition }}
-              className="absolute inset-0 h-full w-full object-cover opacity-25 grayscale transition-opacity duration-500 group-hover:opacity-40" />
+              className="absolute inset-0 h-full w-full object-cover opacity-50 transition-opacity duration-500 group-hover:opacity-65" />
 
-              <div className="absolute inset-0 bg-gradient-to-b from-cream/60 via-cream/80 to-cream/95" />
+              <div className="absolute inset-0 bg-gradient-to-b from-cream/35 via-cream/55 to-cream/85" />
 
               <div className="relative">
                 <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-emerald/10 text-emerald">
