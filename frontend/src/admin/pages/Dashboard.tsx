@@ -23,6 +23,7 @@ import {
   MapPinIcon,
   TargetIcon,
   BedDoubleIcon,
+  FileTextIcon,
   ArrowRightIcon } from
 'lucide-react';
 import { apiGetList, apiGetOne } from '../../lib/api';
@@ -52,6 +53,7 @@ interface BookingsByStatus {
 }
 
 const QUICK_ACTIONS = [
+{ label: 'Create Quotation', to: '/admin/custom-requests/new', icon: FileTextIcon },
 { label: 'New Package', to: '/admin/packages/new', icon: PackageIcon },
 { label: 'New Destination', to: '/admin/destinations/new', icon: MapPinIcon },
 { label: 'New Activity', to: '/admin/activities/new', icon: TargetIcon },
@@ -125,7 +127,7 @@ export function AdminDashboard() {
       {/* Charts */}
       <div className="mt-6 grid gap-5 lg:grid-cols-3">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="rounded-2xl bg-white p-5 shadow-soft lg:col-span-2">
-          <p className="font-display text-sm font-semibold text-forest">Revenue — Last 30 Days</p>
+          <p className="font-display text-sm font-semibold text-forest">Revenue - Last 30 Days</p>
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={revenue}>
@@ -203,7 +205,7 @@ export function AdminDashboard() {
       {/* Quick actions */}
       <div className="mt-6 rounded-2xl bg-white p-5 shadow-soft">
         <p className="font-display text-sm font-semibold text-forest">Quick Actions</p>
-        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {QUICK_ACTIONS.map((a) =>
           <Link
             key={a.to}
