@@ -14,15 +14,6 @@ export interface Activity {
   description: string;
 }
 
-export interface Review {
-  id: string;
-  name: string;
-  country: string;
-  rating: number;
-  text: string;
-  avatar: string;
-}
-
 export const destinations: Destination[] = [
 {
   id: 'sigiriya',
@@ -106,41 +97,6 @@ export const activities: Activity[] = [
   name: 'Tea Plantation Tours',
   image: "/activity-tea-plantation.jpg",
   description: 'Walk emerald estates, meet pickers and taste Ceylon tea at its source.'
-}];
-
-
-export const reviews: Review[] = [
-{
-  id: 'r1',
-  name: 'Tania Fischer',
-  country: 'Germany',
-  rating: 5,
-  text: 'Our Sri Lanka 2026 trip arranged by Roxaval was flawless. Smooth co-ordination, wonderful hotels, and they customized everything to our preference. Truly unforgettable.',
-  avatar: 'https://i.pravatar.cc/150?img=47'
-},
-{
-  id: 'r2',
-  name: 'James Walker',
-  country: 'United Kingdom',
-  rating: 5,
-  text: 'From Sigiriya to Mirissa, every detail was perfectly planned. Our guide was knowledgeable and kind. The best travel experience we have ever had.',
-  avatar: 'https://i.pravatar.cc/150?img=12'
-},
-{
-  id: 'r3',
-  name: 'Aisha Rahman',
-  country: 'UAE',
-  rating: 5,
-  text: 'A dream honeymoon! The private beach dinners and luxury stays exceeded expectations. Roxaval made us feel like royalty throughout.',
-  avatar: 'https://i.pravatar.cc/150?img=32'
-},
-{
-  id: 'r4',
-  name: 'Marco Rossi',
-  country: 'Italy',
-  rating: 5,
-  text: 'Incredible wildlife safari and the scenic train ride was magical. Fantastic value and truly professional service from start to finish.',
-  avatar: 'https://i.pravatar.cc/150?img=52'
 }];
 
 
