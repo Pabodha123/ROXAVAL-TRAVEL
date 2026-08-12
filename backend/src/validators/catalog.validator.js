@@ -148,7 +148,7 @@ const createBlogSchema = z.object({
   excerpt: localizedField(10),
   content: localizedField(20),
   sections: z.array(blogSectionSchema).optional(),
-  template: z.enum(['default', 'romantic']).optional(),
+  template: z.enum(['default', 'romantic', 'coastal']).optional(),
   featuredImage: z.string().min(1),
   gallery: z.array(z.string()).optional(),
   category: z.string().min(2),

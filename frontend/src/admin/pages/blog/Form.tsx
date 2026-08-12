@@ -125,7 +125,8 @@ export function AdminBlogForm() {
             onChange={setTemplate}
             options={[
             { label: 'Default (numbered magazine grid)', value: 'default' },
-            { label: 'Romantic (soft, full-bleed — honeymoon/romance posts)', value: 'romantic' }]} />
+            { label: 'Romantic (soft, full-bleed — honeymoon/romance posts)', value: 'romantic' },
+            { label: 'Coastal (sky-to-navy gradient — beach/ocean posts)', value: 'coastal' }]} />
 
           </div>
           <RepeatSection label="" onAdd={() => setSections((prev) => [...prev, emptySection()])} addLabel="Add Section">

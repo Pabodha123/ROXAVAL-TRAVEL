@@ -25,9 +25,10 @@ const blogSchema = new mongoose.Schema(
     sections: { type: [blogSectionSchema], default: [] },
     // Which sectioned layout to render — 'default' is the numbered magazine
     // grid; 'romantic' is a softer, full-bleed editorial layout for
-    // honeymoon/romance-themed posts. Purely a rendering switch, doesn't
-    // change how content/sections are authored or stored.
-    template: { type: String, enum: ['default', 'romantic'], default: 'default' },
+    // honeymoon/romance-themed posts; 'coastal' is a sky-to-navy gradient
+    // layout for beach/ocean-themed posts. Purely a rendering switch,
+    // doesn't change how content/sections are authored or stored.
+    template: { type: String, enum: ['default', 'romantic', 'coastal'], default: 'default' },
     featuredImage: { type: String, required: true },
     gallery: { type: [String], default: [] },
     category: { type: String, required: true, trim: true },

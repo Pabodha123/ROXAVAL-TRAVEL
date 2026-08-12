@@ -150,6 +150,111 @@ export function BlogDetails() {
 
   }
 
+  if (post.template === 'coastal') {
+    const storySections = post.sections.filter((s) => s.image);
+    const infoSections = post.sections.filter((s) => !s.image);
+    return (
+      <main className="min-h-screen bg-[#0a1e38]">
+        <div className="relative overflow-hidden bg-gradient-to-b from-sky-50 via-sky-100 to-[#0a1e38] pb-24 pt-28 sm:pb-32 sm:pt-36">
+          <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
+            <span className="text-xs font-semibold uppercase tracking-[0.35em] text-sky-700">{post.category}</span>
+            <h1 className="mt-4 font-display text-3xl font-bold leading-tight text-[#0a1e38] sm:text-5xl">{post.title}</h1>
+            {post.excerpt &&
+            <p className="mx-auto mt-5 max-w-lg text-base leading-relaxed text-[#0a1e38]/60">{post.excerpt}</p>
+            }
+          </div>
+          <div className="mx-auto mt-10 max-w-4xl px-4 sm:px-6">
+            <div className="overflow-hidden rounded-[2rem] shadow-2xl ring-[10px] ring-white/50 sm:rounded-[2.5rem]">
+              <img src={resolveImage(post.featuredImage)} alt={post.title} className="h-60 w-full object-cover sm:h-[26rem]" />
+            </div>
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-5xl px-4 pt-10 sm:px-6">
+          <div className="flex flex-wrap items-center justify-center gap-4 rounded-full bg-white/5 px-6 py-3 text-sm text-white/55 ring-1 ring-white/10">
+            <span className="flex items-center gap-1.5"><CalendarIcon className="h-4 w-4" /> {formatDate(post.publishedAt || post.createdAt)}</span>
+            <span className="flex items-center gap-1.5"><EyeIcon className="h-4 w-4" /> {post.views} views</span>
+            <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noreferrer" aria-label="Share on Facebook" className="text-white/45 hover:text-white"><FacebookIcon className="h-4 w-4" /></a>
+            <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.title)}`} target="_blank" rel="noreferrer" aria-label="Share on X" className="text-white/45 hover:text-white"><TwitterIcon className="h-4 w-4" /></a>
+            <button onClick={share} aria-label="Copy link" className="flex items-center gap-1.5 text-white/45 hover:text-white">
+              {copied ? <CheckIcon className="h-3.5 w-3.5" /> : <LinkIcon className="h-3.5 w-3.5" />} {copied ? 'Copied!' : 'Share'}
+            </button>
+          </div>
+
+          {post.content &&
+          <div className="mx-auto mt-10 max-w-2xl space-y-5 text-center text-base leading-relaxed text-white/65">
+              {post.content.split(/\n\s*\n/).map((para, i) => <p key={i}>{para}</p>)}
+            </div>
+          }
+        </div>
+
+        <div className="mx-auto max-w-5xl space-y-14 px-4 py-16 sm:px-6 sm:space-y-20">
+          {storySections.map((s, i) =>
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.6 }}
+            className="grid items-center gap-8 overflow-hidden rounded-[2rem] bg-white/[0.04] p-3 ring-1 ring-white/10 lg:grid-cols-2 lg:gap-0 lg:p-0">
+
+              <div className={`overflow-hidden rounded-[1.5rem] lg:rounded-none lg:h-full ${i % 2 === 1 ? 'lg:order-last' : ''}`}>
+                <img src={resolveImage(s.image)} alt={s.heading} loading="lazy" className="h-56 w-full object-cover sm:h-72 lg:h-full lg:min-h-[20rem]" />
+              </div>
+              <div className="px-4 py-6 sm:px-8 sm:py-8 lg:px-10">
+                <h2 className="font-display text-xl font-semibold text-white sm:text-2xl">{s.heading}</h2>
+                <div className="prose mt-4 max-w-none text-base leading-relaxed text-white/65">
+                  {s.body.split(/\n\s*\n/).map((para, pi) => <p key={pi} className="mb-4">{para}</p>)}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {infoSections.length > 0 &&
+          <div className="grid gap-6 sm:grid-cols-2">
+              {infoSections.map((s, i) =>
+            <motion.div key={i} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.5 }} className="rounded-3xl bg-white/[0.04] p-6 ring-1 ring-white/10 sm:p-8">
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300/70">{String(i + 1).padStart(2, '0')}</span>
+                  <h2 className="mt-2 font-display text-lg font-semibold text-white sm:text-xl">{s.heading}</h2>
+                  <div className="prose mt-3 max-w-none text-sm leading-relaxed text-white/60">
+                    {s.body.split(/\n\s*\n/).map((para, pi) => <p key={pi} className="mb-3">{para}</p>)}
+                  </div>
+                </motion.div>
+            )}
+            </div>
+          }
+
+          {post.tags?.length > 0 &&
+          <div className="flex flex-wrap justify-center gap-2 border-t border-white/10 pt-8">
+              {post.tags.map((t) => <span key={t} className="rounded-full bg-white/5 px-3 py-1.5 text-xs font-medium text-white/55 ring-1 ring-white/10">#{t}</span>)}
+            </div>
+          }
+        </div>
+
+        {related.length > 0 &&
+        <section className="bg-[#081729] py-16">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <h2 className="text-center font-display text-2xl font-semibold text-white">More Coastal Reads</h2>
+              <div className="mt-8 grid gap-6 sm:grid-cols-3">
+                {related.map((p) =>
+              <Link key={p._id} to={`/blog/${p.slug}`} className="group block overflow-hidden rounded-3xl bg-white/[0.04] ring-1 ring-white/10 transition-colors hover:bg-white/[0.07]">
+                    <div className="h-40 overflow-hidden">
+                      <img src={resolveImage(p.featuredImage)} alt={p.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    </div>
+                    <div className="p-5">
+                      <h3 className="font-display text-base font-semibold text-white transition-colors group-hover:text-sky-300 line-clamp-2">{p.title}</h3>
+                      <p className="mt-1.5 text-xs text-white/40">{formatDate(p.publishedAt || p.createdAt)}</p>
+                    </div>
+                  </Link>
+              )}
+              </div>
+            </div>
+          </section>
+        }
+      </main>);
+
+  }
+
   return (
     <main className="min-h-screen bg-cream pt-16">
       <PageBanner
