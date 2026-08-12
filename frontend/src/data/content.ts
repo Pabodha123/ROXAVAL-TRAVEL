@@ -23,15 +23,6 @@ export interface Review {
   avatar: string;
 }
 
-export interface BlogPost {
-  id: string;
-  title: string;
-  image: string;
-  preview: string;
-  date: string;
-  category: string;
-}
-
 export const destinations: Destination[] = [
 {
   id: 'sigiriya',
@@ -150,33 +141,6 @@ export const reviews: Review[] = [
   rating: 5,
   text: 'Incredible wildlife safari and the scenic train ride was magical. Fantastic value and truly professional service from start to finish.',
   avatar: 'https://i.pravatar.cc/150?img=52'
-}];
-
-
-export const blogPosts: BlogPost[] = [
-{
-  id: 'b1',
-  title: '10 Unmissable Experiences on Your First Sri Lanka Trip',
-  image: "/b4a6270a-dd34-4113-9621-b13796ee02d1.jpg",
-  preview: 'From climbing Sigiriya at dawn to whale watching in Mirissa, here are the experiences that define the island.',
-  date: 'Jul 18, 2026',
-  category: 'Travel Guide'
-},
-{
-  id: 'b2',
-  title: 'A Foodie\u2019s Guide to Authentic Sri Lankan Cuisine',
-  image: "/dd243971-0479-413d-985b-2c217e5edc24.jpg",
-  preview: 'Rice and curry, hoppers, kottu and coconut sambol \u2014 a delicious journey through the island\u2019s flavours.',
-  date: 'Jul 09, 2026',
-  category: 'Food & Culture'
-},
-{
-  id: 'b3',
-  title: 'Riding the Blue Train: Kandy to Ella by Rail',
-  image: "/ded68c06-c3a1-4dfa-a417-e025e5868f60.jpg",
-  preview: 'Everything you need to know to enjoy the world\u2019s most scenic train ride through the tea hills.',
-  date: 'Jun 28, 2026',
-  category: 'Adventure'
 }];
 
 
