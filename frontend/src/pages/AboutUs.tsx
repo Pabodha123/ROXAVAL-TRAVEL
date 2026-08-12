@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { SparklesIcon, StarIcon, MessageCircleIcon, MapIcon } from 'lucide-react';
+import { SparklesIcon, StarIcon, MessageCircleIcon, MapIcon, ShieldCheckIcon, AwardIcon } from 'lucide-react';
 import { PageBanner } from '../components/layout/PageBanner';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { Stats } from '../components/sections/Stats';
@@ -11,11 +11,10 @@ import { HotelPartners } from '../components/sections/HotelPartners';
 import { apiGetList } from '../lib/api';
 import type { Review } from '../types/review';
 
-const TEAM = [
-{ role: 'Founder & Managing Director', initials: 'FD' },
-{ role: 'Head of Travel Design', initials: 'TD' },
-{ role: 'Lead Tour Operations Manager', initials: 'OM' },
-{ role: 'Guest Relations Lead', initials: 'GR' }];
+const CREDENTIALS = [
+{ icon: ShieldCheckIcon, label: 'SLTDA Licensed', desc: 'Officially registered and activated with the Sri Lanka Tourism Development Authority.' },
+{ icon: StarIcon, label: 'TripAdvisor Member', desc: 'Listed and reviewed by real travelers on TripAdvisor.' },
+{ icon: AwardIcon, label: 'SLITO Member', desc: 'Proud member of the Sri Lanka Inbound Tour Operators association.' }];
 
 
 export function AboutUs() {
@@ -109,24 +108,25 @@ export function AboutUs() {
       {/* Why Choose Roxaval Travels */}
       <WhyChoose />
 
-      {/* Team Introduction */}
+      {/* Credentials & Memberships */}
       <section className="bg-white py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading eyebrow="Meet the Team" title="The People Behind Your Journey" subtitle="A small, dedicated team of travel designers and local experts." />
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {TEAM.map((m, i) =>
+          <SectionHeading eyebrow="Trust & Recognition" title="Licensed, Verified, Trusted" subtitle="Our credentials as a registered Sri Lankan travel operator." />
+          <div className="mx-auto mt-14 grid max-w-4xl gap-6 sm:grid-cols-3">
+            {CREDENTIALS.map((c, i) =>
             <motion.div
-              key={m.role}
+              key={c.label}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="rounded-3xl bg-cream p-7 text-center shadow-soft">
 
-                <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-forest text-lg font-bold text-white">
-                  {m.initials}
+                <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-forest text-white">
+                  <c.icon className="h-7 w-7 text-gold" />
                 </div>
-                <h3 className="mt-5 font-display text-base font-semibold text-forest">{m.role}</h3>
+                <h3 className="mt-5 font-display text-base font-semibold text-forest">{c.label}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-forest/60">{c.desc}</p>
               </motion.div>
             )}
           </div>
