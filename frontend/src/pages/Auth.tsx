@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { EyeIcon, EyeOffIcon, LockIcon, Loader2Icon, MailIcon, PhoneIcon, UserIcon, CakeIcon, IdCardIcon } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, LockIcon, Loader2Icon, MailIcon, PhoneIcon, UserIcon, CakeIcon, IdCardIcon, ChevronDownIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ApiRequestError } from '../lib/api';
 import { BackButton } from '../components/ui/BackButton';
+import { COUNTRY_DIAL_CODES, isoToFlag } from '../data/countryCodes';
 
 type Tab = 'login' | 'register';
 
 const inputClass = 'w-full rounded-full border border-forest/15 bg-white py-3 pl-11 pr-4 text-sm text-forest outline-none placeholder:text-forest/35 focus:border-emerald';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_REGEX = /^[+]?[0-9\s\-()]{7,20}$/;
+const PHONE_REGEX = /^[0-9\s\-()]{6,20}$/;
 const PASSPORT_REGEX = /^[A-Za-z0-9]{5,15}$/;
 const PASSWORD_STRENGTH_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
@@ -43,6 +44,7 @@ export function Auth() {
   const [regPassword, setRegPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [phone, setPhone] = useState('');
+  const [dialCode, setDialCode] = useState('+94');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [passportNumber, setPassportNumber] = useState('');
 
@@ -112,7 +114,7 @@ export function Auth() {
         fullName: fullName.trim(),
         email: regEmail.trim(),
         password: regPassword,
-        phone: phone.trim() || undefined,
+        phone: phone.trim() ? `${dialCode} ${phone.trim()}` : undefined,
         dateOfBirth: dateOfBirth || undefined,
         passportNumber: passportNumber.trim() || undefined,
       });
@@ -236,9 +238,23 @@ export function Auth() {
                 <MailIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
                 <input type="email" required value={regEmail} onChange={(e) => setRegEmail(e.target.value)} placeholder={t('emailPlaceholder')} className={inputClass} />
               </div>
-              <div className="relative">
-                <PhoneIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-forest/35" />
-                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('phonePlaceholder')} className={inputClass} />
+              <div className="flex items-center gap-2 rounded-full border border-forest/15 bg-white pl-1.5 pr-4 focus-within:border-emerald">
+                <div className="relative shrink-0">
+                  <select
+                  value={dialCode}
+                  onChange={(e) => setDialCode(e.target.value)}
+                  aria-label={t('countryCodeLabel')}
+                  className="appearance-none rounded-full bg-transparent py-3 pl-3 pr-6 text-sm text-forest outline-none">
+
+                    {COUNTRY_DIAL_CODES.map((c) =>
+                    <option key={c.iso2} value={c.dial}>{isoToFlag(c.iso2)} {c.dial}</option>
+                    )}
+                  </select>
+                  <ChevronDownIcon className="pointer-events-none absolute right-0.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-forest/30" />
+                </div>
+                <div className="h-5 w-px shrink-0 bg-forest/10" />
+                <PhoneIcon className="h-4.5 w-4.5 shrink-0 text-forest/35" />
+                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('phonePlaceholder')} className="w-full bg-transparent py-3 text-sm text-forest outline-none placeholder:text-forest/35" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="relative">
