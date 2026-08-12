@@ -29,7 +29,7 @@ export function CoreValues() {
               src={v.image}
               alt=""
               aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-cover object-top opacity-[0.09] grayscale transition-opacity duration-500 group-hover:opacity-20" />
+              className="absolute inset-0 h-full w-full object-cover object-top opacity-[0.05] grayscale transition-opacity duration-500 group-hover:opacity-10" />
 
               <div className="relative">
                 <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-emerald/10 text-emerald">
