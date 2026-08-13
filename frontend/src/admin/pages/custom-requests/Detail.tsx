@@ -525,7 +525,19 @@ export function AdminCustomRequestDetail() {
       return renumbered;
     });
   };
-  const removeDay = (index: number) => setDays((prev) => prev.filter((_, i) => i !== index).map((d, i) => ({ ...d, dayNumber: i + 1 })));
+  // Mirrors addNight's forward shift: removing a day closes the date gap it
+  // leaves behind by pulling every later day one day earlier, so the
+  // itinerary's dates stay contiguous. This is what lets an admin "move" a
+  // night from one destination to the next — delete the day here, then hit
+  // Add Night on the destination that should gain it — without having to
+  // manually fix every date downstream by hand.
+  const removeDay = (index: number) => {
+    setDays((prev) => {
+      const withoutDay = prev.filter((_, i) => i !== index);
+      const shifted = withoutDay.map((d, i) => i < index || !d.date ? d : { ...d, date: shiftDateString(d.date, -1) });
+      return shifted.map((d, i) => ({ ...d, dayNumber: i + 1 }));
+    });
+  };
   const moveDay = (index: number, dir: -1 | 1) => {
     setDays((prev) => {
       const target = index + dir;
