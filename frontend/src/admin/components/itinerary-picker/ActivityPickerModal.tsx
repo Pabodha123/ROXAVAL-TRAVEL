@@ -34,9 +34,9 @@ interface Props {
 }
 
 export function ActivityPickerModal({ open, onClose, destinationOptions, defaultDestination, secondaryDestination, travelers, selectedIds, onAdd, onRemove }: Props) {
-  // Auto-suggested destinations: this day's arrival + the next day's arrival
-  // (e.g. an Airport -> Sigiriya leg should also surface Pinnawala/Dambulla
-  // waypoint activities that belong to whichever destination comes next).
+  // Auto-suggested destinations: this day's arrival + the previous day's
+  // arrival (e.g. a Sigiriya -> Kandy leg should also surface Sigiriya
+  // waypoint activities left over from where the group is travelling from).
   const suggestedDestinations = Array.from(new Set([defaultDestination, secondaryDestination].filter(Boolean))) as string[];
   const [destination, setDestination] = useState('');
   const [category, setCategory] = useState('');
@@ -94,7 +94,7 @@ export function ActivityPickerModal({ open, onClose, destinationOptions, default
     <Modal open={open} onClose={onClose} title="Select Sightseeing" maxWidth="max-w-3xl">
       <div className="grid gap-3 sm:grid-cols-3">
         <select value={destination} onChange={(e) => setDestination(e.target.value)} className="rounded-xl border border-forest/15 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald">
-          <option value="">{suggestedDestinations.length > 0 ? 'Suggested (this + next stop)' : 'All Destinations'}</option>
+          <option value="">{suggestedDestinations.length > 0 ? 'Suggested (this + previous stop)' : 'All Destinations'}</option>
           {destinationOptions.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
         </select>
         <select value={category} onChange={(e) => setCategory(e.target.value)} className="rounded-xl border border-forest/15 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald">

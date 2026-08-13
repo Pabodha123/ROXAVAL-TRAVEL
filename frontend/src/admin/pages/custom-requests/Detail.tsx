@@ -1431,7 +1431,7 @@ export function AdminCustomRequestDetail() {
         onClose={closePicker}
         destinationOptions={destOptions}
         defaultDestination={days[pickerDayIndex]?.destinations[0]}
-        secondaryDestination={days[pickerDayIndex + 1]?.destinations[0]}
+        secondaryDestination={days[pickerDayIndex - 1]?.destinations[0]}
         travelers={request.travelers}
         selectedIds={days[pickerDayIndex]?.activities || []}
         onAdd={addActivitySelection}
