@@ -69,8 +69,9 @@ const customTourRequestSchema = new mongoose.Schema(
     guideRequired: { type: Boolean, default: false },
 
     // Step 3: Budget & requests
+    // Optional — the customer-facing wizard no longer asks for a budget.
     estimatedBudget: {
-      amount: { type: Number, required: true },
+      amount: { type: Number },
       currency: { type: String, default: 'USD' },
       perPerson: { type: Boolean, default: true },
     },

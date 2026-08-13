@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { CalendarIcon, EyeIcon, FlameIcon, ClockIcon, ArrowRightIcon } from 'lucide-react';
 import { Pagination } from '../components/ui/Pagination';
 import { LoadingState, EmptyState, ErrorState } from '../components/ui/StatusState';
+import { BackButton } from '../components/ui/BackButton';
 import { useApiList } from '../hooks/useApiList';
 import { apiGetList, API_ORIGIN } from '../lib/api';
 import { formatDate } from '../lib/date';
@@ -73,6 +74,7 @@ export function Blog() {
     <main className="min-h-screen bg-cream pt-16">
       <section className="border-b border-forest/10 bg-white py-14 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <BackButton className="mb-6" />
           <p className="text-center text-xs font-semibold uppercase tracking-[0.35em] text-gold">Stories &amp; Guides</p>
           <h1 className="mt-3 text-center font-display text-4xl font-semibold text-forest sm:text-5xl">The Roxaval Journal</h1>
           <p className="mx-auto mt-3 max-w-xl text-center font-display text-base italic text-forest/55">Travel guides, culture, food and inspiration for your next Sri Lankan adventure.</p>

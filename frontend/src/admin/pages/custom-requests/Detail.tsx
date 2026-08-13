@@ -223,7 +223,7 @@ interface RequestDetail {
   travelStyle: string;
   transportPreference?: string;
   guideRequired?: boolean;
-  estimatedBudget: { amount: number; currency: string; perPerson: boolean };
+  estimatedBudget?: { amount?: number; currency: string; perPerson: boolean };
   sightseeingPreference?: string;
   specialRequests: string;
   status: string;
@@ -379,7 +379,7 @@ export function AdminCustomRequestDetail() {
 
   useEffect(() => {
     if (!request) return;
-    setCurrency(request.estimatedBudget.currency);
+    setCurrency(request.estimatedBudget?.currency || 'USD');
     if (request.itinerary && !forceEdit && !['Changes Requested', 'Rejected'].includes(request.itinerary.status)) return;
     if (request.itinerary) {
       const itin = request.itinerary;
@@ -464,8 +464,11 @@ export function AdminCustomRequestDetail() {
       setExpandedDays(new Set());
     } else {
       setTitle(`Custom Itinerary for ${request.referenceNumber}`);
-      setBasePrice(request.estimatedBudget.amount);
-      setTotalPrice(request.estimatedBudget.amount);
+      // Deliberately not pre-filled from anywhere (customer budget, a Tour
+      // Package price, etc.) — the admin sets this from current season
+      // rates once hotels/transport/guide are actually picked below.
+      setBasePrice(0);
+      setTotalPrice(0);
       setSightseeingIncluded(request.sightseeingPreference !== 'Exclude');
       setTourGuide('');
       setVehicle('');
@@ -896,7 +899,9 @@ export function AdminCustomRequestDetail() {
               <div className="flex justify-between"><dt className="text-forest/50">Vehicle Type</dt><dd className="text-forest">{request.transportPreference}</dd></div>
               }
               <div className="flex justify-between"><dt className="text-forest/50">Guide Required</dt><dd className="text-forest">{request.guideRequired ? 'Yes' : 'No'}</dd></div>
+              {request.estimatedBudget?.amount != null &&
               <div className="flex justify-between"><dt className="text-forest/50">Budget</dt><dd className="text-forest">{request.estimatedBudget.currency} {request.estimatedBudget.amount.toLocaleString()}</dd></div>
+              }
               {request.sightseeingPreference && request.sightseeingPreference !== 'No Preference' &&
               <div className="flex justify-between"><dt className="text-forest/50">Sightseeing in Budget</dt><dd className="text-forest">{request.sightseeingPreference}</dd></div>
               }
@@ -1370,9 +1375,9 @@ export function AdminCustomRequestDetail() {
               <div className="rounded-2xl bg-white p-6 shadow-soft">
                 <p className="mb-4 font-display text-sm font-semibold text-forest">Pricing</p>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <NumberField label="Base Price" value={basePrice} onChange={setBasePrice} min={0} required />
+                  <NumberField label="Base Price" value={basePrice} onChange={setBasePrice} min={0} />
                   <NumberField label="Discount" value={discount} onChange={setDiscount} min={0} />
-                  <NumberField label="Total Price" value={totalPrice} onChange={setTotalPrice} min={0} required />
+                  <NumberField label="Total Price" value={totalPrice} onChange={setTotalPrice} min={0} />
                   <TextField label="Currency" value={currency} onChange={setCurrency} />
                 </div>
                 <div className="mt-4">

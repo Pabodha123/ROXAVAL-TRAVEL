@@ -52,8 +52,6 @@ interface FormData {
   roomTypePreference: string;
   transportPreference: string;
   guideRequired: boolean;
-  budget: string;
-  perPerson: boolean;
   sightseeingPreference: string;
   travelStyle: string;
   specialRequests: string;
@@ -65,7 +63,7 @@ const initialFormData: FormData = {
   customDestinations: [], customActivities: [],
   hotelCategory: 'Standard', mealPreferences: [], roomTypePreference: '',
   transportPreference: 'No Preference', guideRequired: false,
-  budget: '', perPerson: true, sightseeingPreference: 'No Preference', travelStyle: 'Relaxed',
+  sightseeingPreference: 'No Preference', travelStyle: 'Relaxed',
   specialRequests: ''
 };
 
@@ -75,6 +73,11 @@ export function CustomTourWizard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [step, setStep] = useState(0);
+  // Furthest step the customer has actually reached — lets the progress
+  // header act as real navigation (jump back to any completed step, e.g.
+  // to tweak Destinations after already moving on to Activities) without
+  // allowing a skip-ahead to steps not yet seen.
+  const [maxStepReached, setMaxStepReached] = useState(0);
   const wizardRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [submitted, setSubmitted] = useState(false);
@@ -107,7 +110,6 @@ export function CustomTourWizard() {
         days: String(pkg.durationDays || prev.days),
         selectedDestinations: pkg.destinations.map((d) => d._id),
         selectedActivities: pkg.activities.map((a) => a._id),
-        budget: String(pkg.discountPrice ?? pkg.price ?? prev.budget),
         travelStyle: TRAVEL_STYLES.includes(pkg.category) ? pkg.category : prev.travelStyle
       }));
     }).
@@ -158,7 +160,6 @@ export function CustomTourWizard() {
       travelStyle: formData.travelStyle,
       transportPreference: formData.transportPreference,
       guideRequired: formData.guideRequired,
-      estimatedBudget: { amount: Number(formData.budget), currency: 'USD', perPerson: formData.perPerson },
       sightseeingPreference: formData.sightseeingPreference,
       specialRequests: formData.specialRequests
     };
@@ -166,11 +167,24 @@ export function CustomTourWizard() {
 
   const scrollToTop = () => wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   const nextStep = () => {
-    setStep((s) => Math.min(s + 1, steps.length - 1));
+    setStep((s) => {
+      const next = Math.min(s + 1, steps.length - 1);
+      setMaxStepReached((m) => Math.max(m, next));
+      return next;
+    });
     scrollToTop();
   };
   const prevStep = () => {
     setStep((s) => Math.max(s - 1, 0));
+    scrollToTop();
+  };
+  // Jumping to any already-reached step this way (rather than only via
+  // Back/Next one at a time) is what makes the header usable as real
+  // navigation — selecting something on step 2 no longer means clicking
+  // Back through every step again to get there.
+  const goToStep = (i: number) => {
+    if (i > maxStepReached) return;
+    setStep(i);
     scrollToTop();
   };
 
@@ -192,8 +206,8 @@ export function CustomTourWizard() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.arrivalDate || !formData.days || !formData.budget) {
-      setError('Please fill in travel dates, duration and estimated budget before submitting.');
+    if (!formData.arrivalDate || !formData.days) {
+      setError('Please fill in travel dates and duration before submitting.');
       return;
     }
     setSubmitting(true);
@@ -247,12 +261,17 @@ export function CustomTourWizard() {
         <div className="mt-6 flex items-center gap-2 overflow-x-auto no-scrollbar">
           {steps.map((s, i) =>
           <React.Fragment key={s}>
-              <div className={`flex shrink-0 items-center gap-2 text-sm font-medium ${i === step ? 'text-gold' : i < step ? 'text-white' : 'text-white/40'}`}>
+              <button
+              type="button"
+              onClick={() => goToStep(i)}
+              disabled={i > maxStepReached}
+              className={`flex shrink-0 items-center gap-2 text-sm font-medium transition-colors ${i === step ? 'text-gold' : i < step ? 'text-white hover:text-gold' : 'cursor-not-allowed text-white/40'}`}>
+
                 <span className={`grid h-6 w-6 place-items-center rounded-full text-xs ${i === step ? 'bg-gold text-forest' : i < step ? 'bg-white text-forest' : 'border border-white/40'}`}>
                   {i < step ? <CheckIcon className="h-3.5 w-3.5" /> : i + 1}
                 </span>
                 {s}
-              </div>
+              </button>
               {i < steps.length - 1 && <div className={`h-px w-8 shrink-0 ${i < step ? 'bg-white' : 'bg-white/20'}`} />}
             </React.Fragment>
           )}
@@ -439,15 +458,7 @@ export function CustomTourWizard() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-3 block font-semibold text-forest">Estimated Budget (USD)</label>
-                  <input type="number" min={1} value={formData.budget} onChange={(e) => setFormData({ ...formData, budget: e.target.value })} placeholder="e.g. 2000" className="w-full max-w-xs rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" />
-                  <label className="mt-3 flex items-center gap-2 text-sm font-medium text-forest">
-                    <input type="checkbox" checked={formData.perPerson} onChange={(e) => setFormData({ ...formData, perPerson: e.target.checked })} className="h-4 w-4 rounded border-forest/20 text-emerald focus:ring-emerald" />
-                    This budget is per person
-                  </label>
-                </div>
-                <div>
-                  <label className="mb-3 block font-semibold text-forest">Does this budget include sightseeing &amp; activities?</label>
+                  <label className="mb-3 block font-semibold text-forest">Would you like sightseeing &amp; activities included in your quote?</label>
                   <p className="mb-3 text-sm text-forest/50">This helps us quote you accurately - you can arrange your own sightseeing to lower the cost, or have us include it all.</p>
                   <div className="flex flex-wrap gap-3">
                     {SIGHTSEEING_PREFERENCE_OPTIONS.map((opt) =>
@@ -504,8 +515,7 @@ export function CustomTourWizard() {
                   <div><dt className="text-forest/50">Travel Style</dt><dd className="font-medium text-forest">{formData.travelStyle}</dd></div>
                   <div><dt className="text-forest/50">Vehicle Type</dt><dd className="font-medium text-forest">{formData.transportPreference}</dd></div>
                   <div><dt className="text-forest/50">Guide Required</dt><dd className="font-medium text-forest">{formData.guideRequired ? 'Yes' : 'No'}</dd></div>
-                  <div><dt className="text-forest/50">Budget</dt><dd className="font-medium text-forest">{formData.budget ? `$${formData.budget} ${formData.perPerson ? 'per person' : 'total'}` : '-'}</dd></div>
-                  <div><dt className="text-forest/50">Sightseeing in Budget</dt><dd className="font-medium text-forest">{formData.sightseeingPreference}</dd></div>
+                  <div><dt className="text-forest/50">Sightseeing Included</dt><dd className="font-medium text-forest">{formData.sightseeingPreference}</dd></div>
                 </dl>
 
                 <div>

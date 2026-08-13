@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CalendarIcon, EyeIcon, FacebookIcon, LinkIcon, TwitterIcon, CheckIcon, HeartIcon, MapPinIcon } from 'lucide-react';
+import { CalendarIcon, EyeIcon, FacebookIcon, LinkIcon, TwitterIcon, CheckIcon, HeartIcon, MapPinIcon, ArrowLeftIcon } from 'lucide-react';
 import { PageBanner } from '../components/layout/PageBanner';
 import { LoadingState, ErrorState } from '../components/ui/StatusState';
 import { apiGetOne, apiGetList, API_ORIGIN } from '../lib/api';
@@ -16,6 +16,14 @@ function resolveImage(url: string) {
 
 export function BlogDetails() {
   const { slug } = useParams<{slug: string;}>();
+  const navigate = useNavigate();
+  // Same history.state.idx fallback as BackButton/BreadcrumbBackRow — a
+  // visitor arriving straight from a shared link has no in-app history to
+  // go back to, so this falls back to the blog list instead of stranding them.
+  const goBack = () => {
+    if (window.history.state?.idx > 0) navigate(-1);else
+    navigate('/blog');
+  };
   const [post, setPost] = useState<BlogPost | null>(null);
   const [related, setRelated] = useState<BlogListItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,7 +73,12 @@ export function BlogDetails() {
   if (post.template === 'romantic') {
     return (
       <main className="min-h-screen bg-[#faf3e8]">
-        <div className="px-4 pt-28 pb-8 text-center sm:pt-36">
+        <div className="px-4 pt-8 sm:pt-10">
+          <button onClick={goBack} className="inline-flex items-center gap-1.5 rounded-full border border-[#3a2b1f]/15 bg-white/70 px-3.5 py-2 text-xs font-semibold text-[#3a2b1f] shadow-soft backdrop-blur transition-colors hover:bg-white">
+            <ArrowLeftIcon className="h-3.5 w-3.5" /> Back
+          </button>
+        </div>
+        <div className="px-4 pt-16 pb-8 text-center sm:pt-24">
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.4em] text-gold">
             <MapPinIcon className="h-3.5 w-3.5" /> Sri Lanka
           </span>
@@ -160,8 +173,13 @@ export function BlogDetails() {
     const infoSections = post.sections.filter((s) => !s.image);
     return (
       <main className="min-h-screen bg-[#0a1e38]">
-        <div className="relative overflow-hidden bg-gradient-to-b from-sky-50 via-sky-100 to-[#0a1e38] pb-24 pt-28 sm:pb-32 sm:pt-36">
-          <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
+        <div className="relative overflow-hidden bg-gradient-to-b from-sky-50 via-sky-100 to-[#0a1e38] pb-24 pt-8 sm:pb-32 sm:pt-10">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6">
+            <button onClick={goBack} className="inline-flex items-center gap-1.5 rounded-full border border-[#0a1e38]/15 bg-white/70 px-3.5 py-2 text-xs font-semibold text-[#0a1e38] shadow-soft backdrop-blur transition-colors hover:bg-white">
+              <ArrowLeftIcon className="h-3.5 w-3.5" /> Back
+            </button>
+          </div>
+          <div className="mx-auto max-w-2xl px-4 pt-20 text-center sm:px-6 sm:pt-24">
             <span className="text-xs font-semibold uppercase tracking-[0.35em] text-sky-700">{post.category}</span>
             <h1 className="mt-4 font-display text-3xl font-bold leading-tight text-[#0a1e38] sm:text-5xl">{post.title}</h1>
             {post.excerpt &&

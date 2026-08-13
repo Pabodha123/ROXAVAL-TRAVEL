@@ -26,11 +26,16 @@ const createCustomTourRequestSchema = z.object({
   transportPreference: z.enum(['Private Car', 'Van', 'SUV', 'Minibus', 'No Preference']).optional(),
   roomTypePreference: z.string().optional(),
   guideRequired: z.boolean().optional(),
-  estimatedBudget: z.object({
-    amount: z.number().positive(),
-    currency: z.string().optional(),
-    perPerson: z.boolean().optional(),
-  }),
+  // Optional — the customer-facing wizard no longer asks for a budget;
+  // pricing comes from the admin's quotation instead (see
+  // customTourRequest.controller.js / the itinerary pricing flow).
+  estimatedBudget: z
+    .object({
+      amount: z.number().positive().optional(),
+      currency: z.string().optional(),
+      perPerson: z.boolean().optional(),
+    })
+    .optional(),
   sightseeingPreference: z.enum(['Include', 'Exclude', 'No Preference']).optional(),
   specialRequests: z.string().optional(),
   aiGeneratedItinerary: z

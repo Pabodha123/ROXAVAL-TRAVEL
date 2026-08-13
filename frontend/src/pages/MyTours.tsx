@@ -547,7 +547,6 @@ function RequestsTab({ initialSelectedId, onBookingCreated }: {initialSelectedId
               <p className="flex items-center gap-1.5 text-forest/70"><UsersIcon className="h-4 w-4" /> {selected.travelers.adults} Adults, {selected.travelers.children} Children</p>
               <p className="text-forest/70">Hotel: {selected.hotelCategory}</p>
               <p className="text-forest/70">Style: {selected.travelStyle}</p>
-              <p className="text-forest/70">Budget: {selected.estimatedBudget.currency} {selected.estimatedBudget.amount.toLocaleString()} {selected.estimatedBudget.perPerson ? '/ person' : 'total'}</p>
             </div>
             {selected.specialRequests && <p className="mt-3 text-sm text-forest/60">{selected.specialRequests}</p>}
           </div>
