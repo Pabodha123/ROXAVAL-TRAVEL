@@ -8,7 +8,7 @@ import {
 'lucide-react';
 import { useAdminList } from '../admin/hooks/useAdminList';
 import { StatusBadge } from '../admin/components/StatusBadge';
-import { apiGetList, apiGetOne, apiPatch, apiPost, apiPostForm, ApiRequestError, API_ORIGIN } from '../lib/api';
+import { apiGetList, apiGetOne, apiPatch, apiPost, apiPostForm, ApiRequestError, resolveFileUrl } from '../lib/api';
 import { formatDate } from '../lib/date';
 import { useToast } from '../context/ToastContext';
 import { useUnreadCount } from '../hooks/useUnreadCount';
@@ -152,7 +152,7 @@ function BookingDocuments({ bookingId }: { bookingId: string }) {
       {docs.map((d) =>
       <a
         key={d._id}
-        href={`${API_ORIGIN}${d.fileUrl}`}
+        href={resolveFileUrl(d.fileUrl)}
         target="_blank"
         rel="noreferrer"
         className="flex items-center justify-between rounded-xl border border-forest/10 px-4 py-2.5 text-sm text-forest transition-colors hover:border-emerald hover:bg-emerald/5">

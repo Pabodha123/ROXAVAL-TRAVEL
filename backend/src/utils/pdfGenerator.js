@@ -100,12 +100,15 @@ function drawTable(doc, { x, y, columns, rows }) {
 
 /**
  * Generic document builder. `type` controls the title/layout tweaks while
- * `data` supplies the content. Returns the absolute file path written.
+ * `data` supplies the content. Resolves with the finished PDF as an
+ * in-memory Buffer — callers upload it themselves (Cloudinary); nothing
+ * here touches local disk, since the serverless host's filesystem doesn't
+ * persist between invocations.
  *
  * Supported types: itinerary | hotel_voucher | booking_confirmation |
  *                   invoice | payment_receipt | quotation
  */
-async function generatePdfDocument(type, data, outputFileName, lang = 'en') {
+async function generatePdfDocument(type, data, lang = 'en') {
   const s = t(lang, 'pdf');
   const titles = {
     itinerary: s.itinerary,
@@ -116,13 +119,13 @@ async function generatePdfDocument(type, data, outputFileName, lang = 'en') {
     quotation: s.quotation,
   };
 
-  const outputDir = path.resolve(process.cwd(), env.UPLOADS.documentsDir);
-  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
-  const filePath = path.join(outputDir, outputFileName);
-
   const doc = new PDFDocument({ size: 'A4', margin: 40 });
-  const stream = fs.createWriteStream(filePath);
-  doc.pipe(stream);
+  const chunks = [];
+  doc.on('data', (chunk) => chunks.push(chunk));
+  const finished = new Promise((resolve, reject) => {
+    doc.on('end', () => resolve(Buffer.concat(chunks)));
+    doc.on('error', reject);
+  });
 
   drawHeader(doc, titles[type] || 'Document');
 
@@ -166,12 +169,7 @@ async function generatePdfDocument(type, data, outputFileName, lang = 'en') {
   drawFooter(doc, s);
   doc.end();
 
-  await new Promise((resolve, reject) => {
-    stream.on('finish', resolve);
-    stream.on('error', reject);
-  });
-
-  return filePath;
+  return finished;
 }
 
 module.exports = { generatePdfDocument };

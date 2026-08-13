@@ -1,12 +1,10 @@
-const fs = require('fs');
-const path = require('path');
 const { Booking, HotelVoucher, Document, Customer } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { generateHotelVoucherPdf } = require('../utils/hotelVoucherPdf');
+const { uploadBuffer } = require('../config/cloudinary');
 const { hotelVoucherEmail } = require('../utils/emailTemplates');
 const { sendEmail } = require('../utils/email');
 const { notify } = require('./notification.service');
-const env = require('../config/env');
 
 const addDays = (date, days) => {
   const d = new Date(date);
@@ -82,11 +80,18 @@ const loadBookingContext = async (bookingId) => {
 const renderAndSavePdf = async (voucher, adminId) => {
   const fileName = `voucher-${voucher.voucherNumber}-${Date.now()}.pdf`;
   const customer = await Customer.findById(voucher.customer).select('preferredLanguage');
-  const filePath = await generateHotelVoucherPdf(voucher, fileName, customer?.preferredLanguage || 'en');
-  const fileUrl = `/uploads/documents/${path.basename(filePath)}`;
+  const buffer = await generateHotelVoucherPdf(voucher, customer?.preferredLanguage || 'en');
+  // 'raw' (not 'auto'/'image') — Cloudinary blocks direct delivery of PDFs
+  // uploaded as an image resource by default (anti-abuse policy). It also
+  // blocks delivery of *any* asset whose public_id ends in .pdf regardless
+  // of resource_type, so the extension is stripped from the id here; the
+  // human-readable `fileName` (with .pdf) is kept separately for display,
+  // download, and email-attachment naming.
+  const uploaded = await uploadBuffer(buffer, { folder: 'documents', resourceType: 'raw', publicId: fileName.replace(/\.pdf$/i, '') });
+  const fileUrl = uploaded.secure_url;
 
   if (voucher.document) {
-    await Document.findByIdAndUpdate(voucher.document, { fileUrl, fileName: path.basename(filePath) });
+    await Document.findByIdAndUpdate(voucher.document, { fileUrl, fileName });
   } else {
     const document = await Document.create({
       type: 'hotel_voucher',
@@ -95,7 +100,7 @@ const renderAndSavePdf = async (voucher, adminId) => {
       customer: voucher.customer,
       hotel: voucher.hotel,
       fileUrl,
-      fileName: path.basename(filePath),
+      fileName,
       generatedBy: adminId,
     });
     voucher.document = document._id;
@@ -232,8 +237,6 @@ const deleteVoucher = async (voucherId) => {
   }
 
   if (voucher.document) {
-    const filePath = path.resolve(process.cwd(), env.UPLOADS.documentsDir, voucher.document.fileName);
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
     await Document.findByIdAndDelete(voucher.document._id);
   }
   await voucher.deleteOne();
@@ -249,7 +252,8 @@ const emailVoucher = async (voucherId, audience) => {
 
   const lang = audience === 'customer' ? (await Customer.findById(voucher.customer).select('preferredLanguage'))?.preferredLanguage || 'en' : 'en';
 
-  const attachmentPath = path.resolve(process.cwd(), env.UPLOADS.documentsDir, voucher.document.fileName);
+  // The PDF lives on Cloudinary, not local disk — nodemailer fetches
+  // attachment content directly from an http(s) `path`.
   await sendEmail({
     to,
     subject:
@@ -257,7 +261,7 @@ const emailVoucher = async (voucherId, audience) => {
         ? `Booking Confirmation Request — ${voucher.voucherNumber} — ${voucher.hotelSnapshot.name}`
         : `Your Hotel Voucher — ${voucher.hotelSnapshot.name} (${voucher.voucherNumber})`,
     html: hotelVoucherEmail({ voucher, audience, lang }),
-    attachments: [{ filename: voucher.document.fileName, path: attachmentPath }],
+    attachments: [{ filename: voucher.document.fileName, path: voucher.document.fileUrl }],
   });
 
   if (audience === 'hotel') {

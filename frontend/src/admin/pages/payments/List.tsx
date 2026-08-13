@@ -6,7 +6,7 @@ import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
 import { useConfirm } from '../../components/ConfirmDialog';
 import { useToast } from '../../components/ToastProvider';
-import { apiPatch, ApiRequestError, API_ORIGIN } from '../../../lib/api';
+import { apiPatch, ApiRequestError, resolveFileUrl } from '../../../lib/api';
 
 interface AdminPayment {
   _id: string;
@@ -65,7 +65,7 @@ export function AdminPaymentsList() {
     render: (p) =>
     <div className="flex items-center gap-1.5">
           {p.receiptUrl &&
-      <a href={`${API_ORIGIN}${p.receiptUrl}`} target="_blank" rel="noreferrer" className="grid h-8 w-8 place-items-center rounded-lg text-forest/60 hover:bg-cream hover:text-forest">
+      <a href={resolveFileUrl(p.receiptUrl)} target="_blank" rel="noreferrer" className="grid h-8 w-8 place-items-center rounded-lg text-forest/60 hover:bg-cream hover:text-forest">
               <ExternalLinkIcon className="h-4 w-4" />
             </a>
       }

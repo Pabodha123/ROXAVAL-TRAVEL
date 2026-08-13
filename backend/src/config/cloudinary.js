@@ -13,12 +13,19 @@ cloudinary.config({
  * writes because Vercel's serverless filesystem is read-only outside
  * `/tmp` and doesn't persist between invocations anyway.
  */
-const uploadBuffer = (buffer, { folder, resourceType = 'image' }) =>
+// `publicId` matters most for resource_type 'raw' (PDFs): unlike
+// image/video, Cloudinary doesn't infer a delivery extension for raw files,
+// so without one the URL — and anything that names the download after it —
+// ends up extensionless. Pass the real filename (with extension) through.
+const uploadBuffer = (buffer, { folder, resourceType = 'image', publicId }) =>
   new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream({ folder: `roxaval/${folder}`, resource_type: resourceType }, (err, result) => {
-      if (err) return reject(err);
-      resolve(result);
-    });
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: `roxaval/${folder}`, resource_type: resourceType, ...(publicId ? { public_id: publicId } : {}) },
+      (err, result) => {
+        if (err) return reject(err);
+        resolve(result);
+      }
+    );
     stream.end(buffer);
   });
 

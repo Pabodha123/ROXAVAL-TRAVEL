@@ -3,6 +3,11 @@ import { getCurrentLanguage } from '../i18n';
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 export const API_ORIGIN = API_BASE_URL.replace(/\/api\/v\d+\/?$/, '');
 
+// Generated documents (vouchers, invoices, itineraries...) are stored on
+// Cloudinary and come back as full URLs; only prefix API_ORIGIN for the
+// legacy relative `/uploads/...` shape older records may still have.
+export const resolveFileUrl = (url: string) => (/^https?:\/\//i.test(url) ? url : `${API_ORIGIN}${url}`);
+
 export interface ApiMeta {
   total: number;
   page: number;

@@ -60,13 +60,34 @@ function drawStars(doc, x, y, rating = 0) {
   }
 }
 
-function keyValueRow(doc, x, y, pairs, colWidth) {
-  let cursorX = x;
-  pairs.forEach(([label, value]) => {
-    doc.font('Helvetica-Bold').fontSize(8).fillColor(MUTED_COLOR).text(label.toUpperCase(), cursorX, y);
-    doc.font('Helvetica').fontSize(10).fillColor(TEXT_COLOR).text(String(value ?? '-'), cursorX, y + 12, { width: colWidth - 10 });
-    cursorX += colWidth;
+/**
+ * Bordered, titled details block — a dark brand-colored header bar over a
+ * grid of label/value cells, matching the "Enquiry Details"-style table
+ * hotel partners are used to seeing from Roxaval (see the reference booking
+ * request format). Each entry in `rows` is an array of [label, value] pairs
+ * rendered as evenly-split columns within that row.
+ */
+function drawDetailsTable(doc, { x, y, width, title, rows }) {
+  const headerHeight = 20;
+  doc.rect(x, y, width, headerHeight).fill(BRAND_COLOR);
+  doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(9).text(title.toUpperCase(), x + 8, y + 6);
+  let cursorY = y + headerHeight;
+  const rowHeight = 28;
+
+  rows.forEach((cells, idx) => {
+    const bg = idx % 2 === 1 ? '#f0fdfa' : '#ffffff';
+    doc.rect(x, cursorY, width, rowHeight).fill(bg);
+    const colWidth = width / cells.length;
+    cells.forEach(([label, value], i) => {
+      const cx = x + i * colWidth;
+      doc.font('Helvetica-Bold').fontSize(7.5).fillColor(MUTED_COLOR).text(label.toUpperCase(), cx + 8, cursorY + 6, { width: colWidth - 16 });
+      doc.font('Helvetica').fontSize(9.5).fillColor(TEXT_COLOR).text(String(value ?? '-'), cx + 8, cursorY + 16, { width: colWidth - 16 });
+    });
+    cursorY += rowHeight;
   });
+
+  doc.rect(x, y, width, cursorY - y).strokeColor('#e5e7eb').lineWidth(0.75).stroke();
+  return cursorY + 14;
 }
 
 function drawTable(doc, { x, y, columns, rows }) {
@@ -102,68 +123,46 @@ function drawTable(doc, { x, y, columns, rows }) {
 
 /**
  * Renders a single hotel voucher PDF from a HotelVoucher document (already
- * populated where needed by the caller) and returns the absolute file path.
+ * populated where needed by the caller) and resolves with the finished file
+ * as an in-memory Buffer. Callers are responsible for storing it (Cloudinary)
+ * — nothing here touches local disk, since the serverless host's filesystem
+ * doesn't persist between invocations.
  */
-async function generateHotelVoucherPdf(voucher, outputFileName, lang = 'en') {
+async function generateHotelVoucherPdf(voucher, lang = 'en') {
   const s = t(lang, 'pdf');
-  const outputDir = path.resolve(process.cwd(), env.UPLOADS.documentsDir);
-  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
-  const filePath = path.join(outputDir, outputFileName);
 
   const doc = new PDFDocument({ size: 'A4', margin: 40 });
-  const stream = fs.createWriteStream(filePath);
-  doc.pipe(stream);
+  const chunks = [];
+  doc.on('data', (chunk) => chunks.push(chunk));
+  const finished = new Promise((resolve, reject) => {
+    doc.on('end', () => resolve(Buffer.concat(chunks)));
+    doc.on('error', reject);
+  });
 
   drawHeader(doc, s);
 
-  // Meta bar
-  keyValueRow(
-    doc,
-    40,
-    doc.y + 6,
-    [
-      [s.voucherNo, voucher.voucherNumber],
-      [s.bookingRef, voucher.bookingReference],
-      [s.tourReference, voucher.tourReferenceNumber || '-'],
-      [s.dateIssued, formatDate(new Date())],
-    ],
-    PAGE_WIDTH / 4
-  );
-  doc.y += 36;
-
-  // Guest & tour block
+  // Voucher / booking details — bordered table with a branded header bar,
+  // mirroring the booking-request format hotel partners already recognize.
   const guestSummary = `${voucher.guests.adults} Adult${voucher.guests.adults === 1 ? '' : 's'}${
     voucher.guests.children ? `, ${voucher.guests.children} Child${voucher.guests.children === 1 ? '' : 'ren'}` : ''
   }${voucher.guests.infants ? `, ${voucher.guests.infants} Infant${voucher.guests.infants === 1 ? '' : 's'}` : ''}`;
 
-  keyValueRow(
-    doc,
-    40,
-    doc.y,
-    [
-      [s.guestName, voucher.customerName],
-      [s.guests, guestSummary],
-      [s.emergencyContact, voucher.emergencyContact || voucher.customerPhone || '-'],
+  const detailsY = drawDetailsTable(doc, {
+    x: 40,
+    y: doc.y,
+    width: PAGE_WIDTH,
+    title: s.voucherDetails || 'Voucher Details',
+    rows: [
+      [[s.guestName, voucher.customerName], [s.voucherNo, voucher.voucherNumber]],
+      [[s.bookingRef, voucher.bookingReference], [s.tourReference, voucher.tourReferenceNumber || '-']],
+      [[s.guests, guestSummary], [s.emergencyContact, voucher.emergencyContact || voucher.customerPhone || '-']],
+      [
+        [s.package, voucher.tourPackageName || '-'],
+        [s.travelDates, `${voucher.tourStartDate ? formatDate(voucher.tourStartDate) : '-'} - ${voucher.tourEndDate ? formatDate(voucher.tourEndDate) : '-'}`],
+      ],
     ],
-    PAGE_WIDTH / 3
-  );
-  doc.y += 32;
-
-  keyValueRow(
-    doc,
-    40,
-    doc.y,
-    [
-      [s.package, voucher.tourPackageName || '-'],
-      [s.tourStart, voucher.tourStartDate ? formatDate(voucher.tourStartDate) : '-'],
-      [s.tourEnd, voucher.tourEndDate ? formatDate(voucher.tourEndDate) : '-'],
-    ],
-    PAGE_WIDTH / 3
-  );
-  doc.y += 34;
-
-  doc.moveTo(40, doc.y).lineTo(555, doc.y).strokeColor('#e5e7eb').stroke();
-  doc.y += 14;
+  });
+  doc.y = detailsY;
 
   // Hotel block
   const hotel = voucher.hotelSnapshot;
@@ -243,19 +242,17 @@ async function generateHotelVoucherPdf(voucher, outputFileName, lang = 'en') {
   doc
     .fontSize(7)
     .fillColor(MUTED_COLOR)
-    .text(`${env.COMPANY.name} • ${env.COMPANY.website} • ${s.generatedOn} ${formatDate(new Date())}`, 40, doc.page.height - 40, {
+    // A few points shy of the page's bottom margin (page.height - 40) — sitting
+    // exactly on it leaves no room for the line's own height, which makes
+    // PDFKit auto-paginate and strand this text alone on a blank page 2.
+    .text(`${env.COMPANY.name} • ${env.COMPANY.website} • ${s.generatedOn} ${formatDate(new Date())}`, 40, doc.page.height - 55, {
       align: 'center',
       width: 515,
     });
 
   doc.end();
 
-  await new Promise((resolve, reject) => {
-    stream.on('finish', resolve);
-    stream.on('error', reject);
-  });
-
-  return filePath;
+  return finished;
 }
 
 module.exports = { generateHotelVoucherPdf };

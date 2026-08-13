@@ -28,6 +28,7 @@ const strings = {
     },
     pdf: {
       hotelVoucher: 'HOTEL VOUCHER',
+      voucherDetails: 'Voucher Details',
       voucherNo: 'Voucher No',
       bookingRef: 'Booking Ref',
       guestName: 'Guest Name',
@@ -35,6 +36,7 @@ const strings = {
       emergencyContact: 'Emergency Contact',
       tourStart: 'Tour Start',
       tourEnd: 'Tour End',
+      travelDates: 'Travel Dates',
       ratePerNight: 'Rate Per Night',
       grandTotal: 'Grand Total',
       confirmationNote: 'Kindly confirm availability and proceed with the reservation. If any rooms are sold out or the rate has changed, please notify us immediately.',
@@ -89,6 +91,7 @@ const strings = {
     },
     pdf: {
       hotelVoucher: 'HOTELGUTSCHEIN',
+      voucherDetails: 'Gutschein-Details',
       voucherNo: 'Gutschein-Nr.',
       bookingRef: 'Buchungsref.',
       guestName: 'Gastname',
@@ -96,6 +99,7 @@ const strings = {
       emergencyContact: 'Notfallkontakt',
       tourStart: 'Reisebeginn',
       tourEnd: 'Reiseende',
+      travelDates: 'Reisedaten',
       ratePerNight: 'Preis pro Nacht',
       grandTotal: 'Gesamtsumme',
       confirmationNote: 'Bitte bestätigen Sie die Verfügbarkeit und schließen Sie die Reservierung ab. Falls Zimmer ausgebucht sind oder sich der Preis geändert hat, informieren Sie uns bitte umgehend.',
@@ -150,6 +154,7 @@ const strings = {
     },
     pdf: {
       hotelVoucher: "BON D'HÔTEL",
+      voucherDetails: 'Détails du Bon',
       voucherNo: 'N° de Bon',
       bookingRef: 'Réf. de Réservation',
       guestName: 'Nom du Client',
@@ -157,6 +162,7 @@ const strings = {
       emergencyContact: "Contact d'Urgence",
       tourStart: 'Début du Voyage',
       tourEnd: 'Fin du Voyage',
+      travelDates: 'Dates du Voyage',
       ratePerNight: 'Tarif par Nuit',
       grandTotal: 'Total Général',
       confirmationNote: 'Veuillez confirmer la disponibilité et procéder à la réservation. Si des chambres ne sont plus disponibles ou si le tarif a changé, merci de nous en informer immédiatement.',

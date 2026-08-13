@@ -3,7 +3,7 @@ import {
   ChevronDownIcon, ChevronUpIcon, DownloadIcon, Loader2Icon,
   MailIcon, PencilIcon, RefreshCwIcon, SparklesIcon, TrashIcon } from
 'lucide-react';
-import { apiGetOne, apiPatch, apiPost, apiDelete, ApiRequestError, API_ORIGIN } from '../../lib/api';
+import { apiGetOne, apiPatch, apiPost, apiDelete, ApiRequestError, resolveFileUrl } from '../../lib/api';
 import { formatDate } from '../../lib/date';
 import { useToast } from './ToastProvider';
 import { useConfirm } from './ConfirmDialog';
@@ -94,7 +94,7 @@ function VoucherCard({
 
       <div className="mt-3 flex flex-wrap gap-2">
         {voucher.document &&
-        <a href={`${API_ORIGIN}${voucher.document.fileUrl}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 rounded-lg border border-forest/10 px-3 py-1.5 text-xs font-semibold text-forest hover:bg-cream">
+        <a href={resolveFileUrl(voucher.document.fileUrl)} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 rounded-lg border border-forest/10 px-3 py-1.5 text-xs font-semibold text-forest hover:bg-cream">
             <DownloadIcon className="h-3.5 w-3.5" /> Preview / Download
           </a>
         }
@@ -296,7 +296,7 @@ export function HotelVouchersPanel({ bookingId, bookingStatus }: {bookingId: str
                         <StatusBadge status={v.status} />
                       </div>
                       {v.document &&
-              <a href={`${API_ORIGIN}${v.document.fileUrl}`} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-forest/60 hover:text-forest">
+              <a href={resolveFileUrl(v.document.fileUrl)} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-forest/60 hover:text-forest">
                           <DownloadIcon className="h-3.5 w-3.5" /> Download
                         </a>
               }

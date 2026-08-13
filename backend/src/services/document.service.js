@@ -1,7 +1,7 @@
-const path = require('path');
 const { Document, Booking, Payment } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { generatePdfDocument } = require('../utils/pdfGenerator');
+const { uploadBuffer } = require('../config/cloudinary');
 const { notify } = require('./notification.service');
 const generateReference = require('../utils/generateReference');
 const { localizeValue } = require('../utils/localize');
@@ -49,7 +49,7 @@ const generateItineraryDocument = async (bookingId, generatedBy) => {
   }));
 
   const fileName = `itinerary-${booking.bookingReference}-${Date.now()}.pdf`;
-  const filePath = await generatePdfDocument(
+  const buffer = await generatePdfDocument(
     'itinerary',
     {
       referenceNumber: booking.bookingReference,
@@ -62,7 +62,6 @@ const generateItineraryDocument = async (bookingId, generatedBy) => {
       tableRows,
       notes: 'Itinerary is subject to minor changes due to weather or local conditions.',
     },
-    fileName,
     lang
   );
 
@@ -71,7 +70,7 @@ const generateItineraryDocument = async (bookingId, generatedBy) => {
     referenceNumber: booking.bookingReference,
     booking: booking._id,
     customer: booking.customer._id,
-    filePath,
+    buffer,
     fileName,
     generatedBy,
     notifyUser: customerUser._id,
@@ -85,7 +84,7 @@ const generateBookingConfirmation = async (bookingId, generatedBy) => {
   const lang = booking.customer.preferredLanguage || 'en';
 
   const fileName = `confirmation-${booking.bookingReference}-${Date.now()}.pdf`;
-  const filePath = await generatePdfDocument(
+  const buffer = await generatePdfDocument(
     'booking_confirmation',
     {
       referenceNumber: booking.bookingReference,
@@ -101,7 +100,6 @@ const generateBookingConfirmation = async (bookingId, generatedBy) => {
       },
       notes: 'This confirms your booking with Roxaval Travels. Thank you for choosing us!',
     },
-    fileName,
     lang
   );
 
@@ -110,7 +108,7 @@ const generateBookingConfirmation = async (bookingId, generatedBy) => {
     referenceNumber: booking.bookingReference,
     booking: booking._id,
     customer: booking.customer._id,
-    filePath,
+    buffer,
     fileName,
     generatedBy,
     notifyUser: customerUser._id,
@@ -125,7 +123,7 @@ const generateInvoice = async (bookingId, generatedBy) => {
   const invoiceRef = generateReference('INV');
 
   const fileName = `invoice-${invoiceRef}-${Date.now()}.pdf`;
-  const filePath = await generatePdfDocument(
+  const buffer = await generatePdfDocument(
     'invoice',
     {
       referenceNumber: invoiceRef,
@@ -141,7 +139,6 @@ const generateInvoice = async (bookingId, generatedBy) => {
       },
       notes: 'Payment due as per the agreed schedule. Bank details available on request.',
     },
-    fileName,
     lang
   );
 
@@ -150,7 +147,7 @@ const generateInvoice = async (bookingId, generatedBy) => {
     referenceNumber: invoiceRef,
     booking: booking._id,
     customer: booking.customer._id,
-    filePath,
+    buffer,
     fileName,
     generatedBy,
   });
@@ -165,7 +162,7 @@ const generatePaymentReceipt = async (paymentId, generatedBy) => {
   const lang = payment.customer.preferredLanguage || 'en';
 
   const fileName = `receipt-${payment.paymentReference}-${Date.now()}.pdf`;
-  const filePath = await generatePdfDocument(
+  const buffer = await generatePdfDocument(
     'payment_receipt',
     {
       referenceNumber: payment.paymentReference,
@@ -179,7 +176,6 @@ const generatePaymentReceipt = async (paymentId, generatedBy) => {
       },
       notes: 'Thank you for your payment.',
     },
-    fileName,
     lang
   );
 
@@ -188,7 +184,7 @@ const generatePaymentReceipt = async (paymentId, generatedBy) => {
     referenceNumber: payment.paymentReference,
     booking: payment.booking,
     customer: payment.customer._id,
-    filePath,
+    buffer,
     fileName,
     generatedBy,
   });
@@ -205,7 +201,7 @@ const generateQuotation = async (itineraryId, generatedBy) => {
   const quoteRef = generateReference('QUO');
 
   const fileName = `quotation-${quoteRef}-${Date.now()}.pdf`;
-  const filePath = await generatePdfDocument(
+  const buffer = await generatePdfDocument(
     'quotation',
     {
       referenceNumber: quoteRef,
@@ -220,7 +216,6 @@ const generateQuotation = async (itineraryId, generatedBy) => {
       },
       notes: itinerary.customerFacingNotes || 'This quotation is valid for 14 days from the date of issue.',
     },
-    fileName,
     lang
   );
 
@@ -228,14 +223,17 @@ const generateQuotation = async (itineraryId, generatedBy) => {
     type: 'quotation',
     referenceNumber: quoteRef,
     customer: itinerary.customer._id,
-    filePath,
+    buffer,
     fileName,
     generatedBy,
   });
 };
 
-async function saveDocumentRecord({ type, referenceNumber, booking, customer, hotel, filePath, fileName, generatedBy, notifyUser, notifyMessage }) {
-  const fileUrl = `/uploads/documents/${path.basename(filePath)}`;
+async function saveDocumentRecord({ type, referenceNumber, booking, customer, hotel, buffer, fileName, generatedBy, notifyUser, notifyMessage }) {
+  // 'raw', not 'auto'/'image', and the .pdf suffix is stripped from the
+  // public_id — see hotelVoucher.service.js#renderAndSavePdf.
+  const uploaded = await uploadBuffer(buffer, { folder: 'documents', resourceType: 'raw', publicId: fileName.replace(/\.pdf$/i, '') });
+  const fileUrl = uploaded.secure_url;
   const doc = await Document.create({
     type,
     referenceNumber,
