@@ -26,6 +26,7 @@ import {
 import { HotelPickerModal, type RoomOccupancy } from '../../components/itinerary-picker/HotelPickerModal';
 import { ActivityPickerModal } from '../../components/itinerary-picker/ActivityPickerModal';
 import { TransferPickerModal } from '../../components/itinerary-picker/TransferPickerModal';
+import { HotelVouchersPanel } from '../../components/HotelVouchersPanel';
 
 const PRIORITY_OPTIONS = ['Low', 'Medium', 'High'];
 
@@ -230,6 +231,11 @@ interface RequestDetail {
   assignedAdmin?: string;
   itinerary?: ItineraryDetail;
   revisionHistory: { action: string; note: string; at: string }[];
+  // The booking created once the customer accepts this request's itinerary
+  // (see booking.service.js#createFromItinerary) — null until then, and
+  // still not Confirmed until payment is verified, at which point hotel
+  // vouchers become available.
+  linkedBooking?: { _id: string; bookingReference: string; status: string } | null;
 }
 
 const makeKey = () => Math.random().toString(36).slice(2);
@@ -1390,6 +1396,12 @@ export function AdminCustomRequestDetail() {
           }
         </div>
       </div>
+
+      {request.linkedBooking &&
+      <div className="mt-6">
+          <HotelVouchersPanel bookingId={request.linkedBooking._id} bookingStatus={request.linkedBooking.status} />
+        </div>
+      }
 
       {pickerDayIndex !== null &&
       <HotelPickerModal

@@ -1,4 +1,4 @@
-const { CustomTourRequest, Customer, Admin } = require('../models');
+const { CustomTourRequest, Customer, Admin, Booking } = require('../models');
 const catchAsync = require('../utils/catchAsync');
 const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
@@ -138,6 +138,17 @@ const getRequestById = catchAsync(async (req, res) => {
     .populate(populateItinerary);
   if (!request) throw ApiError.notFound('Custom tour request not found');
   const data = localizeDoc(request, req.lang || 'en', translatableFields);
+
+  // The booking created from this request's accepted itinerary (if any) —
+  // no direct ref exists, so it's looked up by itinerary. Surfaced here so
+  // the admin can generate/manage hotel vouchers without leaving this page.
+  if (request.itinerary) {
+    const booking = await Booking.findOne({ itinerary: request.itinerary._id }).select('bookingReference status');
+    data.linkedBooking = booking ? { _id: booking._id, bookingReference: booking.bookingReference, status: booking.status } : null;
+  } else {
+    data.linkedBooking = null;
+  }
+
   new ApiResponse(200, data, 'Request fetched').send(res);
 });
 

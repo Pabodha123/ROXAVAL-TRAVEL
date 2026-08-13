@@ -22,6 +22,11 @@ const update = catchAsync(async (req, res) => {
   new ApiResponse(200, voucher, 'Hotel voucher updated').send(res);
 });
 
+const remove = catchAsync(async (req, res) => {
+  await hotelVoucherService.deleteVoucher(req.params.id);
+  new ApiResponse(200, null, 'Hotel voucher deleted').send(res);
+});
+
 const emailToHotel = catchAsync(async (req, res) => {
   const voucher = await hotelVoucherService.emailVoucher(req.params.id, 'hotel');
   new ApiResponse(200, voucher, 'Voucher emailed to hotel').send(res);
@@ -32,4 +37,4 @@ const emailToCustomer = catchAsync(async (req, res) => {
   new ApiResponse(200, voucher, 'Voucher emailed to customer').send(res);
 });
 
-module.exports = { generateForBooking, listForBooking, getOne, update, emailToHotel, emailToCustomer };
+module.exports = { generateForBooking, listForBooking, getOne, update, remove, emailToHotel, emailToCustomer };

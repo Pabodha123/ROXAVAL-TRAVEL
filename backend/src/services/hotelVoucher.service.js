@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const { Booking, HotelVoucher, Document, Customer } = require('../models');
 const ApiError = require('../utils/ApiError');
@@ -218,6 +219,26 @@ const updateVoucher = async (voucherId, adminId, patch) => {
   return voucher;
 };
 
+/**
+ * Deletes a voucher that was never actually sent anywhere — once a voucher
+ * has gone out to a hotel or customer it's part of the real communication
+ * history, so it must be superseded (via regeneration) rather than erased.
+ */
+const deleteVoucher = async (voucherId) => {
+  const voucher = await HotelVoucher.findById(voucherId).populate('document');
+  if (!voucher) throw ApiError.notFound('Hotel voucher not found.');
+  if (voucher.status === 'Sent') {
+    throw ApiError.badRequest('This voucher has already been sent and cannot be deleted. Regenerate vouchers for the booking instead.');
+  }
+
+  if (voucher.document) {
+    const filePath = path.resolve(process.cwd(), env.UPLOADS.documentsDir, voucher.document.fileName);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    await Document.findByIdAndDelete(voucher.document._id);
+  }
+  await voucher.deleteOne();
+};
+
 const emailVoucher = async (voucherId, audience) => {
   const voucher = await HotelVoucher.findById(voucherId).populate('document');
   if (!voucher) throw ApiError.notFound('Hotel voucher not found.');
@@ -267,6 +288,7 @@ module.exports = {
   groupHotelStays,
   generateVouchersForBooking,
   updateVoucher,
+  deleteVoucher,
   emailVoucher,
   listVouchersForBooking,
   getVoucherById,

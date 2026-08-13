@@ -8,6 +8,7 @@ router.use(protect, restrictTo('admin', 'superadmin'));
 
 router.get('/:id', controller.getOne);
 router.patch('/:id', validate({ body: updateHotelVoucherSchema }), controller.update);
+router.delete('/:id', controller.remove);
 router.post('/:id/email-hotel', controller.emailToHotel);
 router.post('/:id/email-customer', controller.emailToCustomer);
 
