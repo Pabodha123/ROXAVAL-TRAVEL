@@ -32,8 +32,8 @@ function drawHeader(doc, title) {
     .fontSize(9)
     .font('Helvetica')
     .text(env.COMPANY.address, 110, startY + 20)
-    .text(`${env.COMPANY.phone}  |  ${env.COMPANY.email}`, 110, startY + 33)
-    .text(env.COMPANY.website, 110, startY + 46);
+    .text(`WhatsApp (SL): ${env.COMPANY.phone}  |  WhatsApp (UAE): ${env.COMPANY.phoneUAE}`, 110, startY + 33)
+    .text(`${env.COMPANY.email}  |  ${env.COMPANY.website}`, 110, startY + 46);
 
   doc
     .fillColor(BRAND_COLOR)

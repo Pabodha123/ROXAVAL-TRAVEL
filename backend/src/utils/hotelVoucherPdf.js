@@ -26,8 +26,8 @@ function drawHeader(doc, s) {
     .font('Helvetica')
     .fontSize(8)
     .text(env.COMPANY.address, 105, startY + 18)
-    .text(`${env.COMPANY.phone}  |  ${env.COMPANY.email}`, 105, startY + 30)
-    .text(env.COMPANY.website, 105, startY + 42);
+    .text(`WhatsApp (SL): ${env.COMPANY.phone}  |  WhatsApp (UAE): ${env.COMPANY.phoneUAE}`, 105, startY + 30)
+    .text(`${env.COMPANY.email}  |  ${env.COMPANY.website}`, 105, startY + 42);
 
   doc.fillColor(BRAND_COLOR).font('Helvetica-Bold').fontSize(18).text(s.hotelVoucher, 0, startY, { align: 'right' });
 

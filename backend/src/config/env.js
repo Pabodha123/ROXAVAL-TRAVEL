@@ -31,10 +31,11 @@ const env = {
 
   COMPANY: {
     name: process.env.COMPANY_NAME || 'Roxaval Travels',
-    address: process.env.COMPANY_ADDRESS || '',
-    phone: process.env.COMPANY_PHONE || '',
-    email: process.env.COMPANY_EMAIL || '',
-    website: process.env.COMPANY_WEBSITE || '',
+    address: process.env.COMPANY_ADDRESS || 'No 221 Ganemulla Road, Kandana, Sri Lanka',
+    phone: process.env.COMPANY_PHONE || '+94 77 880 3522',
+    phoneUAE: process.env.COMPANY_PHONE_UAE || '+971 54 264 2902',
+    email: process.env.COMPANY_EMAIL || 'info@roxavaltravels.com',
+    website: process.env.COMPANY_WEBSITE || 'www.roxavaltravels.com',
     logoPath: process.env.COMPANY_LOGO_PATH || 'src/docs/templates/logo.png',
   },
 
