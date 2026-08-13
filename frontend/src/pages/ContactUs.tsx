@@ -24,7 +24,7 @@ interface Settings {
 const FAQS = [
 { q: 'How quickly will I get a response?', a: 'Our team typically replies within 24 hours, often much sooner during business hours.' },
 { q: 'Can I customize any tour package?', a: 'Absolutely - every package can be tailored, or we can design a fully custom itinerary from scratch via "Plan My Tour".' },
-{ q: 'What payment methods do you accept?', a: 'Bank transfer, WhatsApp-coordinated payment, and cash on arrival for select bookings.' },
+{ q: 'What payment methods do you accept?', a: 'Online bank transfer (with an uploaded receipt for our team to verify), or WhatsApp-coordinated payment.' },
 { q: 'Do you offer airport pickup?', a: 'Yes, airport transfers can be included in any custom itinerary or package booking.' },
 { q: 'Is travel insurance included?', a: 'Travel insurance is not included by default - see our Terms & Conditions for details and recommendations.' }];
 

@@ -165,16 +165,25 @@ function BookingDocuments({ bookingId }: { bookingId: string }) {
 
 }
 
+interface BankDetails { bankName: string; accountName: string; accountNumber: string; branch: string; swift: string }
+
 function PayNowPanel({ booking, onPaid }: {booking: BookingItem;onPaid: () => void;}) {
   const toast = useToast();
   const remaining = Math.max(Math.round((booking.pricing.totalAmount - (booking.pricing.amountPaid || 0)) * 100) / 100, 0);
-  const [method, setMethod] = useState<'bank_transfer' | 'whatsapp' | 'cash'>('bank_transfer');
+  const [method, setMethod] = useState<'bank_transfer' | 'whatsapp'>('bank_transfer');
   const [paymentType, setPaymentType] = useState<'advance' | 'balance' | 'full'>('advance');
   const [amount, setAmount] = useState(Math.min(booking.pricing.advanceAmount, remaining));
   const [bankReference, setBankReference] = useState('');
   const [receipt, setReceipt] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
+  const [bankDetails, setBankDetails] = useState<BankDetails | null>(null);
+
+  useEffect(() => {
+    apiGetOne<{ bankDetails: BankDetails }>('/settings').
+    then((s) => setBankDetails(s.bankDetails)).
+    catch(() => {});
+  }, []);
 
   // 'balance' and 'full' both mean "pay off what's left" — using the actual
   // remaining amount (not the static at-booking-time balanceAmount) so this
@@ -185,6 +194,10 @@ function PayNowPanel({ booking, onPaid }: {booking: BookingItem;onPaid: () => vo
   };
 
   const submit = async () => {
+    if (method === 'bank_transfer' && !receipt) {
+      toast('Please upload your transfer slip/receipt before submitting.', 'error');
+      return;
+    }
     setSubmitting(true);
     try {
       const { payment, whatsappLink: link } = await apiPost<{ payment: { _id: string }; whatsappLink?: string }>('/payments', {
@@ -230,22 +243,39 @@ function PayNowPanel({ booking, onPaid }: {booking: BookingItem;onPaid: () => vo
       <div>
         <label className="mb-1.5 block text-xs font-medium text-forest/70">Payment Method</label>
         <select value={method} onChange={(e) => setMethod(e.target.value as typeof method)} className="w-full rounded-xl border border-forest/15 px-3 py-2 text-sm outline-none focus:border-emerald">
-          <option value="bank_transfer">Bank Transfer</option>
+          <option value="bank_transfer">Online Bank Transfer</option>
           <option value="whatsapp">WhatsApp</option>
-          <option value="cash">Cash on Arrival</option>
         </select>
       </div>
       {method === 'bank_transfer' &&
       <>
+          {bankDetails && (bankDetails.bankName || bankDetails.accountNumber) ?
+          <div className="rounded-xl border border-emerald/20 bg-emerald/5 p-3 text-xs text-forest/80">
+            <p className="mb-1.5 font-semibold text-forest">Transfer to:</p>
+            {bankDetails.bankName && <p>Bank: {bankDetails.bankName}</p>}
+            {bankDetails.accountName && <p>Account Name: {bankDetails.accountName}</p>}
+            {bankDetails.accountNumber && <p>Account No: {bankDetails.accountNumber}</p>}
+            {bankDetails.branch && <p>Branch: {bankDetails.branch}</p>}
+            {bankDetails.swift && <p>SWIFT: {bankDetails.swift}</p>}
+          </div> :
+          <div className="rounded-xl border border-gold/30 bg-gold/10 p-3 text-xs text-forest/80">
+            Our bank account details aren't set up yet - please contact us on WhatsApp for transfer instructions before paying.
+          </div>
+          }
           <div>
             <label className="mb-1.5 block text-xs font-medium text-forest/70">Bank Reference (optional)</label>
             <input type="text" value={bankReference} onChange={(e) => setBankReference(e.target.value)} className="w-full rounded-xl border border-forest/15 px-3 py-2 text-sm outline-none focus:border-emerald" />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-forest/70">Upload Receipt</label>
+            <label className="mb-1.5 block text-xs font-medium text-forest/70">Upload Transfer Slip *</label>
             <input type="file" accept="image/*,application/pdf" onChange={(e) => setReceipt(e.target.files?.[0] || null)} className="w-full text-xs text-forest/70" />
           </div>
         </>
+      }
+      {method === 'whatsapp' &&
+      <p className="rounded-xl border border-emerald/20 bg-emerald/5 p-3 text-xs text-forest/80">
+          This opens WhatsApp with your tour and payment details pre-filled to send to us. We'll reply with a secure payment link you can pay through.
+        </p>
       }
       <button onClick={submit} disabled={submitting} className="flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-forest transition-transform hover:scale-[1.02] disabled:opacity-70">
         {submitting && <Loader2Icon className="h-4 w-4 animate-spin" />}

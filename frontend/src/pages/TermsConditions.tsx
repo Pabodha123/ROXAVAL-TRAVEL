@@ -16,7 +16,7 @@ const SECTIONS: Section[] = [
 {
   id: 'payment-policy',
   title: 'Payment Policy',
-  body: <p>A non-refundable advance payment (typically 30% of the total tour cost) is required to confirm a booking, with the remaining balance due before the tour start date as specified at the time of booking. Accepted payment methods include bank transfer, WhatsApp-coordinated payment and cash on arrival for select bookings.</p>
+  body: <p>A non-refundable advance payment (typically 30% of the total tour cost) is required to confirm a booking, with the remaining balance due before the tour start date as specified at the time of booking. Accepted payment methods are online bank transfer (verified against an uploaded receipt) and WhatsApp-coordinated payment.</p>
 },
 {
   id: 'cancellation-policy',

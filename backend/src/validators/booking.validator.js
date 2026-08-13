@@ -27,7 +27,7 @@ const updateBookingStatusSchema = z.object({
 
 const createPaymentSchema = z.object({
   booking: z.string().min(1, 'Booking is required'),
-  method: z.enum(['card', 'bank_transfer', 'whatsapp', 'cash']),
+  method: z.enum(['card', 'bank_transfer', 'whatsapp']),
   paymentType: z.enum(['advance', 'balance', 'full']),
   amount: z.number().positive(),
   currency: z.string().optional(),

@@ -58,7 +58,7 @@ const DEFAULT_CANCELLATION_POLICY = `Payment Policy
 - Deposit: 50% of the total package cost is required at the time of booking to secure your reservation.
 - Balance Payment: The remaining 50% must be paid no later than 14 days before or on arrival day in Sri Lanka.
 - For last-minute bookings (within 14 days of travel), full payment is required upon confirmation.
-- Payments can be made via bank transfer or cash on arrival.
+- Payments can be made via online bank transfer or WhatsApp-coordinated payment.
 
 Cancellation Policy
 - More than 30 days before arrival: Full refund of deposit (minus any bank/transaction charges).

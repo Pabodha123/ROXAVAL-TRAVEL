@@ -14,7 +14,7 @@ const paymentSchema = new mongoose.Schema(
 
     method: {
       type: String,
-      enum: ['card', 'bank_transfer', 'whatsapp', 'cash'],
+      enum: ['card', 'bank_transfer', 'whatsapp'],
       required: true,
     },
     paymentType: { type: String, enum: ['advance', 'balance', 'full'], required: true },
