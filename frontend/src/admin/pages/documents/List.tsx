@@ -3,7 +3,7 @@ import { DownloadIcon, SearchIcon } from 'lucide-react';
 import { useAdminList } from '../../hooks/useAdminList';
 import { DataTable, Column } from '../../components/DataTable';
 import { PageHeader } from '../../components/PageHeader';
-import { resolveFileUrl } from '../../../lib/api';
+import { documentFileUrl } from '../../../lib/api';
 import { formatDate } from '../../../lib/date';
 
 interface AdminDocument {
@@ -40,7 +40,7 @@ export function AdminDocumentsList() {
   { header: 'Generated', render: (d) => formatDate(d.createdAt) },
   {
     header: '', render: (d) =>
-    <a href={resolveFileUrl(d.fileUrl)} target="_blank" rel="noreferrer" className="grid h-8 w-8 place-items-center rounded-lg text-forest/60 hover:bg-cream hover:text-forest">
+    <a href={documentFileUrl(d._id)} target="_blank" rel="noreferrer" className="grid h-8 w-8 place-items-center rounded-lg text-forest/60 hover:bg-cream hover:text-forest">
         <DownloadIcon className="h-4 w-4" />
       </a>
 

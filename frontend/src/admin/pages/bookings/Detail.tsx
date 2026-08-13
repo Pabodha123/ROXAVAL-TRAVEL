@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CalendarIcon, DownloadIcon, Loader2Icon, UsersIcon } from 'lucide-react';
-import { apiGetOne, apiPatch, apiPost, ApiRequestError, resolveFileUrl } from '../../../lib/api';
+import { apiGetOne, apiPatch, apiPost, ApiRequestError, documentFileUrl } from '../../../lib/api';
 import { formatDate, formatDateTime } from '../../../lib/date';
 import { useToast } from '../../components/ToastProvider';
 import { useConfirm } from '../../components/ConfirmDialog';
@@ -87,10 +87,10 @@ export function AdminBookingDetail() {
   const generateDocument = async (docPath: string, label: string) => {
     setGenerating(docPath);
     try {
-      const result = await apiPost<{ fileUrl: string } | { fileUrl: string }[]>(`/documents/bookings/${id}/${docPath}`);
+      const result = await apiPost<{ _id: string } | { _id: string }[]>(`/documents/bookings/${id}/${docPath}`);
       const first = Array.isArray(result) ? result[0] : result;
-      if (first?.fileUrl) {
-        window.open(resolveFileUrl(first.fileUrl), '_blank');
+      if (first?._id) {
+        window.open(documentFileUrl(first._id), '_blank');
         toast(`${label} generated.`);
       }
     } catch (err) {

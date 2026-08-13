@@ -8,6 +8,16 @@ export const API_ORIGIN = API_BASE_URL.replace(/\/api\/v\d+\/?$/, '');
 // legacy relative `/uploads/...` shape older records may still have.
 export const resolveFileUrl = (url: string) => (/^https?:\/\//i.test(url) ? url : `${API_ORIGIN}${url}`);
 
+// Documents are opened through our own API instead of linking straight to
+// Cloudinary: the backend proxies the file with the correct
+// Content-Type/Content-Disposition (Cloudinary serves raw PDFs with a
+// generic type, since its account-level security policy blocks anything
+// it recognizes as a PDF from being delivered directly), and this is also
+// where document-level access control (e.g. hotel vouchers being
+// admin-only) is enforced. The auth cookie rides along automatically on
+// this kind of same-origin navigation.
+export const documentFileUrl = (documentId: string) => `${API_BASE_URL}/documents/${documentId}/file`;
+
 export interface ApiMeta {
   total: number;
   page: number;

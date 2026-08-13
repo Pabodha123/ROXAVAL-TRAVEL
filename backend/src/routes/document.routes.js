@@ -7,6 +7,11 @@ router.use(protect);
 // Customer: view/download their own generated documents
 router.get('/my-documents', restrictTo('customer'), controller.getMyDocuments);
 
+// Any logged-in user: stream a document's PDF (ownership/type checked
+// inside the handler, since a customer may open their own non-voucher
+// documents while staff may open any).
+router.get('/:id/file', controller.viewFile);
+
 // Admin: generate documents + view all
 router.use(restrictTo('admin', 'superadmin'));
 router.get('/', controller.getAllDocuments);
