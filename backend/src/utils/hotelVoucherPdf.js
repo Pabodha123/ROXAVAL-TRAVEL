@@ -90,6 +90,34 @@ function drawDetailsTable(doc, { x, y, width, title, rows }) {
   return cursorY + 14;
 }
 
+/**
+ * Branded sign-off panel — logo, wordmark, licence line and contact
+ * details on a dark card, echoing the email-signature format hotel
+ * partners already receive from Roxaval so the voucher closes the same way.
+ */
+function drawBrandFooterPanel(doc, y) {
+  const x = 40;
+  const width = PAGE_WIDTH;
+  const height = 66;
+  doc.rect(x, y, width, height).fill('#0d3b36');
+
+  const logoPath = path.resolve(process.cwd(), env.COMPANY.logoPath);
+  if (fs.existsSync(logoPath)) {
+    doc.image(logoPath, x + 14, y + 13, { width: 40, height: 40 });
+  }
+
+  doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(13).text('ROXAVAL TRAVELS', x + 64, y + 12);
+  doc.fillColor(GOLD_COLOR).font('Helvetica-Bold').fontSize(7).text('SLTDA AUTHORIZED TRAVEL AGENT', x + 64, y + 27);
+  doc
+    .fillColor('#d1d5db')
+    .font('Helvetica')
+    .fontSize(7.5)
+    .text(`WhatsApp (SL): ${env.COMPANY.phone}   |   WhatsApp (UAE): ${env.COMPANY.phoneUAE}   |   ${env.COMPANY.email}`, x + 64, y + 40)
+    .text(`${env.COMPANY.address}   |   ${env.COMPANY.website}`, x + 64, y + 51);
+
+  return y + height + 12;
+}
+
 function drawTable(doc, { x, y, columns, rows }) {
   let cursorY = y;
   const rowHeight = 26;
@@ -141,6 +169,14 @@ async function generateHotelVoucherPdf(voucher, lang = 'en') {
 
   drawHeader(doc, s);
 
+  // Greeting — the voucher doubles as the booking-request format hotel
+  // partners already recognize from Roxaval's emails, so it opens the same way.
+  doc.font('Helvetica').fontSize(9.5).fillColor(TEXT_COLOR);
+  doc.text(s.greetingSalutation, 40, doc.y);
+  doc.text(s.greetingIntro, 40, doc.y + 2);
+  doc.fillColor(MUTED_COLOR).fontSize(9).text(s.greetingRequest, 40, doc.y + 4, { width: PAGE_WIDTH });
+  doc.y += 10;
+
   // Voucher / booking details — bordered table with a branded header bar,
   // mirroring the booking-request format hotel partners already recognize.
   const guestSummary = `${voucher.guests.adults} Adult${voucher.guests.adults === 1 ? '' : 's'}${
@@ -164,15 +200,32 @@ async function generateHotelVoucherPdf(voucher, lang = 'en') {
   });
   doc.y = detailsY;
 
-  // Hotel block
+  // Hotel block — location/contact are always labeled and shown (falling
+  // back to '-') so a hotel record missing them is obvious at a glance,
+  // rather than the line just silently disappearing.
   const hotel = voucher.hotelSnapshot;
   drawStars(doc, 40, doc.y, hotel.starRating || 0);
   doc.y += 20;
   doc.font('Helvetica-Bold').fontSize(14).fillColor(TEXT_COLOR).text(hotel.name || '-', 40, doc.y);
-  doc.font('Helvetica').fontSize(9).fillColor(MUTED_COLOR).text(hotel.address || '', 40, doc.y + 4, { width: 515 });
-  if (hotel.contactPhone || hotel.contactEmail) {
-    doc.text(`${hotel.contactPhone || ''}${hotel.contactPhone && hotel.contactEmail ? '  |  ' : ''}${hotel.contactEmail || ''}`, 40, doc.y + 4);
-  }
+  doc.y += 18;
+  doc
+    .font('Helvetica-Bold')
+    .fontSize(7.5)
+    .fillColor(MUTED_COLOR)
+    .text(`${s.location.toUpperCase()}:  `, 40, doc.y, { continued: true })
+    .font('Helvetica')
+    .fillColor(TEXT_COLOR)
+    .text(hotel.address || '-');
+  doc.y += 12;
+  const hotelContact = `${hotel.contactPhone || '-'}${hotel.contactEmail ? `  |  ${hotel.contactEmail}` : ''}`;
+  doc
+    .font('Helvetica-Bold')
+    .fontSize(7.5)
+    .fillColor(MUTED_COLOR)
+    .text(`${s.contact.toUpperCase()}:  `, 40, doc.y, { continued: true })
+    .font('Helvetica')
+    .fillColor(TEXT_COLOR)
+    .text(hotelContact);
   doc.y += 14;
 
   // Stay details table
@@ -208,24 +261,27 @@ async function generateHotelVoucherPdf(voucher, lang = 'en') {
     doc.y += 34;
   }
 
-  if (voucher.ratePerNight) {
-    doc.font('Helvetica').fontSize(10).fillColor(TEXT_COLOR).text(s.ratePerNight, 350, doc.y, { continued: true, width: 100 });
-    doc.font('Helvetica-Bold').text(`  ${voucher.ratePerNight.toLocaleString()} USD`, { align: 'right' });
-    doc.font('Helvetica-Bold').fontSize(11).fillColor(BRAND_COLOR).text(s.grandTotal, 350, doc.y + 6, { continued: true, width: 100 });
-    doc.text(`  ${(voucher.totalAmount || 0).toLocaleString()} USD`, { align: 'right' });
-    doc.y += 26;
-  }
+  // Cost — always shown (with a '-' fallback) rather than only when a rate
+  // has been entered, so this section is never silently missing.
+  doc.font('Helvetica').fontSize(10).fillColor(TEXT_COLOR).text(s.ratePerNight, 350, doc.y, { continued: true, width: 100 });
+  doc.font('Helvetica-Bold').text(`  ${voucher.ratePerNight ? `${voucher.ratePerNight.toLocaleString()} USD` : '-'}`, { align: 'right' });
+  doc.font('Helvetica-Bold').fontSize(11).fillColor(BRAND_COLOR).text(s.grandTotal, 350, doc.y + 6, { continued: true, width: 100 });
+  doc.text(`  ${voucher.ratePerNight ? `${(voucher.totalAmount || 0).toLocaleString()} USD` : '-'}`, { align: 'right' });
+  doc.y += 26;
 
-  doc.font('Helvetica').fontSize(8.5).fillColor(MUTED_COLOR).text(
-    s.confirmationNote,
-    40,
-    doc.y + 6,
-    { width: 515 }
-  );
+  doc.font('Helvetica').fontSize(8.5).fillColor(MUTED_COLOR).text(`${s.confirmationNote} ${s.lookingForward}`, 40, doc.y + 6, { width: 515 });
+  doc.y += 32;
+
+  doc.font('Helvetica-Bold').fontSize(9).fillColor(TEXT_COLOR).text(s.signOff, 40, doc.y);
+  doc.text(s.hotelBookingsTeam, 40, doc.y + 13);
   doc.y += 34;
 
-  // Footer: signature + stamp + QR
-  const footerY = Math.max(doc.y, doc.page.height - 170);
+  // Signature + stamp + QR, flowing with the rest of the content instead of
+  // being pinned to the page bottom (that anchoring previously stranded the
+  // final line alone on a blank page 2 whenever it landed too close to the
+  // margin — see drawBrandFooterPanel's own note below for the same class
+  // of fix applied there).
+  const footerY = doc.y + 10;
   doc.moveTo(40, footerY).lineTo(295, footerY).strokeColor('#9ca3af').stroke();
   doc.font('Helvetica').fontSize(8).fillColor(MUTED_COLOR).text(s.authorizedSignature, 40, footerY + 4);
 
@@ -239,13 +295,13 @@ async function generateHotelVoucherPdf(voucher, lang = 'en') {
   const qrBuffer = await QRCode.toBuffer(qrText, { type: 'png', margin: 1, width: 90 });
   doc.image(qrBuffer, 465, footerY - 50, { width: 60 });
 
+  doc.y = footerY + 26;
+  doc.y = drawBrandFooterPanel(doc, doc.y);
+
   doc
     .fontSize(7)
     .fillColor(MUTED_COLOR)
-    // A few points shy of the page's bottom margin (page.height - 40) — sitting
-    // exactly on it leaves no room for the line's own height, which makes
-    // PDFKit auto-paginate and strand this text alone on a blank page 2.
-    .text(`${env.COMPANY.name} • ${env.COMPANY.website} • ${s.generatedOn} ${formatDate(new Date())}`, 40, doc.page.height - 55, {
+    .text(`${env.COMPANY.name} • ${env.COMPANY.website} • ${s.generatedOn} ${formatDate(new Date())}`, 40, doc.y, {
       align: 'center',
       width: 515,
     });
