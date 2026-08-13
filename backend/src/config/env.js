@@ -29,13 +29,17 @@ const env = {
   SMTP_PASS: process.env.SMTP_PASS,
   EMAIL_FROM: process.env.EMAIL_FROM || 'Roxaval Travels <no-reply@roxavaltravels.com>',
 
+  // Fixed, not env-driven: a stale COMPANY_ADDRESS/COMPANY_PHONE set in
+  // Vercel's dashboard once kept silently overriding real business info
+  // pushed here in code, with no way to fix it short of editing Vercel's
+  // env vars by hand. Hardcoding removes that whole failure mode.
   COMPANY: {
-    name: process.env.COMPANY_NAME || 'Roxaval Travels',
-    address: process.env.COMPANY_ADDRESS || 'No 221 Ganemulla Road, Kandana, Sri Lanka',
-    phone: process.env.COMPANY_PHONE || '+94 77 880 3522',
-    phoneUAE: process.env.COMPANY_PHONE_UAE || '+971 54 264 2902',
-    email: process.env.COMPANY_EMAIL || 'info@roxavaltravels.com',
-    website: process.env.COMPANY_WEBSITE || 'www.roxavaltravels.com',
+    name: 'Roxaval Travels',
+    address: 'No 221 Ganemulla Road, Kandana, Sri Lanka',
+    phone: '+94 77 880 3522',
+    phoneUAE: '+971 54 264 2902',
+    email: 'info@roxavaltravels.com',
+    website: 'www.roxavaltravels.com',
     logoPath: process.env.COMPANY_LOGO_PATH || 'src/docs/templates/logo.png',
   },
 
