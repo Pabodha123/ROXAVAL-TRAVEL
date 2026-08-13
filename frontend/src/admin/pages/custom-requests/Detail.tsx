@@ -314,7 +314,6 @@ export function AdminCustomRequestDetail() {
   const [hotelOptions, setHotelOptions] = useState<RefOption[]>([]);
   const [guideOptions, setGuideOptions] = useState<RefOption[]>([]);
   const [vehicleOptions, setVehicleOptions] = useState<RefOption[]>([]);
-  const [guidePricePerDay, setGuidePricePerDay] = useState<Record<string, number>>({});
   const [vehiclePricePerDay, setVehiclePricePerDay] = useState<Record<string, number>>({});
 
   const [title, setTitle] = useState('');
@@ -372,7 +371,6 @@ export function AdminCustomRequestDetail() {
       setHotelOptions(h.data.map((x) => ({ value: x._id, label: x.name })));
       setGuideOptions(g.data.map((x) => ({ value: x._id, label: x.name })));
       setVehicleOptions(v.data.map((x) => ({ value: x._id, label: x.name })));
-      setGuidePricePerDay(Object.fromEntries(g.data.map((x) => [x._id, x.pricePerDay || 0])));
       setVehiclePricePerDay(Object.fromEntries(v.data.map((x) => [x._id, x.pricePerDay || 0])));
     });
   }, []);
@@ -665,8 +663,10 @@ export function AdminCustomRequestDetail() {
     setPickerKind(null);
   };
 
-  const guideVehicleCost = (tourGuide ? (guidePricePerDay[tourGuide] || 0) * days.length : 0) +
-  (vehicle ? (vehiclePricePerDay[vehicle] || 0) * days.length : 0);
+  // Guide cost isn't added separately - the vehicle's day rate already
+  // includes the driver/guide, so only the vehicle contributes here. The
+  // Tour Guide field is still selectable for assigning who goes on the trip.
+  const guideVehicleCost = vehicle ? (vehiclePricePerDay[vehicle] || 0) * days.length : 0;
   const suggestedTotalWithSightseeing = days.reduce((sum, d) => sum + dayCostOf(d), 0) + guideVehicleCost;
   const suggestedTotalWithoutSightseeing = days.reduce((sum, d) => sum + dayCostOf(d, { excludeSightseeing: true }), 0) + guideVehicleCost;
   const suggestedTotal = sightseeingIncluded ? suggestedTotalWithSightseeing : suggestedTotalWithoutSightseeing;
@@ -1347,6 +1347,7 @@ export function AdminCustomRequestDetail() {
                   <SelectField label="Tour Guide" value={tourGuide} onChange={setTourGuide} options={[{ label: 'None', value: '' }, ...guideOptions]} />
                   <SelectField label="Vehicle" value={vehicle} onChange={setVehicle} options={[{ label: 'None', value: '' }, ...vehicleOptions]} />
                 </div>
+                <p className="mt-2 text-xs text-forest/50">Guide cost isn't added to the total separately - the vehicle's day rate already covers the driver/guide.</p>
               </div>
 
               <div className="rounded-2xl border border-emerald/20 bg-emerald/5 p-6">
@@ -1355,8 +1356,8 @@ export function AdminCustomRequestDetail() {
                     <p className="font-display text-sm font-semibold text-forest">Suggested Total (from selections)</p>
                     <p className="mt-1 text-xs text-forest/60">
                       {sightseeingIncluded ?
-                    "Sum of every day's hotel, sightseeing and transfer costs, plus guide/vehicle day rates." :
-                    "Sum of every day's hotel and transfer costs, plus guide/vehicle day rates - sightseeing/activity costs excluded."}
+                    "Sum of every day's hotel, sightseeing and transfer costs, plus the vehicle's day rate." :
+                    "Sum of every day's hotel and transfer costs, plus the vehicle's day rate - sightseeing/activity costs excluded."}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
