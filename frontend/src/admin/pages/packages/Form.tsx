@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Loader2Icon, SaveIcon, TrashIcon } from 'lucide-react';
 import { apiGetList, apiGetOne, apiPatch, apiPost, ApiRequestError } from '../../../lib/api';
@@ -71,6 +71,13 @@ interface AdminTourPackageRaw {
 
 const emptyDay = (n: number): ItineraryDayForm => ({ dayNumber: n, title: emptyLocalizedString(), description: emptyLocalizedString(), destinations: [], activities: [], hotel: '', meals: [] });
 
+// Keep optional references out of the API payload when they are blank. This
+// also creates a stable representation for detecting whether the itinerary
+// itself has changed during a media-only package edit.
+const serializeItinerary = (days: ItineraryDayForm[]) => JSON.stringify(
+  days.map(({ hotel, ...day }) => ({ ...day, ...(hotel ? { hotel } : {}) }))
+);
+
 export function AdminPackageForm() {
   const { id } = useParams<{id: string;}>();
   const isEdit = !!id;
@@ -105,6 +112,7 @@ export function AdminPackageForm() {
   const [maxTravelers, setMaxTravelers] = useState(20);
   const [status, setStatus] = useState('draft');
   const [isFeatured, setIsFeatured] = useState(false);
+  const initialItinerary = useRef('');
 
   useEffect(() => {
     Promise.all([
@@ -132,7 +140,7 @@ export function AdminPackageForm() {
       setHotels(p.hotels.map((h) => h._id));
       setDurationDays(p.durationDays);
       setDurationNights(p.durationNights);
-      setItinerary(
+      const loadedItinerary =
         p.itinerary.length > 0 ?
         p.itinerary.map((day) => ({
           dayNumber: day.dayNumber,
@@ -143,8 +151,9 @@ export function AdminPackageForm() {
           hotel: day.hotel?._id || '',
           meals: day.meals || []
         })) :
-        [emptyDay(1)]
-      );
+        [emptyDay(1)];
+      setItinerary(loadedItinerary);
+      initialItinerary.current = serializeItinerary(loadedItinerary);
       setIncludedServices(p.includedServices || []);
       setExcludedServices(p.excludedServices || []);
       setDescription(p.description);
@@ -170,6 +179,11 @@ export function AdminPackageForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    const normalizedItinerary = itinerary.map(({ hotel, ...day }) => ({
+      ...day,
+      ...(hotel ? { hotel } : {})
+    }));
+    const itineraryChanged = !isEdit || serializeItinerary(itinerary) !== initialItinerary.current;
     const payload = {
       name,
       category,
@@ -181,7 +195,10 @@ export function AdminPackageForm() {
       hotels,
       durationDays,
       durationNights,
-      itinerary,
+      // Gallery-only edits should not re-submit legacy itinerary data. This
+      // prevents an unrelated itinerary cast failure from blocking media
+      // updates. A changed itinerary is still sent in full.
+      ...(itineraryChanged ? { itinerary: normalizedItinerary } : {}),
       includedServices,
       excludedServices,
       description,

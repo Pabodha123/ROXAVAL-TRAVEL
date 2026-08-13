@@ -7,7 +7,10 @@ const itineraryDaySchema = z.object({
   description: localizedField(5),
   destinations: z.array(z.string()).optional(),
   activities: z.array(z.string()).optional(),
-  hotel: z.string().optional(),
+  // An empty string (days with no hotel assigned send '' from the admin
+  // form) must not reach Mongoose as-is - casting '' to an ObjectId ref
+  // throws, so it's normalized to undefined here at the validation boundary.
+  hotel: z.string().optional().transform((v) => v || undefined),
   meals: z.array(z.enum(['Breakfast', 'Lunch', 'Dinner'])).optional(),
 });
 
