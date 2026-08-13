@@ -4,7 +4,6 @@ const { generateHotelVoucherPdf } = require('../utils/hotelVoucherPdf');
 const { uploadBuffer } = require('../config/cloudinary');
 const { hotelVoucherEmail } = require('../utils/emailTemplates');
 const { sendEmail } = require('../utils/email');
-const { notify } = require('./notification.service');
 
 const addDays = (date, days) => {
   const d = new Date(date);
@@ -180,17 +179,10 @@ const generateVouchersForBooking = async (bookingId, adminId) => {
     created.push(voucher);
   }
 
-  if (customerUser?._id) {
-    await notify({
-      recipient: customerUser._id,
-      type: 'document_ready',
-      title: 'Hotel Voucher(s) Ready',
-      message: `${created.length} hotel voucher(s) for booking ${booking.bookingReference} have been generated and are available in your documents.`,
-      link: `/my-tours`,
-      relatedModel: 'Booking',
-      relatedId: booking._id,
-    });
-  }
+  // No customer-facing notification/email here on purpose: hotel vouchers
+  // are an internal/operational document (see getMyDocuments in
+  // document.controller.js) — the customer only hears about one if and
+  // when an admin explicitly uses Email Customer on it.
 
   return created;
 };
