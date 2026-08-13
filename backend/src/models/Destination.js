@@ -56,6 +56,11 @@ const destinationSchema = new mongoose.Schema(
     },
     isFeatured: { type: Boolean, default: false },
     status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft' },
+    // Shown on the public Destinations catalog page always; only offered as a
+    // pickable option in the customer-facing Custom Tour request wizard when
+    // true. Lets us publish a destination for browsing without it being a
+    // selectable "preferred destination" in quotation requests.
+    showInTourForm: { type: Boolean, default: true },
     seo: {
       metaTitle: { type: String, default: '' },
       metaDescription: { type: String, default: '' },

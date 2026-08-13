@@ -86,7 +86,7 @@ export function CustomTourWizard() {
   const [prefillPackage, setPrefillPackage] = useState<TourPackage | null>(null);
   const [prefillDestinationName, setPrefillDestinationName] = useState<string | null>(null);
 
-  const { items: destinations, loading: destinationsLoading } = useApiList<DestinationRef>('/destinations', { limit: 100 }, 100);
+  const { items: destinations, loading: destinationsLoading } = useApiList<DestinationRef>('/destinations', { limit: 100, showInTourForm: true }, 100);
   const { items: activities, loading: activitiesLoading } = useApiList<Activity>('/activities', { limit: 100 }, 100);
 
   // Keep the ages arrays in sync with the traveler counts — new slots default
