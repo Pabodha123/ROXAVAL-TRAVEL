@@ -41,8 +41,18 @@ const groupHotelStays = (days, tripStartDate) => {
     if (current && current.hotelId === hotelId && day.dayNumber === current.endDay + 1) {
       current.endDay = day.dayNumber;
       (day.meals || []).forEach((m) => current.meals.add(m));
+      current.roomCostTotal += day.roomCost || 0;
     } else {
-      current = { hotelId, hotel: day.hotel, startDay: day.dayNumber, endDay: day.dayNumber, meals: new Set(day.meals || []) };
+      current = {
+        hotelId,
+        hotel: day.hotel,
+        startDay: day.dayNumber,
+        endDay: day.dayNumber,
+        meals: new Set(day.meals || []),
+        roomType: day.roomType || '',
+        numberOfRooms: day.numberOfRooms || 1,
+        roomCostTotal: day.roomCost || 0,
+      };
       stays.push(current);
     }
   });
@@ -60,6 +70,12 @@ const groupHotelStays = (days, tripStartDate) => {
       checkInDate,
       checkOutDate,
       mealPlan: deriveMealPlan(s.meals),
+      roomType: s.roomType,
+      numberOfRooms: s.numberOfRooms,
+      // Sum of each night's admin-set roomCost across the stay - covers
+      // seasonal/varying nightly rates, not just a flat rate * nights.
+      totalAmount: s.roomCostTotal > 0 ? s.roomCostTotal : undefined,
+      ratePerNight: s.roomCostTotal > 0 ? Math.round((s.roomCostTotal / nights) * 100) / 100 : undefined,
     };
   });
 };
@@ -145,7 +161,10 @@ const generateVouchersForBooking = async (bookingId, adminId) => {
       checkOutDate: stay.checkOutDate,
       nights: stay.nights,
       mealPlan: stay.mealPlan,
-      numberOfRooms: 1,
+      roomType: stay.roomType || '',
+      numberOfRooms: stay.numberOfRooms || 1,
+      ratePerNight: stay.ratePerNight,
+      totalAmount: stay.totalAmount,
       customerName: customerUser.fullName,
       customerEmail: customerUser.email,
       customerPhone: customerUser.phone,
