@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { ScrollToTop } from './components/layout/ScrollToTop';
@@ -77,12 +78,19 @@ const Placeholder = ({ title }: {title: string;}) =>
 
 
 export function App() {
+  // Catalog data (destinations, packages, activities, etc.) is fetched by
+  // each page's own effects, most keyed on route params rather than
+  // language - so switching languages via the navbar globe icon wouldn't
+  // otherwise re-fetch already-loaded pages in their new language. Keying
+  // the whole route tree on the active language forces a remount (and so a
+  // fresh, correctly-localized fetch) on every switch.
+  const { i18n } = useTranslation();
   return (
     <BrowserRouter>
       <AuthProvider>
       <ToastProvider>
         <ScrollToTop />
-        <Routes>
+        <Routes key={i18n.language}>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/packages" element={<TourPackages />} />
