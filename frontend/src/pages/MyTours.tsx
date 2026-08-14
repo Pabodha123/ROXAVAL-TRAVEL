@@ -446,7 +446,7 @@ function BookingsTab({ initialSelectedId }: {initialSelectedId?: string;}) {
             }
           </div>
 
-          {selected.status === 'Payment Pending' &&
+          {(selected.status === 'Payment Pending' || (selected.status === 'Confirmed' && selected.pricing.totalAmount - selected.pricing.amountPaid > 0.01)) &&
         <div className="rounded-2xl bg-white p-6 shadow-soft">
               <p className="font-display text-sm font-semibold text-forest">Pay Now</p>
               <div className="mt-3"><PayNowPanel booking={selected} onPaid={refetch} /></div>

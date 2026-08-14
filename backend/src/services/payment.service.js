@@ -20,11 +20,13 @@ const createPayment = async (customerUserId, payload) => {
   });
   if (!booking) throw ApiError.notFound('Booking not found for this customer.');
 
-  // Only a booking actually awaiting payment can receive one - blocks
-  // paying against a Cancelled/not-yet-approved booking via a direct API
-  // call (the frontend already only ever shows Pay Now in this state, but
-  // that's not enforcement).
-  if (booking.status !== 'Payment Pending') {
+  // A booking can take a payment either before its first one ('Payment
+  // Pending'), or after the advance is verified and it moves to
+  // 'Confirmed' but a balance is still owed - any other status (Cancelled,
+  // not yet approved, Completed, or already paid in full) can't.
+  const balanceOwed = booking.pricing.totalAmount - (booking.pricing.amountPaid || 0) > 0.01;
+  const payable = booking.status === 'Payment Pending' || (booking.status === 'Confirmed' && balanceOwed);
+  if (!payable) {
     throw ApiError.badRequest(`This booking is not awaiting payment (current status: '${booking.status}').`);
   }
 
