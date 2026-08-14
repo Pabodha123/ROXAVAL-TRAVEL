@@ -539,6 +539,7 @@ function RequestsTab({ initialSelectedId, onBookingCreated }: {initialSelectedId
     name: itin.title,
     price: itin.pricing.totalPrice,
     currency: itin.pricing.currency,
+    pricePerPerson: itin.pricing.pricePerPerson,
     defaultTravelDate: selected?.travelDates.startDate,
     defaultTravelers: selected?.travelers
   } : null;

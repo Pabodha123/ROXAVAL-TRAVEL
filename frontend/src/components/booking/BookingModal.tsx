@@ -11,14 +11,18 @@ export interface BookingSource {
   id: string;
   name: string;
   // For a package, this is the per-adult price. For an itinerary, this is
-  // already the flat group total quoted to the customer — never multiplied
-  // by traveler count.
+  // the quoted price - a per-adult rate when pricePerPerson is true (see
+  // below), otherwise a flat group total.
   price: number;
   currency: string;
   minTravelers?: number;
   maxTravelers?: number;
   // What a child pays as a percentage of the adult price (package bookings only).
   childPricePercent?: number;
+  // Itinerary bookings only. When true, `price` is a per-adult rate that
+  // must be multiplied by the traveler count to get the real total -
+  // matches how the quotation itself displays it ("$X / person").
+  pricePerPerson?: boolean;
   // Known from the accepted custom tour request — pre-fills the form instead
   // of asking the customer to re-enter what they already told us.
   defaultTravelDate?: string;
@@ -44,10 +48,13 @@ export function BookingModal({ open, onClose, source, onSuccess }: BookingModalP
   const [error, setError] = useState<string | null>(null);
   const [createdBooking, setCreatedBooking] = useState<{ _id: string; bookingReference: string } | null>(null);
 
-  // Itinerary price is already the flat group total — never multiply it by
-  // traveler count. Only package prices are per-adult unit prices.
+  // Itinerary hotel/activity selections were priced by the admin for the
+  // exact travelers on the accepted request, so those fields are locked
+  // below rather than freely editable — a per-person quote is then just
+  // that quoted rate times the (fixed) adult count, no separate child rate
+  // needed since the traveler mix can't change here.
   const estimatedTotal = source.type === 'itinerary' ?
-  source.price :
+  source.price * (source.pricePerPerson ? Math.max(adults, 1) : 1) :
   source.price * Math.max(adults, 1) + source.price * ((source.childPricePercent ?? 50) / 100) * children;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -120,17 +127,20 @@ export function BookingModal({ open, onClose, source, onSuccess }: BookingModalP
         <div className="grid grid-cols-3 gap-3">
           <div>
             <label className="mb-1.5 block text-sm font-medium text-forest">{t('modal.adults')}</label>
-            <input type="number" min={1} max={source.maxTravelers} value={adults} onChange={(e) => setAdults(Number(e.target.value))} className="w-full rounded-xl border border-forest/15 bg-cream/40 px-3 py-2.5 text-sm outline-none focus:border-emerald" />
+            <input type="number" min={1} max={source.maxTravelers} value={adults} onChange={(e) => setAdults(Number(e.target.value))} disabled={source.type === 'itinerary'} className="w-full rounded-xl border border-forest/15 bg-cream/40 px-3 py-2.5 text-sm outline-none focus:border-emerald disabled:cursor-not-allowed disabled:opacity-60" />
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium text-forest">{t('modal.children')}</label>
-            <input type="number" min={0} value={children} onChange={(e) => setChildren(Number(e.target.value))} className="w-full rounded-xl border border-forest/15 bg-cream/40 px-3 py-2.5 text-sm outline-none focus:border-emerald" />
+            <input type="number" min={0} value={children} onChange={(e) => setChildren(Number(e.target.value))} disabled={source.type === 'itinerary'} className="w-full rounded-xl border border-forest/15 bg-cream/40 px-3 py-2.5 text-sm outline-none focus:border-emerald disabled:cursor-not-allowed disabled:opacity-60" />
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium text-forest">{t('modal.infants')}</label>
-            <input type="number" min={0} value={infants} onChange={(e) => setInfants(Number(e.target.value))} className="w-full rounded-xl border border-forest/15 bg-cream/40 px-3 py-2.5 text-sm outline-none focus:border-emerald" />
+            <input type="number" min={0} value={infants} onChange={(e) => setInfants(Number(e.target.value))} disabled={source.type === 'itinerary'} className="w-full rounded-xl border border-forest/15 bg-cream/40 px-3 py-2.5 text-sm outline-none focus:border-emerald disabled:cursor-not-allowed disabled:opacity-60" />
           </div>
         </div>
+        {source.type === 'itinerary' &&
+        <p className="text-xs text-forest/50">Travelers match your accepted quotation and can't be changed here - contact us if this needs to change.</p>
+        }
         <div>
           <label className="mb-1.5 block text-sm font-medium text-forest">{t('modal.specialRequests')}</label>
           <textarea rows={3} value={specialRequests} onChange={(e) => setSpecialRequests(e.target.value)} className="w-full rounded-xl border border-forest/15 bg-cream/40 px-4 py-2.5 text-sm outline-none focus:border-emerald" />
