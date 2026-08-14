@@ -44,12 +44,11 @@ const env = {
   },
 
   PAYMENTS: {
-    whatsappNumber: process.env.WHATSAPP_BUSINESS_NUMBER || '',
-    bankName: process.env.BANK_NAME || '',
-    bankAccountName: process.env.BANK_ACCOUNT_NAME || '',
-    bankAccountNumber: process.env.BANK_ACCOUNT_NUMBER || '',
-    bankBranch: process.env.BANK_BRANCH || '',
-    bankSwift: process.env.BANK_SWIFT || '',
+    // Fixed for the same reason as COMPANY above — a stale
+    // WHATSAPP_BUSINESS_NUMBER set in Vercel's dashboard was overriding the
+    // real number, sending customers' payment-arrangement messages to a
+    // placeholder number instead of Roxaval's actual WhatsApp.
+    whatsappNumber: '+94 77 880 3522',
   },
 
   UPLOADS: {
