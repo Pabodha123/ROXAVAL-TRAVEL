@@ -69,7 +69,7 @@ export async function searchAll(query: string, limit = 5): Promise<SearchResults
     id: p._id,
     category: 'Tour Packages',
     title: p.name,
-    subtitle: `${p.category} · ${p.currency} ${p.price.toLocaleString()}`,
+    subtitle: p.category,
     image: p.heroImage,
     href: `/packages/${p._id}`
   }))).

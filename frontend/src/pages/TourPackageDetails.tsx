@@ -298,12 +298,7 @@ export function TourPackageDetails() {
         {/* Sidebar CTA */}
         <aside>
           <div className="sticky top-28 rounded-3xl bg-forest p-7 text-white shadow-lift">
-            <p className="text-xs uppercase tracking-wide text-cream/60">{t('detail.startingFrom')}</p>
-            <div className="flex items-baseline gap-2">
-              {pkg.discountPrice && <p className="text-sm text-cream/50 line-through">${pkg.price.toLocaleString()}</p>}
-              <p className="font-display text-3xl font-semibold">${displayPrice.toLocaleString()}</p>
-            </div>
-            <p className="mt-1 text-xs text-cream/50">{t('detail.perPerson', { min: pkg.minTravelers, max: pkg.maxTravelers })}</p>
+            <p className="text-xs uppercase tracking-wide text-cream/60">{t('detail.perPerson', { min: pkg.minTravelers, max: pkg.maxTravelers })}</p>
             <button
               onClick={() => user ? setBookingOpen(true) : navigate('/auth', { state: { from: { pathname: `/packages/${pkg._id}` } } })}
               className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-[1.03] active:scale-95">

@@ -40,13 +40,7 @@ export function PackageCard({ pkg, index = 0, compact = false }: PackageCardProp
             <ClockIcon className="h-3.5 w-3.5" /> {pkg.durationDays}D / {pkg.durationNights}N
           </p>
 
-          <div className={`flex items-end justify-between border-t border-forest/10 ${compact ? 'mt-3 pt-3' : 'mt-5 pt-4'}`}>
-            <div>
-              {pkg.discountPrice &&
-              <p className="text-xs text-forest/40 line-through">${pkg.price.toLocaleString()}</p>
-              }
-              <p className={`font-display font-semibold text-forest ${compact ? 'text-base' : 'text-2xl'}`}>${(pkg.discountPrice ?? pkg.price).toLocaleString()}</p>
-            </div>
+          <div className={`flex items-end justify-end border-t border-forest/10 ${compact ? 'mt-3 pt-3' : 'mt-5 pt-4'}`}>
             {compact ?
             <span className="inline-flex items-center gap-1 rounded-full bg-forest px-3 py-1.5 text-xs font-semibold text-cream transition-colors group-hover:bg-emerald">
                 View <ArrowRightIcon className="h-3 w-3 transition-transform group-hover:translate-x-1" />
