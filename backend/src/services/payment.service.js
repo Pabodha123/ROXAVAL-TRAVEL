@@ -20,12 +20,31 @@ const createPayment = async (customerUserId, payload) => {
   });
   if (!booking) throw ApiError.notFound('Booking not found for this customer.');
 
+  // Only a booking actually awaiting payment can receive one - blocks
+  // paying against a Cancelled/not-yet-approved booking via a direct API
+  // call (the frontend already only ever shows Pay Now in this state, but
+  // that's not enforcement).
+  if (booking.status !== 'Payment Pending') {
+    throw ApiError.badRequest(`This booking is not awaiting payment (current status: '${booking.status}').`);
+  }
+
   // Count what's already been claimed (verified, or submitted and awaiting
   // verification) so a customer can't stack multiple payments that together
   // over- or under-shoot what's actually owed.
   const priorPayments = await Payment.find({ booking: booking._id, status: { $in: ['Submitted', 'Verified'] } });
   const amountClaimed = priorPayments.reduce((sum, p) => sum + p.amount, 0);
   const remaining = Math.round((booking.pricing.totalAmount - amountClaimed) * 100) / 100;
+
+  // Block a second submission while a prior one is still awaiting admin
+  // review - covers double-clicking Submit / a retried request, which
+  // would otherwise create two ambiguous claims against the same balance.
+  // Bank transfer / WhatsApp already move the booking out of 'Payment
+  // Pending' on submission (caught above), but a gateway ('card') payment
+  // stays 'Pending' until the webhook resolves it, so it needs its own check.
+  const hasOutstanding = await Payment.exists({ booking: booking._id, status: { $in: ['Submitted', 'Pending'] } });
+  if (hasOutstanding) {
+    throw ApiError.badRequest('A payment for this booking is already submitted and awaiting verification. Please wait for it to be reviewed before submitting another.');
+  }
 
   const minimumRequired = payload.paymentType === 'advance' ? Math.min(booking.pricing.advanceAmount, Math.max(remaining, 0)) : Math.max(remaining, 0);
   if (payload.amount < minimumRequired - 0.01) {
@@ -45,7 +64,10 @@ const createPayment = async (customerUserId, payload) => {
     method: payload.method,
     paymentType: payload.paymentType,
     amount: payload.amount,
-    currency: payload.currency || booking.pricing.currency,
+    // Always the booking's own currency - never a client-supplied one.
+    // There's no legitimate case where a payment's currency should differ
+    // from what the booking was actually priced in.
+    currency: booking.pricing.currency,
     bankReference: payload.bankReference,
     status: payload.method === 'card' ? 'Pending' : 'Submitted',
   });
