@@ -42,27 +42,11 @@ services:
         sync: false
       - key: EMAIL_FROM
         sync: false
-      - key: COMPANY_NAME
-        value: Roxaval Travels
-      - key: COMPANY_ADDRESS
+      - key: CLOUDINARY_CLOUD_NAME
         sync: false
-      - key: COMPANY_PHONE
+      - key: CLOUDINARY_API_KEY
         sync: false
-      - key: COMPANY_EMAIL
-        sync: false
-      - key: COMPANY_WEBSITE
-        sync: false
-      - key: WHATSAPP_BUSINESS_NUMBER
-        sync: false
-      - key: BANK_NAME
-        sync: false
-      - key: BANK_ACCOUNT_NAME
-        sync: false
-      - key: BANK_ACCOUNT_NUMBER
-        sync: false
-      - key: BANK_BRANCH
-        sync: false
-      - key: BANK_SWIFT
+      - key: CLOUDINARY_API_SECRET
         sync: false
       - key: MAX_FILE_UPLOAD_MB
         value: 5
