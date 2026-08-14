@@ -74,14 +74,20 @@ const createFromItinerary = async (customerUserId, { itineraryId, travelDate, tr
   const itinerary = await Itinerary.findOne({ _id: itineraryId, customer: customer._id, status: 'Accepted' });
   if (!itinerary) throw ApiError.notFound('Accepted itinerary not found for this customer.');
 
-  // itinerary.pricing.totalPrice is always the flat group total set by the
-  // admin (the "per person" checkbox is display-only — see QuotationView),
-  // so it's used as-is with no traveler-count multiplication here.
-  const { advanceAmount, balanceAmount } = splitAdvanceBalance(itinerary.pricing.totalPrice);
+  // A per-person quote (see QuotationView, which labels it "$X / person")
+  // is a per-adult rate that must be multiplied by the traveler count to
+  // get the real amount owed - matches the traveler count the itinerary
+  // was actually priced for, since the booking form locks Adults/Children/
+  // Infants to that quoted count rather than letting them be changed here.
+  const multiplier = itinerary.pricing.pricePerPerson ? Math.max(travelers.adults || 0, 1) : 1;
+  const subtotal = Math.round(itinerary.pricing.basePrice * multiplier * 100) / 100;
+  const discount = Math.round((itinerary.pricing.discount || 0) * multiplier * 100) / 100;
+  const totalAmount = Math.round(itinerary.pricing.totalPrice * multiplier * 100) / 100;
+  const { advanceAmount, balanceAmount } = splitAdvanceBalance(totalAmount);
   const pricing = {
-    subtotal: itinerary.pricing.basePrice,
-    discount: itinerary.pricing.discount || 0,
-    totalAmount: itinerary.pricing.totalPrice,
+    subtotal,
+    discount,
+    totalAmount,
     advanceAmount,
     balanceAmount,
     amountPaid: 0,
