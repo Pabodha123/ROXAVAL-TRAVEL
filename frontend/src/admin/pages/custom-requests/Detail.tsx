@@ -576,10 +576,10 @@ export function AdminCustomRequestDetail() {
     { hotel: '', roomType: '', numberOfRooms: 1, roomOccupancy: emptyOccupancy(), roomCost: 0 };
   };
 
-  const applyHotelSelection = (sel: { hotel: string; roomType: string; numberOfRooms: number; roomOccupancy: RoomOccupancy; roomCost: number }) => {
+  const applyHotelSelection = (sel: { hotel: string; hotelName: string; roomType: string; numberOfRooms: number; roomOccupancy: RoomOccupancy; roomCost: number }) => {
     if (pickerDayIndex === null) return;
     const day = days[pickerDayIndex];
-    const option: HotelOptionEntry = { ...sel, hotelName: hotelOptions.find((h) => h.value === sel.hotel)?.label, selected: day.hotelOptions.length === 0 };
+    const option: HotelOptionEntry = { ...sel, selected: day.hotelOptions.length === 0 };
     const nextOptions = [...day.hotelOptions, option];
     patchDayWithCost(pickerDayIndex, { hotelOptions: nextOptions, ...mirrorPrimaryHotel({ hotelOptions: nextOptions }) });
   };

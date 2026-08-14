@@ -16,6 +16,7 @@ export interface RoomOccupancy {
 
 export interface HotelSelection {
   hotel: string;
+  hotelName: string;
   roomType: string;
   numberOfRooms: number;
   roomOccupancy: RoomOccupancy;
@@ -131,9 +132,10 @@ export function HotelPickerModal({ open, onClose, destinationOptions, defaultDes
   const roomCount = occupancy.single + occupancy.double + occupancy.triple + occupancy.quad;
 
   const confirm = () => {
-    if (!pickedHotel || !pickedRoomType) return;
+    if (!pickedHotel || !pickedRoomType || subtotal <= 0) return;
     onConfirm({
       hotel: pickedHotel._id,
+      hotelName: pickedHotel.name,
       roomType: pickedRoomType.name,
       numberOfRooms: Math.max(1, roomCount),
       roomOccupancy: occupancy,
@@ -224,8 +226,19 @@ export function HotelPickerModal({ open, onClose, destinationOptions, defaultDes
           )}
           </div>
           <div className="mt-3 flex items-center justify-between">
-            <p className="text-sm font-semibold text-forest">Subtotal: ${subtotal.toLocaleString()}</p>
-            <button type="button" onClick={confirm} className="rounded-full bg-emerald px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-light">Use this Room</button>
+            <div>
+              <p className="text-sm font-semibold text-forest">Subtotal: ${subtotal.toLocaleString()}</p>
+              {subtotal <= 0 &&
+              <p className="mt-0.5 text-xs text-red-500">Enter at least one room above to set a cost before confirming.</p>
+              }
+            </div>
+            <button
+              type="button"
+              onClick={confirm}
+              disabled={subtotal <= 0}
+              className="rounded-full bg-emerald px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-light disabled:cursor-not-allowed disabled:bg-forest/20 disabled:text-forest/40">
+              Use this Room
+            </button>
           </div>
         </div>
       }
