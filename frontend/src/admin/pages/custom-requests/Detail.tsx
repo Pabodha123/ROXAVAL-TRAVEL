@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AlertTriangleIcon, BedDoubleIcon, ChevronDownIcon, ChevronUpIcon, DownloadIcon, Loader2Icon, MessageCircleIcon, PencilIcon, PlusIcon, SendIcon, TrashIcon, UserCheckIcon, WandSparklesIcon, XIcon } from 'lucide-react';
+import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, DownloadIcon, Loader2Icon, MessageCircleIcon, PencilIcon, PlusIcon, SendIcon, TrashIcon, UserCheckIcon, WandSparklesIcon, XIcon } from 'lucide-react';
 import { apiGetList, apiGetOne, apiPatch, apiPost, ApiRequestError, API_ORIGIN } from '../../../lib/api';
 import { whatsAppLink } from '../../../lib/contact';
 import { formatDate, formatDateTime } from '../../../lib/date';
@@ -139,6 +139,11 @@ interface HotelOptionEntry {
 
 interface ItineraryDayForm {
   _key: string;
+  // Links this day back to the Route Builder leg that generated it (one leg
+  // = one night by default, or several consecutive days when extra nights
+  // are added on that leg). Empty for days that predate Route Builder or
+  // were added manually — those are left alone by all leg sync logic below.
+  legId: string;
   dayNumber: number;
   date: string;
   title: string;
@@ -243,7 +248,7 @@ const makeKey = () => Math.random().toString(36).slice(2);
 const emptyOccupancy = (): RoomOccupancy => ({ single: 0, double: 0, triple: 0, quad: 0, extraBed: 0, childWithBed: 0, childNoBed: 0, infant: 0 });
 
 const emptyDay = (n: number): ItineraryDayForm => ({
-  _key: makeKey(), dayNumber: n, date: '', title: '', schedule: '', destinations: [], activities: [], customDestinations: [], customActivities: [],
+  _key: makeKey(), legId: '', dayNumber: n, date: '', title: '', schedule: '', destinations: [], activities: [], customDestinations: [], customActivities: [],
   hotel: '', roomType: '', numberOfRooms: 1, roomOccupancy: emptyOccupancy(), roomCost: 0, hotelOptions: [], meals: [], transport: '',
   activityPricing: [], transfers: [], flights: [], dayCost: 0,
   arrivalTime: '', departureTime: '', travelTime: '', notes: ''
@@ -254,6 +259,67 @@ const shiftDateString = (iso: string, days: number) => {
   if (Number.isNaN(d.getTime())) return iso;
   d.setDate(d.getDate() + days);
   return d.toISOString().slice(0, 10);
+};
+
+// Route Builder is the single source of truth for the route: every leg
+// (after the first) inherits its departure and start date from the leg
+// before it, and its own end date from its own night count. Re-run after
+// any add/remove/edit so the whole chain — including everything after the
+// point of the edit — stays continuously connected, exactly like deleting a
+// leg is supposed to reconnect the ones on either side of it.
+const reconnectLegs = (legs: RouteLeg[]): RouteLeg[] => {
+  let cursor = '';
+  return legs.map((leg, i) => {
+    const departure = i === 0 ? leg.departure : cursor;
+    const fromDate = i === 0 ? leg.fromDate : cursor || leg.fromDate;
+    const nights = Math.max(leg.nights, 1);
+    const toDate = fromDate ? shiftDateString(fromDate, nights) : leg.toDate;
+    cursor = toDate;
+    return { ...leg, departure, fromDate, toDate, nights };
+  });
+};
+
+// Expands each leg into `nights` day(s) (2+ nights = several days at the
+// same arrival destination), reusing whatever content already exists for
+// that leg's nights so hotel/activity/notes picks survive a date shift or a
+// sibling leg being added/removed. Days with no legId (pre-Route-Builder or
+// manually added) are left exactly as they are and kept at the end.
+const deriveDaysFromLegs = (legs: RouteLeg[], prevDays: ItineraryDayForm[], destOptions: RefOption[]): ItineraryDayForm[] => {
+  const manualDays = prevDays.filter((d) => !d.legId);
+  const generated: ItineraryDayForm[] = [];
+
+  for (const leg of legs) {
+    const existingForLeg = prevDays.filter((d) => d.legId === leg.id);
+    const matchedDestId = destOptions.find((d) => d.label.trim().toLowerCase() === leg.arrival.trim().toLowerCase())?.value;
+
+    for (let night = 0; night < leg.nights; night += 1) {
+      const date = leg.fromDate ? shiftDateString(leg.fromDate, night) : '';
+      const title = night === 0 ? `${leg.departure} → ${leg.arrival}` : `${leg.arrival} – Night ${night + 1}`;
+      const existing = existingForLeg[night];
+      if (existing) {
+        generated.push({ ...existing, date, title, destinations: matchedDestId ? [matchedDestId] : existing.destinations });
+      } else {
+        // A later night at the same stay — carry over the previous night's
+        // hotel/activities rather than starting blank, since it's the same
+        // destination and very likely the same room.
+        const carryFrom = generated[generated.length - 1];
+        generated.push({
+          ...emptyDay(0),
+          legId: leg.id,
+          date,
+          title,
+          destinations: matchedDestId ? [matchedDestId] : [],
+          ...(carryFrom && night > 0 ? {
+            hotel: carryFrom.hotel, roomType: carryFrom.roomType, numberOfRooms: carryFrom.numberOfRooms,
+            roomOccupancy: { ...carryFrom.roomOccupancy }, roomCost: carryFrom.roomCost,
+            hotelOptions: carryFrom.hotelOptions.map((h) => ({ ...h })), meals: [...carryFrom.meals], transport: carryFrom.transport,
+          } : {}),
+        });
+      }
+    }
+  }
+
+  return [...generated, ...manualDays].map((d, i) => ({ ...d, dayNumber: i + 1, dayCost: dayCostOf(d) }));
 };
 
 const dayCostOf = (d: Pick<ItineraryDayForm, 'roomCost' | 'activityPricing' | 'transfers' | 'flights'>, opts: { excludeSightseeing?: boolean } = {}) =>
@@ -385,6 +451,7 @@ export function AdminCustomRequestDetail() {
       setSummary(itin.summary);
       setDays(itin.days.map((d) => ({
         _key: makeKey(),
+        legId: '',
         dayNumber: d.dayNumber,
         date: d.date ? d.date.slice(0, 10) : '',
         title: d.title,
@@ -494,45 +561,22 @@ export function AdminCustomRequestDetail() {
       return [...prev, newDay];
     });
   };
-  // Inserts an extra night right after `index`, carrying over the same
-  // destination/hotel (the common "customer wants to stay another night
-  // here" case) so the admin doesn't have to re-pick them. Every day's date
-  // after the insertion point is pushed forward by one day so the
-  // itinerary's dates, departure date, and voucher night-counts (which are
-  // derived from contiguous same-hotel dayNumber runs) all stay correct.
-  const addNight = (index: number) => {
-    setDays((prev) => {
-      const source = prev[index];
-      const newDay: ItineraryDayForm = {
-        ...emptyDay(0),
-        date: source.date ? shiftDateString(source.date, 1) : '',
-        title: source.title,
-        destinations: [...source.destinations],
-        customDestinations: [...source.customDestinations],
-        hotel: source.hotel,
-        roomType: source.roomType,
-        numberOfRooms: source.numberOfRooms,
-        roomOccupancy: { ...source.roomOccupancy },
-        roomCost: source.roomCost,
-        hotelOptions: source.hotelOptions.map((h) => ({ ...h })),
-        meals: [...source.meals],
-        transport: source.transport,
-      };
-      newDay.dayCost = dayCostOf(newDay);
-      const withNewDay = [...prev.slice(0, index + 1), newDay, ...prev.slice(index + 1)];
-      const withShiftedDates = withNewDay.map((d, i) => i <= index + 1 || !d.date ? d : { ...d, date: shiftDateString(d.date, 1) });
-      const renumbered = withShiftedDates.map((d, i) => ({ ...d, dayNumber: i + 1 }));
-      setExpandedDays((exp) => new Set(exp).add(newDay._key));
-      return renumbered;
-    });
-  };
-  // Mirrors addNight's forward shift: removing a day closes the date gap it
-  // leaves behind by pulling every later day one day earlier, so the
-  // itinerary's dates stay contiguous. This is what lets an admin "move" a
-  // night from one destination to the next — delete the day here, then hit
-  // Add Night on the destination that should gain it — without having to
-  // manually fix every date downstream by hand.
+  // Nights are managed from Route Builder only now (its +/- controls) — a
+  // day generated from a leg is deleted by shrinking or removing that leg,
+  // which keeps the two views from ever drifting apart. A day with no legId
+  // (predates Route Builder, or added manually) still uses the plain
+  // shift-and-renumber fallback.
   const removeDay = (index: number) => {
+    const day = days[index];
+    if (day.legId) {
+      const nightsForLeg = days.filter((d) => d.legId === day.legId).length;
+      if (nightsForLeg <= 1) {
+        removeRouteLeg(day.legId);
+      } else {
+        changeLegNights(day.legId, -1);
+      }
+      return;
+    }
     setDays((prev) => {
       const withoutDay = prev.filter((_, i) => i !== index);
       const shifted = withoutDay.map((d, i) => i < index || !d.date ? d : { ...d, date: shiftDateString(d.date, -1) });
@@ -678,6 +722,22 @@ export function AdminCustomRequestDetail() {
 
   const lastLegToDate = routeLegs.length > 0 ? routeLegs[routeLegs.length - 1].toDate : '';
 
+  // Route Builder is the single source of truth: every leg mutation below
+  // reconnects the whole chain (so a delete or a nights change ripples
+  // through every leg after it) and then re-derives the Day-by-Day Plan from
+  // that chain, rather than letting the two structures drift apart.
+  const applyLegs = (rawLegs: RouteLeg[]) => {
+    const reconnected = reconnectLegs(rawLegs);
+    setRouteLegs(reconnected);
+    setDays((prev) => {
+      // The form always starts with one untouched blank day — once Route
+      // Builder actually has legs, that placeholder (no legId, no content)
+      // would otherwise sit there forever as a stray "manual" day.
+      const isPristineStarterDay = prev.length === 1 && !prev[0].legId && !prev[0].title && !prev[0].schedule && !prev[0].hotel && prev[0].activities.length === 0;
+      return deriveDaysFromLegs(reconnected, isPristineStarterDay ? [] : prev, destOptions);
+    });
+  };
+
   const addRouteLeg = () => {
     if (!legDeparture.trim() || !legArrival.trim() || !legFromDate || !legToDate) {
       toast('Please fill in departure, arrival and both dates.', 'error');
@@ -691,36 +751,19 @@ export function AdminCustomRequestDetail() {
       toast('To Date must be on or after From Date.', 'error');
       return;
     }
-    const nights = Math.round((new Date(legToDate).getTime() - new Date(legFromDate).getTime()) / 86400000);
-    const dayCount = Math.max(nights, 1);
-    const matchedDestId = destOptions.find((d) => d.label.trim().toLowerCase() === legArrival.trim().toLowerCase())?.value;
-    setDays((prev) => {
-      // The form always starts with one untouched blank day — replace it
-      // instead of leaving it orphaned alongside the generated days (it has
-      // no title/schedule, which silently blocks native form submission).
-      const isPristineStarterDay = prev.length === 1 && !prev[0].title && !prev[0].schedule && !prev[0].hotel && prev[0].activities.length === 0;
-      const base = isPristineStarterDay ? [] : prev;
-      const newDays: ItineraryDayForm[] = [];
-      for (let i = 0; i < dayCount; i += 1) {
-        const dayNumber = base.length + newDays.length + 1;
-        const date = new Date(legFromDate);
-        date.setDate(date.getDate() + i);
-        newDays.push({
-          ...emptyDay(dayNumber),
-          title: i === 0 ? `${legDeparture} → ${legArrival}` : `${legArrival} – Day ${i + 1}`,
-          date: date.toISOString().slice(0, 10),
-          destinations: matchedDestId ? [matchedDestId] : []
-        });
-      }
-      return [...base, ...newDays];
-    });
-    setRouteLegs((prev) => [...prev, { id: makeKey(), departure: legDeparture, arrival: legArrival, fromDate: legFromDate, toDate: legToDate, nights }]);
+    const nights = Math.max(Math.round((new Date(legToDate).getTime() - new Date(legFromDate).getTime()) / 86400000), 1);
+    applyLegs([...routeLegs, { id: makeKey(), departure: legDeparture, arrival: legArrival, fromDate: legFromDate, toDate: legToDate, nights }]);
     setLegDeparture(legArrival);
     setLegArrival('');
     setLegFromDate(legToDate);
     setLegToDate('');
   };
-  const removeRouteLeg = (legId: string) => setRouteLegs((prev) => prev.filter((l) => l.id !== legId));
+
+  const removeRouteLeg = (legId: string) => applyLegs(routeLegs.filter((l) => l.id !== legId));
+
+  const changeLegNights = (legId: string, delta: number) => {
+    applyLegs(routeLegs.map((l) => l.id === legId ? { ...l, nights: Math.max(l.nights + delta, 1) } : l));
+  };
 
   const assignToMe = async () => {
     setAssigning(true);
@@ -1182,9 +1225,15 @@ export function AdminCustomRequestDetail() {
                             <td className="py-2 pr-3 text-forest">{leg.arrival}</td>
                             <td className="py-2 pr-3 text-forest/70">{formatDate(leg.fromDate)}</td>
                             <td className="py-2 pr-3 text-forest/70">{formatDate(leg.toDate)}</td>
-                            <td className="py-2 pr-3 text-forest/70">{leg.nights}</td>
+                            <td className="py-2 pr-3 text-forest/70">
+                              <div className="flex items-center gap-1.5">
+                                <button type="button" title="Remove a night" onClick={() => changeLegNights(leg.id, -1)} disabled={leg.nights <= 1} className="grid h-5 w-5 place-items-center rounded-full border border-forest/15 text-forest/50 hover:border-emerald hover:text-emerald disabled:opacity-30">–</button>
+                                <span className="w-4 text-center">{leg.nights}</span>
+                                <button type="button" title="Stay an extra night here" onClick={() => changeLegNights(leg.id, 1)} className="grid h-5 w-5 place-items-center rounded-full border border-forest/15 text-forest/50 hover:border-emerald hover:text-emerald">+</button>
+                              </div>
+                            </td>
                             <td className="py-2 text-right">
-                              <button type="button" onClick={() => removeRouteLeg(leg.id)} className="text-forest/30 hover:text-red-500"><XIcon className="h-4 w-4" /></button>
+                              <button type="button" title="Remove this leg" onClick={() => removeRouteLeg(leg.id)} className="text-forest/30 hover:text-red-500"><XIcon className="h-4 w-4" /></button>
                             </td>
                           </tr>
                     )}
@@ -1209,11 +1258,11 @@ export function AdminCustomRequestDetail() {
 
                   actions={
                   <>
-                        <button type="button" disabled={i === 0} onClick={() => moveDay(i, -1)} className="text-forest/40 hover:text-forest disabled:opacity-20"><ChevronUpIcon className="h-4 w-4" /></button>
-                        <button type="button" disabled={i === days.length - 1} onClick={() => moveDay(i, 1)} className="text-forest/40 hover:text-forest disabled:opacity-20"><ChevronDownIcon className="h-4 w-4" /></button>
-                        <button type="button" title="Add another night at this same destination/hotel" onClick={() => addNight(i)} className="ml-1 flex items-center gap-1 rounded-full bg-emerald/10 px-2 py-1 text-xs font-semibold text-emerald hover:bg-emerald/20"><BedDoubleIcon className="h-3.5 w-3.5" /> Add Night</button>
+                        {/* Order for leg-derived days comes entirely from Route Builder now — reordering here would just get overwritten by the next leg edit, so only plain manual days can be moved. */}
+                        <button type="button" disabled={i === 0 || !!day.legId} onClick={() => moveDay(i, -1)} title={day.legId ? 'Reorder this from Route Builder' : undefined} className="text-forest/40 hover:text-forest disabled:opacity-20"><ChevronUpIcon className="h-4 w-4" /></button>
+                        <button type="button" disabled={i === days.length - 1 || !!day.legId} onClick={() => moveDay(i, 1)} title={day.legId ? 'Reorder this from Route Builder' : undefined} className="text-forest/40 hover:text-forest disabled:opacity-20"><ChevronDownIcon className="h-4 w-4" /></button>
                         {days.length > 1 &&
-                    <button type="button" onClick={() => removeDay(i)} className="ml-1 text-red-500 hover:text-red-700"><TrashIcon className="h-4 w-4" /></button>
+                    <button type="button" title={day.legId ? 'Remove this night (also removes it from Route Builder)' : 'Remove this day'} onClick={() => removeDay(i)} className="ml-1 text-red-500 hover:text-red-700"><TrashIcon className="h-4 w-4" /></button>
                     }
                       </>}>
 

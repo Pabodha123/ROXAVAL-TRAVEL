@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CalendarIcon } from 'lucide-react';
 
 interface DateFieldProps {
@@ -37,7 +37,6 @@ function displayToIso(display: string) {
 // used only to power a real calendar picker via showPicker().
 export function DateField({ value, onChange, min, max, required, placeholder = 'dd/mm/yyyy', className, id }: DateFieldProps) {
   const [text, setText] = useState(isoToDisplay(value));
-  const nativeRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setText(isoToDisplay(value));
@@ -55,20 +54,6 @@ export function DateField({ value, onChange, min, max, required, placeholder = '
     } else if (formatted.length === 0) {
       onChange('');
     }
-  };
-
-  const openPicker = () => {
-    const el = nativeRef.current;
-    if (!el) return;
-    if (typeof el.showPicker === 'function') {
-      try {
-        el.showPicker();
-        return;
-      } catch {
-        // unsupported in this browser — fall back to focusing it
-      }
-    }
-    el.focus();
   };
 
   // Callers pass their own full input className (border/shape/left-icon
@@ -91,19 +76,25 @@ export function DateField({ value, onChange, min, max, required, placeholder = '
         required={required}
         className={`${baseClassName} pr-10`} />
 
-      <button type="button" onClick={openPicker} tabIndex={-1} aria-label="Open calendar" className="absolute right-3 top-1/2 -translate-y-1/2 text-forest/40 hover:text-forest">
+      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-forest/40">
         <CalendarIcon className="h-4 w-4" />
-      </button>
+      </div>
+      {/*
+        A real native <input type="date"> sitting directly under the icon,
+        not just a JS-triggered picker — showPicker() has inconsistent
+        mobile support (notably older iOS Safari) and its fallback
+        (focusing a hidden element) doesn't reliably open anything on
+        mobile. A genuine tap on an actual date input is the one approach
+        that opens the native picker on every browser.
+      */}
       <input
-        ref={nativeRef}
         type="date"
+        aria-label="Open calendar"
         value={value || ''}
         min={min}
         max={max}
         onChange={(e) => onChange(e.target.value)}
-        tabIndex={-1}
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 h-full w-full opacity-0" />
+        className="absolute right-0 top-0 h-full w-11 cursor-pointer opacity-0" />
 
     </div>);
 
