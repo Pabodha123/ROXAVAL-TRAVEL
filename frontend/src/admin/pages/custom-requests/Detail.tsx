@@ -268,13 +268,15 @@ const shiftDateString = (iso: string, days: number) => {
 // point of the edit — stays continuously connected, exactly like deleting a
 // leg is supposed to reconnect the ones on either side of it.
 const reconnectLegs = (legs: RouteLeg[]): RouteLeg[] => {
-  let cursor = '';
+  let prevArrival = '';
+  let prevToDate = '';
   return legs.map((leg, i) => {
-    const departure = i === 0 ? leg.departure : cursor;
-    const fromDate = i === 0 ? leg.fromDate : cursor || leg.fromDate;
+    const departure = i === 0 ? leg.departure : prevArrival;
+    const fromDate = i === 0 ? leg.fromDate : prevToDate || leg.fromDate;
     const nights = Math.max(leg.nights, 1);
     const toDate = fromDate ? shiftDateString(fromDate, nights) : leg.toDate;
-    cursor = toDate;
+    prevArrival = leg.arrival;
+    prevToDate = toDate;
     return { ...leg, departure, fromDate, toDate, nights };
   });
 };
