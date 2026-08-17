@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import {
   HomeIcon, PackageIcon, MapPinIcon, TargetIcon, BriefcaseIcon,
@@ -140,15 +140,15 @@ export function Navbar() {
               {t('nav.explore')}
               <ChevronDownIcon className={`h-4 w-4 transition-transform ${exploreOpen ? 'rotate-180' : ''}`} />
             </button>
-            <AnimatePresence>
-              {exploreOpen &&
+            {/* No AnimatePresence/exit -- an animated exit can visually
+                stick open if a route change lands mid-animation. */}
+            {exploreOpen &&
               <motion.div
                 initial={{ opacity: 0, y: 10, scale: 0.97 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.97 }}
                 transition={{ duration: 0.2 }}
                 className="absolute right-0 mt-2 w-52 rounded-2xl bg-white shadow-lift p-2 overflow-hidden">
-                
+
                   {exploreLinks.map((l) =>
                 <Link
                   key={l.label}
@@ -160,8 +160,7 @@ export function Navbar() {
                     </Link>
                 )}
                 </motion.div>
-              }
-            </AnimatePresence>
+            }
           </div>
         </div>
 
@@ -185,12 +184,10 @@ export function Navbar() {
                 <span className="text-sm font-medium text-white">{user.fullName.split(' ')[0]}</span>
                 <ChevronDownIcon className={`h-3.5 w-3.5 text-cream/70 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
               </button>
-              <AnimatePresence>
-                {userMenuOpen &&
+              {userMenuOpen &&
               <motion.div
                 initial={{ opacity: 0, y: 10, scale: 0.97 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.97 }}
                 transition={{ duration: 0.2 }}
                 className="absolute right-0 mt-2 w-52 rounded-2xl bg-white shadow-lift p-2 overflow-hidden">
 
@@ -212,7 +209,6 @@ export function Navbar() {
                     </button>
                   </motion.div>
               }
-              </AnimatePresence>
             </div> :
 
           <Link

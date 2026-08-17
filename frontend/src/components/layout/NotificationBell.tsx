@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { BellIcon } from 'lucide-react';
 import { apiGetList, apiPatch, ApiMeta } from '../../lib/api';
 import { notificationTypeMeta } from '../../lib/notificationTypes';
@@ -79,12 +79,14 @@ export function NotificationBell() {
           </span>
         }
       </button>
-      <AnimatePresence>
-        {open &&
+      {/* No AnimatePresence/exit here -- same fragile-in-Safari pattern as
+          the mobile menu had (an animated exit can visually get stuck open
+          if a route change or other state update lands mid-animation).
+          Closing instantly is more reliable than a pretty fade-out. */}
+      {open &&
         <motion.div
           initial={{ opacity: 0, y: 10, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 10, scale: 0.97 }}
           transition={{ duration: 0.2 }}
           className="absolute right-0 mt-2 w-80 rounded-2xl bg-white shadow-lift p-2 overflow-hidden">
 
@@ -122,7 +124,6 @@ export function NotificationBell() {
             </Link>
           </motion.div>
         }
-      </AnimatePresence>
     </div>);
 
 }
