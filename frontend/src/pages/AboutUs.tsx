@@ -34,11 +34,23 @@ export function AboutUs() {
         subtitle="Let your journey smile."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'About Us' }]} />
 
+      {/* Logo */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="mx-auto -mt-10 flex max-w-7xl justify-center px-4 sm:px-6 lg:px-8">
+
+        <div className="rounded-[2rem] bg-white p-6 shadow-lift">
+          <img src="/roxaval-logo.png" alt="Roxaval Travels" className="h-28 w-auto sm:h-36" />
+        </div>
+      </motion.div>
 
       {/* Company Introduction */}
-      <section className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8">
-        <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }}>
-          <SectionHeading eyebrow="Who we are" title="Your Trusted Local Travel Partner" align="left" />
+      <section className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 lg:px-8">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }}>
+          <SectionHeading eyebrow="Who we are" title="Your Trusted Local Travel Partner" />
           <p className="mt-6 text-base leading-relaxed text-forest/70">
             Roxaval Travels is a Sri Lanka-based travel agency dedicated to crafting luxurious, fully customized journeys across
             the island - from ancient kingdoms to golden beaches. We believe travel should feel personal, so every itinerary we
@@ -49,19 +61,13 @@ export function AboutUs() {
             vehicle and detail - so all you have to do is show up and explore.
           </p>
         </motion.div>
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }} className="overflow-hidden rounded-[2rem] shadow-lift">
-          <img src="/f1dc4405-8788-4026-86f6-8dcd6433d54c.jpg" alt="Sri Lanka landscape" className="h-full w-full object-cover" />
-        </motion.div>
       </section>
 
       {/* Our Story */}
       <section className="bg-white py-20">
-        <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }} className="order-2 overflow-hidden rounded-[2rem] shadow-lift lg:order-1">
-            <img src="/e12be888-4561-43cf-b8a3-fb6d9de4b630.jpg" alt="Roxaval Travels journey" className="h-full w-full object-cover" />
-          </motion.div>
-          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }} className="order-1 lg:order-2">
-            <SectionHeading eyebrow="Our Story" title="Built on a Love for This Island" align="left" />
+        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }}>
+            <SectionHeading eyebrow="Our Story" title="Built on a Love for This Island" />
             <p className="mt-6 text-base leading-relaxed text-forest/70">
               Roxaval Travels began with a simple idea - that visitors deserve to experience Sri Lanka the way locals do,
               not through a rigid, one-size-fits-all package. Over more than a decade, that idea grew into a full-service
@@ -73,6 +79,20 @@ export function AboutUs() {
             </p>
           </motion.div>
         </div>
+      </section>
+
+      {/* Client Welcome */}
+      <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeading eyebrow="Real Travelers" title="Welcomed Like Family, Every Time" subtitle="Every journey starts with a warm welcome to the island." />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7 }}
+          className="mt-14 overflow-hidden rounded-[2rem] shadow-lift">
+
+          <img src="/client-welcome-1.jpg" alt="Roxaval Travels guests welcomed to Sri Lanka" className="h-full w-full object-cover" />
+        </motion.div>
       </section>
 
       {/* Mission & Vision */}

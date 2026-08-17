@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { BellIcon, LogOutIcon, MenuIcon, UserCircleIcon } from 'lucide-react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 import { apiGetList, apiPatch } from '../../lib/api';
+import { playNotificationChime, unlockNotificationSound } from '../../lib/notificationSound';
 
 interface NotificationItem {
   _id: string;
@@ -14,6 +15,8 @@ interface NotificationItem {
   createdAt: string;
 }
 
+const POLL_INTERVAL_MS = 20000;
+
 export function Topbar({ onOpenMobile }: {onOpenMobile: () => void;}) {
   const { user, logout } = useAdminAuth();
   const navigate = useNavigate();
@@ -23,14 +26,43 @@ export function Topbar({ onOpenMobile }: {onOpenMobile: () => void;}) {
   const [unreadCount, setUnreadCount] = useState(0);
   const profileRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+  const lastUnreadCount = useRef<number | null>(null);
+
+  // Any click/keypress anywhere in the admin panel unlocks audio playback
+  // for the rest of the session, so the chime isn't silently blocked by
+  // the browser's autoplay policy when a notification later arrives on
+  // its own (i.e. not from a direct user action).
+  useEffect(() => {
+    const unlock = () => unlockNotificationSound();
+    document.addEventListener('click', unlock, { once: true });
+    document.addEventListener('keydown', unlock, { once: true });
+    return () => {
+      document.removeEventListener('click', unlock);
+      document.removeEventListener('keydown', unlock);
+    };
+  }, []);
 
   useEffect(() => {
-    apiGetList<NotificationItem>('/notifications', { limit: 8 }).
-    then(({ data, meta }) => {
-      setNotifications(data);
-      setUnreadCount((meta as unknown as { unreadCount?: number }).unreadCount || 0);
-    }).
-    catch(() => {});
+    const fetchNotifications = () => {
+      apiGetList<NotificationItem>('/notifications', { limit: 8 }).
+      then(({ data, meta }) => {
+        const nextUnread = (meta as unknown as { unreadCount?: number }).unreadCount || 0;
+        setNotifications(data);
+        setUnreadCount(nextUnread);
+        // Only chime when unread count genuinely goes UP after the first
+        // load -- never on the initial page load, and never on a drop
+        // (e.g. the admin just marked something read in another tab).
+        if (lastUnreadCount.current !== null && nextUnread > lastUnreadCount.current) {
+          playNotificationChime();
+        }
+        lastUnreadCount.current = nextUnread;
+      }).
+      catch(() => {});
+    };
+
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
