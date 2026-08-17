@@ -194,7 +194,7 @@ interface ItineraryDetail {
   hotels: { _id: string; name: string }[];
   tourGuide?: { _id: string; name: string };
   vehicle?: { _id: string; name: string };
-  pricing: { basePrice: number; discount: number; totalPrice: number; currency: string; pricePerPerson: boolean };
+  pricing: { basePrice: number; markupAmount?: number; discount: number; totalPrice: number; currency: string; pricePerPerson: boolean };
   sightseeingIncluded?: boolean;
   adminNotes: string;
   customerFacingNotes: string;
@@ -391,6 +391,7 @@ export function AdminCustomRequestDetail() {
   const [tourGuide, setTourGuide] = useState('');
   const [vehicle, setVehicle] = useState('');
   const [basePrice, setBasePrice] = useState(0);
+  const [markupAmount, setMarkupAmount] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [currency, setCurrency] = useState('USD');
@@ -515,6 +516,7 @@ export function AdminCustomRequestDetail() {
       setTourGuide(itin.tourGuide?._id || '');
       setVehicle(itin.vehicle?._id || '');
       setBasePrice(itin.pricing.basePrice);
+      setMarkupAmount(itin.pricing.markupAmount ?? 0);
       setDiscount(itin.pricing.discount);
       setTotalPrice(itin.pricing.totalPrice);
       setCurrency(itin.pricing.currency);
@@ -717,9 +719,20 @@ export function AdminCustomRequestDetail() {
   const suggestedTotalWithoutSightseeing = days.reduce((sum, d) => sum + dayCostOf(d, { excludeSightseeing: true }), 0) + guideVehicleCost;
   const suggestedTotal = sightseeingIncluded ? suggestedTotalWithSightseeing : suggestedTotalWithoutSightseeing;
 
+  const markedUpTotal = suggestedTotal + markupAmount;
+
+  // suggestedTotal is already the FULL group cost, not a per-person figure:
+  // hotel/vehicle/transfer rates are flat regardless of headcount, and each
+  // selected activity's own cost is already adults*adultRate +
+  // children*childRate (see ActivityPickerModal's costFor()). So "per
+  // person" has to be DERIVED by dividing the marked-up group total across
+  // paying travelers, not the other way around.
+  const payingTravelers = Math.max((request.travelers.adults || 0) + (request.travelers.children || 0), 1);
+
   const useSuggestedTotal = () => {
     setBasePrice(suggestedTotal);
-    setTotalPrice(suggestedTotal - discount);
+    const fullCostWithMarkup = markedUpTotal - discount;
+    setTotalPrice(pricePerPerson ? fullCostWithMarkup / payingTravelers : fullCostWithMarkup);
   };
 
   const lastLegToDate = routeLegs.length > 0 ? routeLegs[routeLegs.length - 1].toDate : '';
@@ -834,7 +847,7 @@ export function AdminCustomRequestDetail() {
         hotels,
         tourGuide: tourGuide || undefined,
         vehicle: vehicle || undefined,
-        pricing: { basePrice, discount, totalPrice, currency, pricePerPerson },
+        pricing: { basePrice, markupAmount, discount, totalPrice, currency, pricePerPerson },
         sightseeingIncluded,
         adminNotes,
         customerFacingNotes,
@@ -1412,7 +1425,18 @@ export function AdminCustomRequestDetail() {
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="font-display text-xl font-semibold text-forest">{currency} {suggestedTotal.toLocaleString()}</span>
+                    <div className="text-right">
+                      <span className="font-display text-xl font-semibold text-forest">{currency} {suggestedTotal.toLocaleString()}</span>
+                      <p className="text-[11px] text-forest/50">full group cost (hotels, vehicle &amp; activities already priced per traveler)</p>
+                      {markupAmount > 0 &&
+                      <p className="text-xs text-emerald">+ {currency} {markupAmount.toLocaleString()} markup = {currency} {markedUpTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })} full cost</p>
+                      }
+                      {pricePerPerson &&
+                      <p className="text-xs text-forest/60">
+                        ÷ {payingTravelers} {payingTravelers === 1 ? 'traveler' : 'travelers'} = {currency} {((markedUpTotal - discount) / payingTravelers).toLocaleString(undefined, { maximumFractionDigits: 2 })} / person
+                      </p>
+                      }
+                    </div>
                     <button type="button" onClick={useSuggestedTotal} className="rounded-full bg-emerald px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-light">Use this amount</button>
                   </div>
                 </div>
@@ -1426,12 +1450,16 @@ export function AdminCustomRequestDetail() {
 
               <div className="rounded-2xl bg-white p-6 shadow-soft">
                 <p className="mb-4 font-display text-sm font-semibold text-forest">Pricing</p>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                   <NumberField label="Base Price" value={basePrice} onChange={setBasePrice} min={0} />
+                  <NumberField label="Markup ($)" value={markupAmount} onChange={setMarkupAmount} min={0} />
                   <NumberField label="Discount" value={discount} onChange={setDiscount} min={0} />
                   <NumberField label="Total Price" value={totalPrice} onChange={setTotalPrice} min={0} />
                   <TextField label="Currency" value={currency} onChange={setCurrency} />
                 </div>
+                <p className="mt-2 text-xs text-forest/50">
+                  Markup is Roxaval's margin on top of the base cost - it's baked into Total Price when you click "Use this amount" above, never shown to the customer directly.
+                </p>
                 <div className="mt-4">
                   <CheckboxField label="Price is per person" checked={pricePerPerson} onChange={setPricePerPerson} />
                 </div>
