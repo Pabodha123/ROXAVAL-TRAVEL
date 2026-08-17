@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, DownloadIcon, Loader2Icon, MessageCircleIcon, PencilIcon, PlusIcon, SendIcon, TrashIcon, UserCheckIcon, WandSparklesIcon, XIcon } from 'lucide-react';
+import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, DownloadIcon, EyeIcon, Loader2Icon, MessageCircleIcon, PencilIcon, PlusIcon, SendIcon, TrashIcon, UserCheckIcon, WandSparklesIcon, XIcon } from 'lucide-react';
 import { apiGetList, apiGetOne, apiPatch, apiPost, ApiRequestError, API_ORIGIN } from '../../../lib/api';
 import { whatsAppLink } from '../../../lib/contact';
 import { formatDate, formatDateTime } from '../../../lib/date';
@@ -373,6 +373,7 @@ export function AdminCustomRequestDetail() {
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState(false);
   const [sending, setSending] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
   // Manually re-opens the builder over an already-sent itinerary so admins
   // can tweak and resend it, without the customer having to request changes first.
   const [forceEdit, setForceEdit] = useState(false);
@@ -395,7 +396,6 @@ export function AdminCustomRequestDetail() {
   const [discount, setDiscount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [currency, setCurrency] = useState('USD');
-  const [pricePerPerson, setPricePerPerson] = useState(true);
   const [sightseeingIncluded, setSightseeingIncluded] = useState(true);
   const [adminNotes, setAdminNotes] = useState('');
   const [customerFacingNotes, setCustomerFacingNotes] = useState(DEFAULT_CUSTOMER_FACING_NOTES);
@@ -520,7 +520,6 @@ export function AdminCustomRequestDetail() {
       setDiscount(itin.pricing.discount);
       setTotalPrice(itin.pricing.totalPrice);
       setCurrency(itin.pricing.currency);
-      setPricePerPerson(itin.pricing.pricePerPerson);
       setSightseeingIncluded(itin.sightseeingIncluded ?? true);
       setAdminNotes(itin.adminNotes);
       setCustomerFacingNotes(itin.customerFacingNotes || DEFAULT_CUSTOMER_FACING_NOTES);
@@ -721,18 +720,12 @@ export function AdminCustomRequestDetail() {
 
   const markedUpTotal = suggestedTotal + markupAmount;
 
-  // suggestedTotal is already the FULL group cost, not a per-person figure:
-  // hotel/vehicle/transfer rates are flat regardless of headcount, and each
-  // selected activity's own cost is already adults*adultRate +
-  // children*childRate (see ActivityPickerModal's costFor()). So "per
-  // person" has to be DERIVED by dividing the marked-up group total across
-  // paying travelers, not the other way around.
-  const payingTravelers = Math.max((request?.travelers.adults || 0) + (request?.travelers.children || 0), 1);
-
+  // The quotation always shows one number: hotel + vehicle (+ sightseeing,
+  // if included) + markup - discount = the total cost for the whole trip.
+  // No per-person division — the client explicitly doesn't want that.
   const useSuggestedTotal = () => {
     setBasePrice(suggestedTotal);
-    const fullCostWithMarkup = markedUpTotal - discount;
-    setTotalPrice(pricePerPerson ? fullCostWithMarkup / payingTravelers : fullCostWithMarkup);
+    setTotalPrice(markedUpTotal - discount);
   };
 
   const lastLegToDate = routeLegs.length > 0 ? routeLegs[routeLegs.length - 1].toDate : '';
@@ -831,6 +824,27 @@ export function AdminCustomRequestDetail() {
     return list.find((d) => d.dayNumber !== lastDayNumber && !d.hotel) || null;
   };
 
+  // Shared by sendItinerary() and previewQuotation() — both POST the exact
+  // same shape, the only difference is which endpoint (send vs draft) and
+  // what happens to the response afterward.
+  const buildItineraryPayload = () => ({
+    title,
+    summary,
+    days: days.map(({ _key, ...d }) => ({ ...d, date: d.date || undefined })),
+    hotels,
+    tourGuide: tourGuide || undefined,
+    vehicle: vehicle || undefined,
+    pricing: { basePrice, markupAmount, discount, totalPrice, currency, pricePerPerson: false },
+    sightseeingIncluded,
+    adminNotes,
+    customerFacingNotes,
+    visaRequirements,
+    travelInsurance,
+    cancellationPolicy,
+    inclusions,
+    exclusions,
+  });
+
   const sendItinerary = async (e: React.FormEvent) => {
     e.preventDefault();
     const missingHotelDay = findMissingHotelDay(days);
@@ -840,23 +854,7 @@ export function AdminCustomRequestDetail() {
     }
     setSending(true);
     try {
-      await apiPost(`/custom-tours/${id}/itinerary`, {
-        title,
-        summary,
-        days: days.map(({ _key, ...d }) => ({ ...d, date: d.date || undefined })),
-        hotels,
-        tourGuide: tourGuide || undefined,
-        vehicle: vehicle || undefined,
-        pricing: { basePrice, markupAmount, discount, totalPrice, currency, pricePerPerson },
-        sightseeingIncluded,
-        adminNotes,
-        customerFacingNotes,
-        visaRequirements,
-        travelInsurance,
-        cancellationPolicy,
-        inclusions,
-        exclusions
-      });
+      await apiPost(`/custom-tours/${id}/itinerary`, buildItineraryPayload());
       toast('Itinerary sent to customer.');
       setForceEdit(false);
       load();
@@ -864,6 +862,27 @@ export function AdminCustomRequestDetail() {
       toast(err instanceof ApiRequestError ? err.message : 'Failed to send itinerary.', 'error');
     } finally {
       setSending(false);
+    }
+  };
+
+  // Saves the current in-progress edits as a draft (no customer
+  // notification, no status change) purely so the quotation preview page
+  // has something fresh to fetch and render — the builder's own state only
+  // holds reference ids (hotel/activity ids), not the fully-hydrated
+  // objects (names, images, room types...) the quotation view needs, so a
+  // true client-side-only preview isn't possible without duplicating the
+  // backend's population logic. This trades one silent save for a
+  // guaranteed-accurate preview.
+  const previewQuotation = async () => {
+    setPreviewing(true);
+    try {
+      await apiPost(`/custom-tours/${id}/itinerary/draft`, buildItineraryPayload());
+      window.open(`/admin/custom-requests/${id}/quotation`, '_blank');
+      load();
+    } catch (err) {
+      toast(err instanceof ApiRequestError ? err.message : 'Failed to save draft for preview.', 'error');
+    } finally {
+      setPreviewing(false);
     }
   };
 
@@ -1427,14 +1446,9 @@ export function AdminCustomRequestDetail() {
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <span className="font-display text-xl font-semibold text-forest">{currency} {suggestedTotal.toLocaleString()}</span>
-                      <p className="text-[11px] text-forest/50">full group cost (hotels, vehicle &amp; activities already priced per traveler)</p>
+                      <p className="text-[11px] text-forest/50">hotel + vehicle{sightseeingIncluded ? ' + sightseeing' : ''} (total cost, not per person)</p>
                       {markupAmount > 0 &&
-                      <p className="text-xs text-emerald">+ {currency} {markupAmount.toLocaleString()} markup = {currency} {markedUpTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })} full cost</p>
-                      }
-                      {pricePerPerson &&
-                      <p className="text-xs text-forest/60">
-                        ÷ {payingTravelers} {payingTravelers === 1 ? 'traveler' : 'travelers'} = {currency} {((markedUpTotal - discount) / payingTravelers).toLocaleString(undefined, { maximumFractionDigits: 2 })} / person
-                      </p>
+                      <p className="text-xs text-emerald">+ {currency} {markupAmount.toLocaleString()} markup = {currency} {markedUpTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })} total cost</p>
                       }
                     </div>
                     <button type="button" onClick={useSuggestedTotal} className="rounded-full bg-emerald px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-light">Use this amount</button>
@@ -1458,11 +1472,8 @@ export function AdminCustomRequestDetail() {
                   <TextField label="Currency" value={currency} onChange={setCurrency} />
                 </div>
                 <p className="mt-2 text-xs text-forest/50">
-                  Markup is Roxaval's margin on top of the base cost - it's baked into Total Price when you click "Use this amount" above, never shown to the customer directly.
+                  Markup is Roxaval's margin on top of the base cost - it's baked into Total Price when you click "Use this amount" above, never shown to the customer directly. Total Price is the full trip cost, not per person.
                 </p>
-                <div className="mt-4">
-                  <CheckboxField label="Price is per person" checked={pricePerPerson} onChange={setPricePerPerson} />
-                </div>
               </div>
 
               <div className="rounded-2xl bg-white p-6 shadow-soft">
@@ -1483,7 +1494,11 @@ export function AdminCustomRequestDetail() {
                 </div>
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-3">
+                <button type="button" disabled={previewing} onClick={previewQuotation} className="flex items-center gap-2 rounded-full border border-forest/15 px-6 py-3 text-sm font-semibold text-forest hover:bg-cream disabled:opacity-70">
+                  {previewing ? <Loader2Icon className="h-4 w-4 animate-spin" /> : <EyeIcon className="h-4 w-4" />}
+                  View Quotation
+                </button>
                 <button type="submit" disabled={sending} className="flex items-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-semibold text-cream hover:bg-emerald disabled:opacity-70">
                   {sending ? <Loader2Icon className="h-4 w-4 animate-spin" /> : <SendIcon className="h-4 w-4" />}
                   Send Itinerary to Customer

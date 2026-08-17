@@ -106,10 +106,6 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
   const itin = request.itinerary;
   const days = itin.days || [];
   const nights = Math.max(0, days.length - 1);
-  // Infants are conventionally free/not counted toward a per-person quote -
-  // only paying adults and children multiply the per-person rate.
-  const payingTravelers = Math.max((request.travelers?.adults || 0) + (request.travelers?.children || 0), 1);
-  const fullCost = itin.pricing.totalPrice * payingTravelers;
 
   // Ordered, de-duplicated route (consecutive repeats collapsed) built from
   // each day's destination tags — falls back to hotel destinations when a
@@ -155,12 +151,7 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
             </div>
             <div className="rounded-2xl bg-forest px-5 py-3 text-right text-white">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-white/60">Total Cost</p>
-              <p className="font-display text-xl font-bold">{itin.pricing.currency} {(itin.pricing.pricePerPerson ? fullCost : itin.pricing.totalPrice).toLocaleString()}</p>
-              {itin.pricing.pricePerPerson &&
-                <p className="mt-0.5 text-[11px] font-semibold text-gold-light">
-                  {itin.pricing.currency} {itin.pricing.totalPrice.toLocaleString()} / person ({payingTravelers} {payingTravelers === 1 ? 'traveler' : 'travelers'})
-                </p>
-              }
+              <p className="font-display text-xl font-bold">{itin.pricing.currency} {itin.pricing.totalPrice.toLocaleString()}</p>
             </div>
           </div>
 
@@ -299,13 +290,8 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
               <p className="text-xs text-forest/50">Base Price: {itin.pricing.currency} {itin.pricing.basePrice.toLocaleString()} &nbsp; Discount: {itin.pricing.currency} {itin.pricing.discount.toLocaleString()}</p>
             }
             <p className="font-display text-xl font-bold text-forest">
-              Total: {itin.pricing.currency} {(itin.pricing.pricePerPerson ? fullCost : itin.pricing.totalPrice).toLocaleString()}
+              Total: {itin.pricing.currency} {itin.pricing.totalPrice.toLocaleString()}
             </p>
-            {itin.pricing.pricePerPerson &&
-              <p className="text-sm font-semibold text-emerald">
-                {itin.pricing.currency} {itin.pricing.totalPrice.toLocaleString()} / person ({payingTravelers} {payingTravelers === 1 ? 'Traveler' : 'Travelers'})
-              </p>
-            }
             <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold ${itin.sightseeingIncluded === false ? 'bg-gold/15 text-forest/70' : 'bg-emerald/10 text-emerald'}`}>
               {itin.sightseeingIncluded === false ? 'Sightseeing & activities not included' : 'Includes sightseeing & activities'}
             </span>
