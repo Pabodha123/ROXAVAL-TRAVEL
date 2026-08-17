@@ -176,7 +176,7 @@ export function TourPackageDetails() {
                         }
                           </div>
                       }
-                        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-forest/65">{body}</p>
+                        <p className="mt-3 max-w-2xl whitespace-pre-line text-sm leading-relaxed text-forest/65">{body}</p>
                         {(day.hotel || day.meals && day.meals.length > 0) &&
                       <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 border-t border-forest/8 pt-3.5">
                             {day.hotel &&
@@ -298,7 +298,19 @@ export function TourPackageDetails() {
         {/* Sidebar CTA */}
         <aside>
           <div className="sticky top-28 rounded-3xl bg-forest p-7 text-white shadow-lift">
-            <p className="text-xs uppercase tracking-wide text-cream/60">{t('detail.perPerson', { min: pkg.minTravelers, max: pkg.maxTravelers })}</p>
+            {pkg.showPrice ?
+            <>
+                <p className="font-display text-3xl font-bold">
+                  {pkg.currency} {displayPrice.toLocaleString()}
+                  {pkg.discountPrice != null && pkg.discountPrice < pkg.price &&
+                  <span className="ml-2 text-base font-normal text-cream/50 line-through">{pkg.currency} {pkg.price.toLocaleString()}</span>
+                  }
+                </p>
+                <p className="mt-1 text-xs uppercase tracking-wide text-cream/60">{t('detail.perPerson', { min: pkg.minTravelers, max: pkg.maxTravelers })}</p>
+              </> :
+
+            <p className="font-display text-xl font-semibold">{t('detail.contactForPricing')}</p>
+            }
             <button
               onClick={() => user ? setBookingOpen(true) : navigate('/auth', { state: { from: { pathname: `/packages/${pkg._id}` } } })}
               className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-[1.03] active:scale-95">

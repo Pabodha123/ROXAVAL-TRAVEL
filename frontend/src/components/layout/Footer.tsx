@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   MapPinIcon, MailIcon, MessageCircleIcon, GlobeIcon,
-  FacebookIcon, InstagramIcon, YoutubeIcon, MusicIcon, SendIcon, CheckIcon } from
+  FacebookIcon, InstagramIcon, MusicIcon, SendIcon, CheckIcon } from
 'lucide-react';
 import { apiPost } from '../../lib/api';
 import {
@@ -12,11 +12,12 @@ import {
   CONTACT_EMAIL, WEBSITE_DISPLAY, WEBSITE_URL, ADDRESS_SRI_LANKA } from
 '../../lib/contact';
 
+// No lucide TikTok icon exists, so MusicIcon stands in for it (same
+// convention already in use here before this URL wiring).
 const socials = [
-{ icon: FacebookIcon, label: 'Facebook' },
-{ icon: InstagramIcon, label: 'Instagram' },
-{ icon: YoutubeIcon, label: 'YouTube' },
-{ icon: MusicIcon, label: 'TikTok' }];
+{ icon: FacebookIcon, label: 'Facebook', href: 'https://www.facebook.com/share/19QafrCEGn/?mibextid=wwXIfr' },
+{ icon: InstagramIcon, label: 'Instagram', href: 'https://www.instagram.com/roxavaltravels?igsh=MXF6Z3hrNmdxY2Nm&igsi=MXF6Z3hrNmdxY2Nm&utm_source=qr' },
+{ icon: MusicIcon, label: 'TikTok', href: 'https://www.tiktok.com/@roxavaltravels?_r=1&_t=ZS-98xkJr57tzw' }];
 
 
 export function Footer() {
@@ -106,7 +107,9 @@ export function Footer() {
               {socials.map((s) =>
               <a
                 key={s.label}
-                href="#"
+                href={s.href}
+                target="_blank"
+                rel="noreferrer"
                 aria-label={s.label}
                 className="grid place-items-center h-10 w-10 rounded-full bg-white/10 text-cream hover:bg-gold hover:text-forest transition-colors">
                 

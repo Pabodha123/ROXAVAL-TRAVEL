@@ -67,6 +67,7 @@ interface AdminTourPackageRaw {
   maxTravelers: number;
   status: string;
   isFeatured: boolean;
+  showPrice: boolean;
 }
 
 const emptyDay = (n: number): ItineraryDayForm => ({ dayNumber: n, title: emptyLocalizedString(), description: emptyLocalizedString(), destinations: [], activities: [], hotel: '', meals: [] });
@@ -112,6 +113,7 @@ export function AdminPackageForm() {
   const [maxTravelers, setMaxTravelers] = useState(20);
   const [status, setStatus] = useState('draft');
   const [isFeatured, setIsFeatured] = useState(false);
+  const [showPrice, setShowPrice] = useState(true);
   const initialItinerary = useRef('');
 
   useEffect(() => {
@@ -165,6 +167,7 @@ export function AdminPackageForm() {
       setMaxTravelers(p.maxTravelers);
       setStatus(p.status);
       setIsFeatured(p.isFeatured);
+      setShowPrice(p.showPrice ?? true);
     }).
     finally(() => setLoading(false));
   }, [id, isEdit]);
@@ -209,7 +212,8 @@ export function AdminPackageForm() {
       minTravelers,
       maxTravelers,
       status,
-      isFeatured
+      isFeatured,
+      showPrice
     };
     try {
       if (isEdit) {
@@ -282,7 +286,7 @@ export function AdminPackageForm() {
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   <TranslatedInput label="Title" value={day.title} onChange={(v) => updateDay(i, { title: v })} />
                   <div className="sm:col-span-2">
-                    <TranslatedTextarea label="Description" value={day.description} onChange={(v) => updateDay(i, { description: v })} rows={2} />
+                    <TranslatedTextarea label="Description" value={day.description} onChange={(v) => updateDay(i, { description: v })} rows={8} />
                   </div>
                   <RefMultiSelect label="Destinations" options={destOptions} value={day.destinations} onChange={(v) => updateDay(i, { destinations: v })} />
                   <RefMultiSelect label="Activities" options={activityOptions} value={day.activities} onChange={(v) => updateDay(i, { activities: v })} />
@@ -325,6 +329,10 @@ export function AdminPackageForm() {
             <NumberField label="Child Price (% of adult)" value={childPricePercent} onChange={setChildPricePercent} min={0} />
             <NumberField label="Min Travelers" value={minTravelers} onChange={setMinTravelers} min={1} />
             <NumberField label="Max Travelers" value={maxTravelers} onChange={setMaxTravelers} min={1} />
+          </div>
+          <div className="mt-4">
+            <CheckboxField label="Show price to customers" checked={showPrice} onChange={setShowPrice} />
+            <p className="mt-1 text-xs text-forest/50">When off, the package page shows "Contact us for pricing" instead of the price above.</p>
           </div>
         </div>
 

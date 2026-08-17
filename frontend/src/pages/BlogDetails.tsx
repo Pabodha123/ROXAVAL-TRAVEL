@@ -6,6 +6,7 @@ import { PageBanner } from '../components/layout/PageBanner';
 import { LoadingState, ErrorState } from '../components/ui/StatusState';
 import { apiGetOne, apiGetList, API_ORIGIN } from '../lib/api';
 import { formatDateLong as formatDate } from '../lib/date';
+import { CommentsSection } from '../components/blog/CommentsSection';
 import type { BlogPost, BlogListItem } from '../types/blog';
 
 // Admin-uploaded images are stored as backend-relative paths (/uploads/images/...);
@@ -144,6 +145,12 @@ export function BlogDetails() {
           }
         </article>
 
+        <section className="bg-[#faf3e8] pb-16">
+          <div className="mx-auto max-w-2xl px-4 sm:px-6">
+            <CommentsSection blogId={post._id} />
+          </div>
+        </section>
+
         {related.length > 0 &&
         <section className="bg-white py-16">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -254,6 +261,12 @@ export function BlogDetails() {
           }
         </div>
 
+        <section className="bg-white/[0.03] py-16">
+          <div className="mx-auto max-w-2xl px-4 sm:px-6">
+            <CommentsSection blogId={post._id} />
+          </div>
+        </section>
+
         {related.length > 0 &&
         <section className="bg-[#081729] py-16">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -357,6 +370,9 @@ export function BlogDetails() {
             {post.tags.map((t) => <span key={t} className="rounded-full bg-cream px-3 py-1.5 text-xs font-medium text-forest/60">#{t}</span>)}
           </div>
         }
+        <div className="border-t border-forest/10 pt-10">
+          <CommentsSection blogId={post._id} />
+        </div>
       </article>
 
       {related.length > 0 &&

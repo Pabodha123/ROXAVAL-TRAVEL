@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckIcon, SearchIcon, StarIcon, TrashIcon, XIcon } from 'lucide-react';
+import { CheckIcon, HomeIcon, SearchIcon, StarIcon, TrashIcon, XIcon } from 'lucide-react';
 import { useAdminList } from '../../hooks/useAdminList';
 import { DataTable, Column } from '../../components/DataTable';
 import { PageHeader } from '../../components/PageHeader';
@@ -18,6 +18,7 @@ interface AdminReview {
   title?: string;
   text: string;
   status: string;
+  isFeatured: boolean;
   createdAt: string;
 }
 
@@ -35,6 +36,16 @@ export function AdminReviewsList() {
     try {
       await apiPatch(`/reviews/${r._id}/moderate`, { status: decision });
       toast(`Review ${decision}.`);
+      refetch();
+    } catch (err) {
+      toast(err instanceof ApiRequestError ? err.message : 'Failed to update review.', 'error');
+    }
+  };
+
+  const toggleFeatured = async (r: AdminReview) => {
+    try {
+      await apiPatch(`/reviews/${r._id}/featured`, { isFeatured: !r.isFeatured });
+      toast(r.isFeatured ? 'Removed from homepage.' : 'Featured on homepage.');
       refetch();
     } catch (err) {
       toast(err instanceof ApiRequestError ? err.message : 'Failed to update review.', 'error');
@@ -65,6 +76,17 @@ export function AdminReviewsList() {
   { header: 'Rating', render: (r) => <span className="inline-flex items-center gap-1"><StarIcon className="h-3.5 w-3.5 fill-gold text-gold" /> {r.rating}</span> },
   { header: 'Review', className: 'max-w-xs truncate', render: (r) => r.text },
   { header: 'Status', render: (r) => <StatusBadge status={r.status} /> },
+  {
+    header: 'Featured',
+    render: (r) => r.status === 'approved' ?
+    <button
+      onClick={() => toggleFeatured(r)}
+      title={r.isFeatured ? 'Showing on homepage — click to remove' : 'Not on homepage — click to feature'}
+      className={`grid h-8 w-8 place-items-center rounded-lg transition-colors ${r.isFeatured ? 'bg-gold/15 text-gold hover:bg-gold/25' : 'text-forest/30 hover:bg-cream hover:text-forest/60'}`}>
+        <HomeIcon className="h-4 w-4" />
+      </button> :
+    <span className="text-xs text-forest/30">—</span>
+  },
   {
     header: 'Actions',
     render: (r) =>

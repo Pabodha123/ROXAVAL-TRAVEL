@@ -56,6 +56,7 @@ export interface TourPackage {
   reviewsCount: number;
   status: 'draft' | 'published' | 'archived';
   isFeatured: boolean;
+  showPrice: boolean;
   createdAt: string;
   updatedAt: string;
 }

@@ -21,7 +21,7 @@ export function PackageCard({ pkg, index = 0, compact = false }: PackageCardProp
       className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-soft transition-shadow hover:shadow-lift">
 
       <Link to={`/packages/${pkg._id}`} className="flex flex-1 flex-col">
-        <div className={`relative overflow-hidden ${compact ? 'h-36' : 'h-52'}`}>
+        <div className={`relative overflow-hidden ${compact ? 'h-48' : 'h-52'}`}>
           <img src={pkg.heroImage} alt={pkg.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
           <span className={`absolute top-3 left-3 rounded-full bg-gold font-bold uppercase tracking-wide text-forest ${compact ? 'px-2 py-0.5 text-[9px]' : 'px-3 py-1 text-[11px]'}`}>{pkg.category}</span>
           <span className={`absolute top-3 right-3 flex items-center gap-1 rounded-full bg-forest/85 backdrop-blur font-semibold text-white ${compact ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-xs'}`}>

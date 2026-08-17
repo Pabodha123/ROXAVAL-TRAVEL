@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { StarIcon, PackageIcon, CalendarIcon } from 'lucide-react';
+import { StarIcon, PackageIcon, CalendarIcon, ExternalLinkIcon } from 'lucide-react';
 import { PageBanner } from '../components/layout/PageBanner';
 import { Pagination } from '../components/ui/Pagination';
 import { LoadingState, EmptyState, ErrorState } from '../components/ui/StatusState';
@@ -129,6 +129,18 @@ export function Reviews() {
         </div>
 
         <Pagination meta={meta} shown={items.length} hasMore={hasMore} loading={loading} onLoadMore={loadMore} />
+
+        <div className="mt-14 flex flex-col items-center gap-3 rounded-3xl border border-forest/10 bg-white p-8 text-center shadow-soft">
+          <p className="font-display text-lg font-semibold text-forest">Read More Reviews on Tripadvisor</p>
+          <p className="max-w-md text-sm text-forest/60">See what travelers are saying about Roxaval Travels on Tripadvisor.</p>
+          <a
+            href="https://www.tripadvisor.com/Attraction_Review-g293962-d27987234-Reviews-Roxaval_Travels-Colombo_Western_Province.html"
+            target="_blank"
+            rel="noreferrer"
+            className="mt-1 flex items-center gap-2 rounded-full bg-[#34e0a1] px-6 py-3 text-sm font-semibold text-[#00332a] transition-transform hover:scale-105">
+            View on Tripadvisor <ExternalLinkIcon className="h-4 w-4" />
+          </a>
+        </div>
       </section>
     </main>);
 

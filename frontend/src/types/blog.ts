@@ -26,3 +26,11 @@ export interface BlogPost extends BlogListItem {
   author?: { _id: string; user?: { fullName?: string } };
   seo?: { metaTitle?: string; metaDescription?: string; keywords?: string[] };
 }
+
+export interface BlogComment {
+  _id: string;
+  blogId: string;
+  text: string;
+  customer?: { user?: { fullName?: string } };
+  createdAt: string;
+}
