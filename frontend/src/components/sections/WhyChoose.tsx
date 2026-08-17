@@ -1,9 +1,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import * as Icons from 'lucide-react';
+import { AwardIcon, SparklesIcon, CompassIcon, BedDoubleIcon, BadgePercentIcon, ShieldCheckIcon, HeadphonesIcon, CarFrontIcon, CheckIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { whyChoose } from '../../data/content';
 import { SectionHeading } from '../ui/SectionHeading';
+
+// A plain `import * as Icons from 'lucide-react'` (needed since `f.icon`
+// below is a data-driven string, not a static import) pulls in every icon
+// in the library -- lucide-react doesn't tree-shake through a namespace
+// import, so that one line was bloating this chunk to 800KB+. Only the
+// handful actually referenced by data/content.ts's `whyChoose` are needed.
+const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  Award: AwardIcon, Sparkles: SparklesIcon, Compass: CompassIcon, BedDouble: BedDoubleIcon,
+  BadgePercent: BadgePercentIcon, ShieldCheck: ShieldCheckIcon, Headphones: HeadphonesIcon, CarFront: CarFrontIcon,
+};
 
 export function WhyChoose() {
   const { t } = useTranslation('home');
@@ -22,7 +32,7 @@ export function WhyChoose() {
 
           <div className="relative grid gap-x-12 gap-y-5 sm:grid-cols-2">
             {whyChoose.map((f, i) => {
-              const Icon = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[f.icon] || Icons.CheckIcon;
+              const Icon = ICONS[f.icon] || CheckIcon;
               return (
                 <motion.div
                   key={f.title}
