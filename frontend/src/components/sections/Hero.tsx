@@ -50,15 +50,6 @@ export function Hero() {
           <span className="block text-gold">{t('hero.titleLine2')}</span>
         </motion.h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="mt-6 max-w-xl text-base sm:text-lg text-cream/85 leading-relaxed">
-
-          {t('hero.subtitle')}
-        </motion.p>
-
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}

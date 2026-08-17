@@ -236,13 +236,18 @@ export function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {mobileOpen &&
+      {/* Mobile menu — deliberately no AnimatePresence/exit animation here.
+          Animating height to "auto" (Framer Motion's workaround for a CSS
+          limitation) is known to be unreliable in Safari/WebKit, especially
+          when a route change lands mid-animation: the menu can visually
+          get stuck between open and closed even though mobileOpen is
+          already false. Closing instantly (still opens with a nice
+          animation) trades a bit of polish for actually working every
+          time, which matters far more for primary navigation. */}
+      {mobileOpen &&
         <motion.div
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.3 }}
           className="lg:hidden overflow-hidden">
           
@@ -317,8 +322,7 @@ export function Navbar() {
               </div>
             </div>
           </motion.div>
-        }
-      </AnimatePresence>
+      }
 
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </motion.header>);
