@@ -727,7 +727,7 @@ export function AdminCustomRequestDetail() {
   // children*childRate (see ActivityPickerModal's costFor()). So "per
   // person" has to be DERIVED by dividing the marked-up group total across
   // paying travelers, not the other way around.
-  const payingTravelers = Math.max((request.travelers.adults || 0) + (request.travelers.children || 0), 1);
+  const payingTravelers = Math.max((request?.travelers.adults || 0) + (request?.travelers.children || 0), 1);
 
   const useSuggestedTotal = () => {
     setBasePrice(suggestedTotal);
