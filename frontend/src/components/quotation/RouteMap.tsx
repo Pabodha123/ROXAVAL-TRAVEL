@@ -33,16 +33,26 @@ function FitBounds({ stops }: { stops: RouteStop[] }) {
   return null;
 }
 
+type MapDest = { name: string; mapLocation?: { lat?: number; lng?: number } };
+
 /**
  * Numbered day-by-day route on a Sri Lanka map — built from each day's
  * destination coordinates (Destination.mapLocation), deduplicated so a
  * multi-day stay in one place doesn't stack repeat markers.
+ *
+ * A day's own `destinations` array is populated from itinerary_days.
+ * destination_ids, which the API currently returns as raw IDs rather than
+ * hydrated Destination objects, so it's effectively always empty in
+ * practice — same gap the route text above this map already works around
+ * by falling back to the day's hotel's destination, which IS a real
+ * eager-loaded relation. Mirroring that fallback here is what makes the
+ * map actually have coordinates to plot.
  */
-export function RouteMap({ days }: { days: { dayNumber: number; destinations?: { name: string; mapLocation?: { lat?: number; lng?: number } }[] }[] }) {
+export function RouteMap({ days }: { days: { dayNumber: number; destinations?: MapDest[]; hotel?: { destination?: MapDest } }[] }) {
   const stops = useMemo(() => {
     const result: RouteStop[] = [];
     days.forEach((d) => {
-      const dest = d.destinations?.[0];
+      const dest = d.destinations?.[0] || d.hotel?.destination;
       const lat = dest?.mapLocation?.lat;
       const lng = dest?.mapLocation?.lng;
       if (!dest || lat == null || lng == null) return;

@@ -154,11 +154,11 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
               <p className="mt-1 text-sm text-forest/50">Quotation No. {request.referenceNumber}</p>
             </div>
             <div className="rounded-2xl bg-forest px-5 py-3 text-right text-white">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-white/60">{itin.pricing.pricePerPerson ? 'Per Person' : 'Total Package'}</p>
-              <p className="font-display text-xl font-bold">{itin.pricing.currency} {itin.pricing.totalPrice.toLocaleString()}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-white/60">Total Cost</p>
+              <p className="font-display text-xl font-bold">{itin.pricing.currency} {(itin.pricing.pricePerPerson ? fullCost : itin.pricing.totalPrice).toLocaleString()}</p>
               {itin.pricing.pricePerPerson &&
                 <p className="mt-0.5 text-[11px] font-semibold text-gold-light">
-                  {itin.pricing.currency} {fullCost.toLocaleString()} full cost ({payingTravelers} {payingTravelers === 1 ? 'traveler' : 'travelers'})
+                  {itin.pricing.currency} {itin.pricing.totalPrice.toLocaleString()} / person ({payingTravelers} {payingTravelers === 1 ? 'traveler' : 'travelers'})
                 </p>
               }
             </div>
@@ -299,11 +299,11 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
               <p className="text-xs text-forest/50">Base Price: {itin.pricing.currency} {itin.pricing.basePrice.toLocaleString()} &nbsp; Discount: {itin.pricing.currency} {itin.pricing.discount.toLocaleString()}</p>
             }
             <p className="font-display text-xl font-bold text-forest">
-              Total: {itin.pricing.currency} {itin.pricing.totalPrice.toLocaleString()}{itin.pricing.pricePerPerson ? ' / person' : ''}
+              Total: {itin.pricing.currency} {(itin.pricing.pricePerPerson ? fullCost : itin.pricing.totalPrice).toLocaleString()}
             </p>
             {itin.pricing.pricePerPerson &&
               <p className="text-sm font-semibold text-emerald">
-                Full Cost for {payingTravelers} {payingTravelers === 1 ? 'Traveler' : 'Travelers'}: {itin.pricing.currency} {fullCost.toLocaleString()}
+                {itin.pricing.currency} {itin.pricing.totalPrice.toLocaleString()} / person ({payingTravelers} {payingTravelers === 1 ? 'Traveler' : 'Travelers'})
               </p>
             }
             <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold ${itin.sightseeingIncluded === false ? 'bg-gold/15 text-forest/70' : 'bg-emerald/10 text-emerald'}`}>

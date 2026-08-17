@@ -65,6 +65,17 @@ export function Navbar() {
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
+  // The Explore dropdown only closes on mouse-leave, which a click that
+  // navigates away doesn't reliably trigger (especially on touch, where
+  // there's no hover state to leave in the first place) — leaving it
+  // stuck open on whatever page it navigated to. Same guarantee for the
+  // mobile menu and user menu: a route change should always close them.
+  useEffect(() => {
+    setExploreOpen(false);
+    setUserMenuOpen(false);
+    setMobileOpen(false);
+  }, [location.pathname]);
+
   const handleLogout = async () => {
     await logout();
     setUserMenuOpen(false);
@@ -142,6 +153,7 @@ export function Navbar() {
                 <Link
                   key={l.label}
                   to={l.href}
+                  onClick={() => setExploreOpen(false)}
                   className="block px-4 py-2.5 text-sm text-forest/80 rounded-xl hover:bg-cream hover:text-emerald transition-colors">
 
                       {l.label}

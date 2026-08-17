@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BellIcon } from 'lucide-react';
 import { apiGetList, apiPatch, ApiMeta } from '../../lib/api';
@@ -21,6 +21,14 @@ export function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Belt-and-braces: whatever click path led to a route change (a nav
+  // link, browser back/forward, a notification's own link) the panel
+  // should never still be open on the page it navigated to.
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     apiGetList<NotificationItem>('/notifications', { limit: 8 }).

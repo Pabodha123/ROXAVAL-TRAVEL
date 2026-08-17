@@ -51,7 +51,7 @@ export function Packages() {
             <Loader2Icon className="h-6 w-6 animate-spin text-forest/40" />
           </div> :
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {packages.map((pkg, i) => <PackageCard key={pkg._id} pkg={pkg} index={i} compact />)}
           </div>
         }
