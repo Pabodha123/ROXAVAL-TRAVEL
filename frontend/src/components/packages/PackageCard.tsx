@@ -21,7 +21,7 @@ export function PackageCard({ pkg, index = 0, compact = false }: PackageCardProp
       className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-soft transition-shadow hover:shadow-lift">
 
       <Link to={`/packages/${pkg._id}`} className="flex flex-1 flex-col">
-        <div className={`relative overflow-hidden ${compact ? 'h-48' : 'h-52'}`}>
+        <div className={`relative overflow-hidden ${compact ? 'h-60' : 'h-52'}`}>
           <img src={pkg.heroImage} alt={pkg.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
           <span className={`absolute top-3 left-3 rounded-full bg-gold font-bold uppercase tracking-wide text-forest ${compact ? 'px-2 py-0.5 text-[9px]' : 'px-3 py-1 text-[11px]'}`}>{pkg.category}</span>
           <span className={`absolute top-3 right-3 flex items-center gap-1 rounded-full bg-forest/85 backdrop-blur font-semibold text-white ${compact ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-xs'}`}>
@@ -29,7 +29,7 @@ export function PackageCard({ pkg, index = 0, compact = false }: PackageCardProp
           </span>
         </div>
 
-        <div className={`flex flex-1 flex-col ${compact ? 'p-4' : 'p-6'}`}>
+        <div className={`flex flex-1 flex-col ${compact ? 'px-4 pt-3 pb-3' : 'p-6'}`}>
           {!compact &&
           <span className="inline-flex w-fit items-center gap-1 rounded-full bg-cream px-2.5 py-1 text-[10px] font-semibold text-forest/70">
               {pkg.tourType === 'Private' ? <UserIcon className="h-3 w-3" /> : <Users2Icon className="h-3 w-3" />} {pkg.tourType}
@@ -40,7 +40,7 @@ export function PackageCard({ pkg, index = 0, compact = false }: PackageCardProp
             <ClockIcon className="h-3.5 w-3.5" /> {pkg.durationDays}D / {pkg.durationNights}N
           </p>
 
-          <div className={`flex items-end justify-end border-t border-forest/10 ${compact ? 'mt-3 pt-3' : 'mt-5 pt-4'}`}>
+          <div className={`flex items-end justify-end border-t border-forest/10 ${compact ? 'mt-2 pt-2' : 'mt-5 pt-4'}`}>
             {compact ?
             <span className="inline-flex items-center gap-1 rounded-full bg-forest px-3 py-1.5 text-xs font-semibold text-cream transition-colors group-hover:bg-emerald">
                 View <ArrowRightIcon className="h-3 w-3 transition-transform group-hover:translate-x-1" />

@@ -3,9 +3,10 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import {
   MapPinIcon, MailIcon, MessageCircleIcon, ClockIcon, GlobeIcon,
-  FacebookIcon, InstagramIcon, YoutubeIcon, MusicIcon, SendIcon,
+  FacebookIcon, InstagramIcon, YoutubeIcon, SendIcon,
   Loader2Icon, CheckIcon, ChevronDownIcon, ShieldAlertIcon } from
 'lucide-react';
+import { TikTokIcon } from '../components/icons/BrandIcons';
 import { PageBanner } from '../components/layout/PageBanner';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { apiGetOne, apiPost, ApiRequestError } from '../lib/api';
@@ -34,7 +35,7 @@ const SOCIAL_ICONS: Record<string, React.ComponentType<{className?: string;}>> =
   facebook: FacebookIcon,
   instagram: InstagramIcon,
   youtube: YoutubeIcon,
-  tiktok: MusicIcon
+  tiktok: TikTokIcon
 };
 
 export function ContactUs() {

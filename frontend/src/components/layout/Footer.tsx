@@ -4,20 +4,20 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   MapPinIcon, MailIcon, MessageCircleIcon, GlobeIcon,
-  FacebookIcon, InstagramIcon, MusicIcon, SendIcon, CheckIcon } from
+  FacebookIcon, InstagramIcon, SendIcon, CheckIcon } from
 'lucide-react';
+import { TikTokIcon, TripAdvisorIcon } from '../icons/BrandIcons';
 import { apiPost } from '../../lib/api';
 import {
   WHATSAPP_DISPLAY, WHATSAPP_NUMBER_SL, WHATSAPP_DISPLAY_SL, whatsAppLink,
   CONTACT_EMAIL, WEBSITE_DISPLAY, WEBSITE_URL, ADDRESS_SRI_LANKA } from
 '../../lib/contact';
 
-// No lucide TikTok icon exists, so MusicIcon stands in for it (same
-// convention already in use here before this URL wiring).
 const socials = [
 { icon: FacebookIcon, label: 'Facebook', href: 'https://www.facebook.com/share/19QafrCEGn/?mibextid=wwXIfr' },
 { icon: InstagramIcon, label: 'Instagram', href: 'https://www.instagram.com/roxavaltravels?igsh=MXF6Z3hrNmdxY2Nm&igsi=MXF6Z3hrNmdxY2Nm&utm_source=qr' },
-{ icon: MusicIcon, label: 'TikTok', href: 'https://www.tiktok.com/@roxavaltravels?_r=1&_t=ZS-98xkJr57tzw' }];
+{ icon: TikTokIcon, label: 'TikTok', href: 'https://www.tiktok.com/@roxavaltravels?_r=1&_t=ZS-98xkJr57tzw' },
+{ icon: TripAdvisorIcon, label: 'TripAdvisor', href: 'https://www.tripadvisor.com/Attraction_Review-g293962-d27987234-Reviews-Roxaval_Travels-Colombo_Western_Province.html' }];
 
 
 export function Footer() {

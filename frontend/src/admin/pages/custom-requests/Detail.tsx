@@ -12,6 +12,7 @@ import { Timeline } from '../../../components/ui/Timeline';
 import { resolveRequestStage } from '../../../lib/tourTimeline';
 import { MessagingPanel } from '../../../components/messaging/MessagingPanel';
 import { NotesBlock } from '../../../components/quotation/NotesBlock';
+import { TranslatedTextarea, emptyLocalizedString, type LocalizedString } from '../../components/fields/TranslatedFields';
 import {
   TextField,
   TextAreaField,
@@ -146,7 +147,7 @@ interface ItineraryDayForm {
   legId: string;
   dayNumber: number;
   date: string;
-  title: string;
+  title: LocalizedString;
   schedule: string;
   destinations: string[];
   activities: string[];
@@ -208,6 +209,22 @@ interface ItineraryDetail {
   versionHistory: ItineraryVersion[];
 }
 
+// Separate from ItineraryDetail on purpose: the normal (non-raw) fetch
+// flattens every translatable field to the admin's own site language, which
+// is exactly right for all the read-only display uses of `request` below --
+// but editing day titles/policy text in all 3 languages needs the actual
+// {en,de,fr} objects, fetched once via ?raw=true and used only to seed the
+// form state, never to replace the localized `request` object itself.
+interface RawItineraryFields {
+  days: { dayNumber: number; title: LocalizedString }[];
+  customerFacingNotes?: LocalizedString;
+  visaRequirements?: LocalizedString;
+  travelInsurance?: LocalizedString;
+  cancellationPolicy?: LocalizedString;
+  inclusions?: LocalizedString;
+  exclusions?: LocalizedString;
+}
+
 interface RequestDetail {
   _id: string;
   referenceNumber: string;
@@ -248,7 +265,7 @@ const makeKey = () => Math.random().toString(36).slice(2);
 const emptyOccupancy = (): RoomOccupancy => ({ single: 0, double: 0, triple: 0, quad: 0, extraBed: 0, childWithBed: 0, childNoBed: 0, infant: 0 });
 
 const emptyDay = (n: number): ItineraryDayForm => ({
-  _key: makeKey(), legId: '', dayNumber: n, date: '', title: '', schedule: '', destinations: [], activities: [], customDestinations: [], customActivities: [],
+  _key: makeKey(), legId: '', dayNumber: n, date: '', title: emptyLocalizedString(), schedule: '', destinations: [], activities: [], customDestinations: [], customActivities: [],
   hotel: '', roomType: '', numberOfRooms: 1, roomOccupancy: emptyOccupancy(), roomCost: 0, hotelOptions: [], meals: [], transport: '',
   activityPricing: [], transfers: [], flights: [], dayCost: 0,
   arrivalTime: '', departureTime: '', travelTime: '', notes: ''
@@ -299,7 +316,10 @@ const deriveDaysFromLegs = (legs: RouteLeg[], prevDays: ItineraryDayForm[], dest
       const title = night === 0 ? `${leg.departure} → ${leg.arrival}` : `${leg.arrival} – Night ${night + 1}`;
       const existing = existingForLeg[night];
       if (existing) {
-        generated.push({ ...existing, date, title, destinations: matchedDestId ? [matchedDestId] : existing.destinations });
+        // Route Builder always refreshes the English title to match the
+        // recalculated route, but keeps any DE/FR translation the admin
+        // already typed rather than discarding it on every regeneration.
+        generated.push({ ...existing, date, title: { ...existing.title, en: title }, destinations: matchedDestId ? [matchedDestId] : existing.destinations });
       } else {
         // A later night at the same stay — carry over the previous night's
         // hotel/activities rather than starting blank, since it's the same
@@ -309,7 +329,7 @@ const deriveDaysFromLegs = (legs: RouteLeg[], prevDays: ItineraryDayForm[], dest
           ...emptyDay(0),
           legId: leg.id,
           date,
-          title,
+          title: { ...emptyLocalizedString(), en: title },
           destinations: matchedDestId ? [matchedDestId] : [],
           ...(carryFrom && night > 0 ? {
             hotel: carryFrom.hotel, roomType: carryFrom.roomType, numberOfRooms: carryFrom.numberOfRooms,
@@ -398,12 +418,13 @@ export function AdminCustomRequestDetail() {
   const [currency, setCurrency] = useState('USD');
   const [sightseeingIncluded, setSightseeingIncluded] = useState(true);
   const [adminNotes, setAdminNotes] = useState('');
-  const [customerFacingNotes, setCustomerFacingNotes] = useState(DEFAULT_CUSTOMER_FACING_NOTES);
-  const [visaRequirements, setVisaRequirements] = useState('');
-  const [travelInsurance, setTravelInsurance] = useState('');
-  const [cancellationPolicy, setCancellationPolicy] = useState(DEFAULT_CANCELLATION_POLICY);
-  const [inclusions, setInclusions] = useState(DEFAULT_INCLUSIONS);
-  const [exclusions, setExclusions] = useState(DEFAULT_EXCLUSIONS);
+  const [customerFacingNotes, setCustomerFacingNotes] = useState<LocalizedString>({ ...emptyLocalizedString(), en: DEFAULT_CUSTOMER_FACING_NOTES });
+  const [visaRequirements, setVisaRequirements] = useState<LocalizedString>(emptyLocalizedString());
+  const [travelInsurance, setTravelInsurance] = useState<LocalizedString>(emptyLocalizedString());
+  const [cancellationPolicy, setCancellationPolicy] = useState<LocalizedString>({ ...emptyLocalizedString(), en: DEFAULT_CANCELLATION_POLICY });
+  const [inclusions, setInclusions] = useState<LocalizedString>({ ...emptyLocalizedString(), en: DEFAULT_INCLUSIONS });
+  const [exclusions, setExclusions] = useState<LocalizedString>({ ...emptyLocalizedString(), en: DEFAULT_EXCLUSIONS });
+  const [rawItinerary, setRawItinerary] = useState<RawItineraryFields | null>(null);
 
   const [routeLegs, setRouteLegs] = useState<RouteLeg[]>([]);
   const [legDeparture, setLegDeparture] = useState('');
@@ -423,6 +444,9 @@ export function AdminCustomRequestDetail() {
   const load = () => {
     if (!id) return;
     apiGetOne<RequestDetail>(`/custom-tours/${id}`).then(setRequest).finally(() => setLoading(false));
+    apiGetOne<RequestDetail & { itinerary?: RawItineraryFields }>(`/custom-tours/${id}`, { raw: true }).
+      then((r) => setRawItinerary(r.itinerary || null)).
+      catch(() => {});
   };
 
   useEffect(load, [id]);
@@ -457,7 +481,7 @@ export function AdminCustomRequestDetail() {
         legId: '',
         dayNumber: d.dayNumber,
         date: d.date ? d.date.slice(0, 10) : '',
-        title: d.title,
+        title: rawItinerary?.days.find((rd) => rd.dayNumber === d.dayNumber)?.title || { ...emptyLocalizedString(), en: d.title },
         schedule: d.schedule,
         destinations: (d.destinations || []).map((x) => x._id),
         activities: (d.activities || []).map((x) => x._id),
@@ -522,12 +546,12 @@ export function AdminCustomRequestDetail() {
       setCurrency(itin.pricing.currency);
       setSightseeingIncluded(itin.sightseeingIncluded ?? true);
       setAdminNotes(itin.adminNotes);
-      setCustomerFacingNotes(itin.customerFacingNotes || DEFAULT_CUSTOMER_FACING_NOTES);
-      setVisaRequirements(itin.visaRequirements || '');
-      setTravelInsurance(itin.travelInsurance || '');
-      setCancellationPolicy(itin.cancellationPolicy || DEFAULT_CANCELLATION_POLICY);
-      setInclusions(itin.inclusions || DEFAULT_INCLUSIONS);
-      setExclusions(itin.exclusions || DEFAULT_EXCLUSIONS);
+      setCustomerFacingNotes(rawItinerary?.customerFacingNotes?.en ? rawItinerary.customerFacingNotes : { ...emptyLocalizedString(), en: DEFAULT_CUSTOMER_FACING_NOTES });
+      setVisaRequirements(rawItinerary?.visaRequirements || emptyLocalizedString());
+      setTravelInsurance(rawItinerary?.travelInsurance || emptyLocalizedString());
+      setCancellationPolicy(rawItinerary?.cancellationPolicy?.en ? rawItinerary.cancellationPolicy : { ...emptyLocalizedString(), en: DEFAULT_CANCELLATION_POLICY });
+      setInclusions(rawItinerary?.inclusions?.en ? rawItinerary.inclusions : { ...emptyLocalizedString(), en: DEFAULT_INCLUSIONS });
+      setExclusions(rawItinerary?.exclusions?.en ? rawItinerary.exclusions : { ...emptyLocalizedString(), en: DEFAULT_EXCLUSIONS });
       setRouteLegs([]);
       setExpandedDays(new Set());
     } else {
@@ -540,19 +564,19 @@ export function AdminCustomRequestDetail() {
       setSightseeingIncluded(request.sightseeingPreference !== 'Exclude');
       setTourGuide('');
       setVehicle('');
-      setVisaRequirements('');
-      setTravelInsurance('');
-      setCancellationPolicy(DEFAULT_CANCELLATION_POLICY);
-      setInclusions(DEFAULT_INCLUSIONS);
-      setExclusions(DEFAULT_EXCLUSIONS);
-      setCustomerFacingNotes(DEFAULT_CUSTOMER_FACING_NOTES);
+      setVisaRequirements(emptyLocalizedString());
+      setTravelInsurance(emptyLocalizedString());
+      setCancellationPolicy({ ...emptyLocalizedString(), en: DEFAULT_CANCELLATION_POLICY });
+      setInclusions({ ...emptyLocalizedString(), en: DEFAULT_INCLUSIONS });
+      setExclusions({ ...emptyLocalizedString(), en: DEFAULT_EXCLUSIONS });
+      setCustomerFacingNotes({ ...emptyLocalizedString(), en: DEFAULT_CUSTOMER_FACING_NOTES });
       setRouteLegs([]);
       if (request.roomTypePreference) {
         setDays([{ ...emptyDay(1), roomType: request.roomTypePreference }]);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [request, forceEdit]);
+  }, [request, rawItinerary, forceEdit]);
 
   const updateDay = (index: number, patch: Partial<ItineraryDayForm>) => {
     setDays((prev) => prev.map((d, i) => i === index ? { ...d, ...patch } : d));
@@ -741,7 +765,7 @@ export function AdminCustomRequestDetail() {
       // The form always starts with one untouched blank day — once Route
       // Builder actually has legs, that placeholder (no legId, no content)
       // would otherwise sit there forever as a stray "manual" day.
-      const isPristineStarterDay = prev.length === 1 && !prev[0].legId && !prev[0].title && !prev[0].schedule && !prev[0].hotel && prev[0].activities.length === 0;
+      const isPristineStarterDay = prev.length === 1 && !prev[0].legId && !prev[0].title.en && !prev[0].schedule && !prev[0].hotel && prev[0].activities.length === 0;
       return deriveDaysFromLegs(reconnected, isPristineStarterDay ? [] : prev, destOptions);
     });
   };
@@ -1286,7 +1310,7 @@ export function AdminCustomRequestDetail() {
                   onToggle={() => toggleDayExpanded(day._key)}
                   summary={
                   <>
-                        Day {day.dayNumber}{day.date ? ` · ${formatDate(day.date)}` : ''} · {day.title || '(untitled)'}
+                        Day {day.dayNumber}{day.date ? ` · ${formatDate(day.date)}` : ''} · {day.title.en || '(untitled)'}
                         {day.hotel ? ` · ${hotelOptions.find((h) => h.value === day.hotel)?.label || ''}` : ''}
                       </>}
 
@@ -1302,7 +1326,7 @@ export function AdminCustomRequestDetail() {
 
 
                       <div className="grid gap-3 sm:grid-cols-2">
-                        <TextField label="Title" value={day.title} onChange={(v) => updateDay(i, { title: v })} required minLength={2} />
+                        <TranslatedTextarea label="Title" value={day.title} onChange={(v) => updateDay(i, { title: v })} required rows={2} />
                         <TextField label="Date" type="date" value={day.date} onChange={(v) => updateDay(i, { date: v })} />
                         <div className="sm:col-span-2 rounded-xl border border-forest/10 p-3">
                           <div className="flex items-center justify-between">
@@ -1479,18 +1503,18 @@ export function AdminCustomRequestDetail() {
               <div className="rounded-2xl bg-white p-6 shadow-soft">
                 <p className="mb-4 font-display text-sm font-semibold text-forest">Quotation Details</p>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <TextAreaField label="Visa Requirements" value={visaRequirements} onChange={setVisaRequirements} rows={3} />
-                  <TextAreaField label="Travel Insurance" value={travelInsurance} onChange={setTravelInsurance} rows={3} />
-                  <TextAreaField label="Cancellation Policy" value={cancellationPolicy} onChange={setCancellationPolicy} rows={3} />
-                  <TextAreaField label="Inclusions" value={inclusions} onChange={setInclusions} rows={3} />
-                  <TextAreaField label="Exclusions" value={exclusions} onChange={setExclusions} rows={3} />
+                  <TranslatedTextarea label="Visa Requirements" value={visaRequirements} onChange={setVisaRequirements} rows={3} />
+                  <TranslatedTextarea label="Travel Insurance" value={travelInsurance} onChange={setTravelInsurance} rows={3} />
+                  <TranslatedTextarea label="Cancellation Policy" value={cancellationPolicy} onChange={setCancellationPolicy} rows={3} />
+                  <TranslatedTextarea label="Inclusions" value={inclusions} onChange={setInclusions} rows={3} />
+                  <TranslatedTextarea label="Exclusions" value={exclusions} onChange={setExclusions} rows={3} />
                 </div>
               </div>
 
               <div className="rounded-2xl bg-white p-6 shadow-soft">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <TextAreaField label="Admin Notes (internal)" value={adminNotes} onChange={setAdminNotes} rows={3} />
-                  <TextAreaField label="Customer-Facing Notes" value={customerFacingNotes} onChange={setCustomerFacingNotes} rows={3} />
+                  <TranslatedTextarea label="Customer-Facing Notes" value={customerFacingNotes} onChange={setCustomerFacingNotes} rows={3} />
                 </div>
               </div>
 
