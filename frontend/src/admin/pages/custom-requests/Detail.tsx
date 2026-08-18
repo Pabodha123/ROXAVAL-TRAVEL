@@ -33,7 +33,7 @@ const PRIORITY_OPTIONS = ['Low', 'Medium', 'High'];
 
 const MEAL_OPTIONS = ['Breakfast', 'Lunch', 'Dinner'];
 
-const DEFAULT_INCLUSIONS = `Accommodation in 3-Star or 4-Star Hotels
+const DEFAULT_INCLUSIONS_EN = `Accommodation in 3-Star or 4-Star Hotels
 Comfortable rooms with modern amenities, including daily breakfast and dinner as per the itinerary.
 
 Chauffeur Guide With Luxury Car/Van
@@ -48,14 +48,58 @@ Meet-and-greet on arrival and smooth departure transfer at the end of the tour.
 Private Transport Throughout the Tour
 Fully air-conditioned luxury vehicle for your exclusive use.`;
 
-const DEFAULT_EXCLUSIONS = `Air Tickets
+const DEFAULT_INCLUSIONS_DE = `Unterkunft in 3- oder 4-Sterne-Hotels
+Komfortable Zimmer mit moderner Ausstattung, einschließlich täglichem Frühstück und Abendessen gemäß Reiseplan.
+
+Chauffeur-Guide mit Luxus-PKW/Van
+Professioneller, englischsprachiger Chauffeur-Guide, der Sie während der gesamten Reise begleitet.
+
+Alle Besichtigungen & Ausflüge
+Besuche aller im Reiseplan genannten Hauptattraktionen.
+
+Flughafenabholung & -transfer
+Empfang bei der Ankunft und reibungsloser Abreisetransfer am Ende der Reise.
+
+Privater Transport während der gesamten Reise
+Vollklimatisiertes Luxusfahrzeug zur exklusiven Nutzung.`;
+
+const DEFAULT_INCLUSIONS_FR = `Hébergement en Hôtels 3 ou 4 Étoiles
+Chambres confortables avec équipements modernes, incluant le petit-déjeuner et le dîner quotidiens selon l'itinéraire.
+
+Chauffeur-Guide avec Voiture/Van de Luxe
+Chauffeur-guide professionnel, parlant anglais, qui vous accompagne tout au long du voyage.
+
+Toutes les Visites & Excursions
+Visites de toutes les principales attractions mentionnées dans l'itinéraire.
+
+Accueil & Transfert à l'Aéroport
+Accueil à l'arrivée et transfert de départ sans encombre à la fin du circuit.
+
+Transport Privé Pendant Tout le Circuit
+Véhicule de luxe entièrement climatisé pour votre usage exclusif.`;
+
+const DEFAULT_EXCLUSIONS_EN = `Air Tickets
 Visa Fee
 Lunch and any other meals not mentioned in the itinerary
 Personal Expenses such as laundry, tips, telephone calls, mini-bar, etc.
 Early Check-in & Late Checkout Charges at hotels
 Entrance Tickets to sightseeing places and activities`;
 
-const DEFAULT_CANCELLATION_POLICY = `Payment Policy
+const DEFAULT_EXCLUSIONS_DE = `Flugtickets
+Visagebühr
+Mittagessen und alle anderen im Reiseplan nicht genannten Mahlzeiten
+Persönliche Ausgaben wie Wäsche, Trinkgelder, Telefonate, Minibar usw.
+Gebühren für frühen Check-in & späten Check-out in Hotels
+Eintrittskarten für Sehenswürdigkeiten und Aktivitäten`;
+
+const DEFAULT_EXCLUSIONS_FR = `Billets d'Avion
+Frais de Visa
+Déjeuner et tout autre repas non mentionné dans l'itinéraire
+Dépenses Personnelles telles que blanchisserie, pourboires, appels téléphoniques, minibar, etc.
+Frais d'Arrivée Anticipée & de Départ Tardif dans les hôtels
+Billets d'Entrée pour les sites touristiques et activités`;
+
+const DEFAULT_CANCELLATION_POLICY_EN = `Payment Policy
 - Deposit: 50% of the total package cost is required at the time of booking to secure your reservation.
 - Balance Payment: The remaining 50% must be paid no later than 14 days before or on arrival day in Sri Lanka.
 - For last-minute bookings (within 14 days of travel), full payment is required upon confirmation.
@@ -67,7 +111,31 @@ Cancellation Policy
 - 14 days or less before arrival / No-show: No refund.
 - Hotel cancellation policies may vary and will be applied accordingly.`;
 
-const DEFAULT_CUSTOMER_FACING_NOTES = `IMPORTANT NOTES
+const DEFAULT_CANCELLATION_POLICY_DE = `Zahlungsrichtlinie
+- Anzahlung: 50 % der Gesamtreisekosten sind bei der Buchung zur Sicherung Ihrer Reservierung fällig.
+- Restzahlung: Die restlichen 50 % müssen spätestens 14 Tage vor oder am Ankunftstag in Sri Lanka bezahlt werden.
+- Bei kurzfristigen Buchungen (innerhalb von 14 Tagen vor Reisebeginn) ist die vollständige Zahlung bei Bestätigung fällig.
+- Zahlungen können per Online-Banküberweisung oder über WhatsApp koordinierte Zahlung erfolgen.
+
+Stornierungsrichtlinie
+- Mehr als 30 Tage vor Ankunft: Vollständige Rückerstattung der Anzahlung (abzüglich etwaiger Bank-/Transaktionsgebühren).
+- 15–29 Tage vor Ankunft: 50 % der Anzahlung werden zurückerstattet.
+- 14 Tage oder weniger vor Ankunft / Nichterscheinen: Keine Rückerstattung.
+- Die Stornierungsbedingungen der Hotels können variieren und werden entsprechend angewendet.`;
+
+const DEFAULT_CANCELLATION_POLICY_FR = `Politique de Paiement
+- Acompte : 50 % du coût total du forfait est requis au moment de la réservation pour garantir votre réservation.
+- Solde : Les 50 % restants doivent être payés au plus tard 14 jours avant ou le jour de l'arrivée au Sri Lanka.
+- Pour les réservations de dernière minute (dans les 14 jours précédant le voyage), le paiement intégral est requis à la confirmation.
+- Les paiements peuvent être effectués par virement bancaire en ligne ou par paiement coordonné via WhatsApp.
+
+Politique d'Annulation
+- Plus de 30 jours avant l'arrivée : Remboursement intégral de l'acompte (moins les éventuels frais bancaires/de transaction).
+- 15 à 29 jours avant l'arrivée : 50 % de l'acompte seront remboursés.
+- 14 jours ou moins avant l'arrivée / Non-présentation : Aucun remboursement.
+- Les politiques d'annulation des hôtels peuvent varier et seront appliquées en conséquence.`;
+
+const DEFAULT_CUSTOMER_FACING_NOTES_EN = `IMPORTANT NOTES
 This is just a quote; no reservations have been held yet or booking has not proceeded yet.
 The rooms & rates are subject to availability at the time of booking / confirmation.
 Hotel, sightseeing, meals, and transfer rates might change without prior notice until & unless the tour has been booked or confirmed from your end.
@@ -92,6 +160,63 @@ Swift Code: HBLILKLX
 Note: Above quote is based on the current rate of exchange. If the rate of exchange changes at the time of final billing, the package quote will change accordingly.
 
 +94 77 880 3522 | bookings@roxavaltravels.com | www.roxavaltravels.com`;
+
+const DEFAULT_CUSTOMER_FACING_NOTES_DE = `WICHTIGE HINWEISE
+Dies ist lediglich ein Angebot; es wurden noch keine Reservierungen vorgenommen und keine Buchung ist erfolgt.
+Zimmer & Preise unterliegen der Verfügbarkeit zum Zeitpunkt der Buchung/Bestätigung.
+Hotel-, Besichtigungs-, Verpflegungs- und Transferpreise können sich ohne vorherige Ankündigung ändern, bis die Reise von Ihrer Seite gebucht oder bestätigt wurde.
+Eine Änderung der Reisedaten erfordert ein neues Angebot.
+Der reguläre Hotel-Check-in ist ab 14:00 Uhr, der Check-out um 12:00 Uhr.
+Die oben genannten Kosten beinhalten keine Zuschläge, falls diese im jeweiligen Reisezeitraum anfallen.
+Das Angebot kann sich aufgrund von Wechselkursschwankungen während des Bestätigungs- und Buchungsvorgangs ändern (bei internationalen Reisen).
+Wir übernehmen keine Verantwortung für den Verlust Ihrer Wertsachen wie Mobiltelefone, Taschen, Schmuck & Geld.
+
+ZUSÄTZLICHE INFORMATIONEN
+Buchung & Bestätigung: Eine Buchung ist bestätigt, sobald Roxaval Travels die Anzahlung sowie eine schriftliche Bestätigung per E-Mail/WhatsApp vom Kunden erhalten hat.
+Alle Buchungen unterliegen der Verfügbarkeit von Hotels, Transport und Aktivitäten zum Zeitpunkt der Reservierung.
+Passkopien aller Reisenden müssen bei der Buchung für den Hotel-Check-in vorgelegt werden.
+
+Kontodaten
+Bankname: Hatton National Bank
+Kontonummer: 119010103701
+Bankleitzahl: 119
+Firmenname: Roxaval Travels Pvt Ltd
+Swift-Code: HBLILKLX
+
+Hinweis: Das obige Angebot basiert auf dem aktuellen Wechselkurs. Sollte sich der Wechselkurs bis zur endgültigen Abrechnung ändern, wird sich der Angebotspreis entsprechend anpassen.
+
++94 77 880 3522 | bookings@roxavaltravels.com | www.roxavaltravels.com`;
+
+const DEFAULT_CUSTOMER_FACING_NOTES_FR = `REMARQUES IMPORTANTES
+Ceci est uniquement un devis ; aucune réservation n'a encore été effectuée et aucune réservation n'a été confirmée.
+Les chambres et les tarifs sont soumis à disponibilité au moment de la réservation/confirmation.
+Les tarifs des hôtels, visites, repas et transferts peuvent changer sans préavis tant que le circuit n'a pas été réservé ou confirmé de votre part.
+Tout changement de dates entraînera un nouveau devis.
+L'heure normale d'enregistrement à l'hôtel est à partir de 14h00 et le départ à 12h00.
+Le coût ci-dessus n'inclut aucun supplément éventuellement applicable pendant la période de voyage indiquée.
+Le devis peut changer en raison des fluctuations du taux de change lors de la confirmation et de la réservation (pour les circuits internationaux).
+Nous ne sommes pas responsables de la perte de vos objets de valeur tels que téléphones, bagages, bijoux et argent.
+
+INFORMATIONS COMPLÉMENTAIRES
+Réservation & Confirmation : Une réservation est confirmée dès que Roxaval Travels reçoit l'acompte initial ainsi qu'une confirmation écrite par e-mail/WhatsApp du client.
+Toutes les réservations sont soumises à la disponibilité des hôtels, transports et activités au moment de la réservation.
+Des copies de passeport pour tous les voyageurs doivent être fournies au moment de la réservation pour l'enregistrement à l'hôtel.
+
+Coordonnées Bancaires
+Nom de la Banque : Hatton National Bank
+Numéro de Compte : 119010103701
+Code Banque : 119
+Nom de l'Entreprise : Roxaval Travels Pvt Ltd
+Code Swift : HBLILKLX
+
+Remarque : Le devis ci-dessus est basé sur le taux de change actuel. Si le taux de change venait à changer au moment de la facturation finale, le prix du forfait sera ajusté en conséquence.
+
++94 77 880 3522 | bookings@roxavaltravels.com | www.roxavaltravels.com`;
+
+const DEFAULT_INCLUSIONS: LocalizedString = { en: DEFAULT_INCLUSIONS_EN, de: DEFAULT_INCLUSIONS_DE, fr: DEFAULT_INCLUSIONS_FR };
+const DEFAULT_EXCLUSIONS: LocalizedString = { en: DEFAULT_EXCLUSIONS_EN, de: DEFAULT_EXCLUSIONS_DE, fr: DEFAULT_EXCLUSIONS_FR };
+const DEFAULT_CANCELLATION_POLICY: LocalizedString = { en: DEFAULT_CANCELLATION_POLICY_EN, de: DEFAULT_CANCELLATION_POLICY_DE, fr: DEFAULT_CANCELLATION_POLICY_FR };
+const DEFAULT_CUSTOMER_FACING_NOTES: LocalizedString = { en: DEFAULT_CUSTOMER_FACING_NOTES_EN, de: DEFAULT_CUSTOMER_FACING_NOTES_DE, fr: DEFAULT_CUSTOMER_FACING_NOTES_FR };
 
 interface RefOption {
   value: string;
@@ -418,12 +543,12 @@ export function AdminCustomRequestDetail() {
   const [currency, setCurrency] = useState('USD');
   const [sightseeingIncluded, setSightseeingIncluded] = useState(true);
   const [adminNotes, setAdminNotes] = useState('');
-  const [customerFacingNotes, setCustomerFacingNotes] = useState<LocalizedString>({ ...emptyLocalizedString(), en: DEFAULT_CUSTOMER_FACING_NOTES });
+  const [customerFacingNotes, setCustomerFacingNotes] = useState<LocalizedString>(DEFAULT_CUSTOMER_FACING_NOTES);
   const [visaRequirements, setVisaRequirements] = useState<LocalizedString>(emptyLocalizedString());
   const [travelInsurance, setTravelInsurance] = useState<LocalizedString>(emptyLocalizedString());
-  const [cancellationPolicy, setCancellationPolicy] = useState<LocalizedString>({ ...emptyLocalizedString(), en: DEFAULT_CANCELLATION_POLICY });
-  const [inclusions, setInclusions] = useState<LocalizedString>({ ...emptyLocalizedString(), en: DEFAULT_INCLUSIONS });
-  const [exclusions, setExclusions] = useState<LocalizedString>({ ...emptyLocalizedString(), en: DEFAULT_EXCLUSIONS });
+  const [cancellationPolicy, setCancellationPolicy] = useState<LocalizedString>(DEFAULT_CANCELLATION_POLICY);
+  const [inclusions, setInclusions] = useState<LocalizedString>(DEFAULT_INCLUSIONS);
+  const [exclusions, setExclusions] = useState<LocalizedString>(DEFAULT_EXCLUSIONS);
   const [rawItinerary, setRawItinerary] = useState<RawItineraryFields | null>(null);
 
   const [routeLegs, setRouteLegs] = useState<RouteLeg[]>([]);
@@ -546,12 +671,16 @@ export function AdminCustomRequestDetail() {
       setCurrency(itin.pricing.currency);
       setSightseeingIncluded(itin.sightseeingIncluded ?? true);
       setAdminNotes(itin.adminNotes);
-      setCustomerFacingNotes(rawItinerary?.customerFacingNotes?.en ? rawItinerary.customerFacingNotes : { ...emptyLocalizedString(), en: DEFAULT_CUSTOMER_FACING_NOTES });
+      // If the saved English text is still exactly the untouched boilerplate
+      // (common — most quotations never customize these), pick up the full
+      // DE/FR translation instead of re-using old EN-only saved data, so
+      // re-opening and re-sending an older quotation now also translates.
+      setCustomerFacingNotes(rawItinerary?.customerFacingNotes?.en === DEFAULT_CUSTOMER_FACING_NOTES.en ? DEFAULT_CUSTOMER_FACING_NOTES : rawItinerary?.customerFacingNotes?.en ? rawItinerary.customerFacingNotes : DEFAULT_CUSTOMER_FACING_NOTES);
       setVisaRequirements(rawItinerary?.visaRequirements || emptyLocalizedString());
       setTravelInsurance(rawItinerary?.travelInsurance || emptyLocalizedString());
-      setCancellationPolicy(rawItinerary?.cancellationPolicy?.en ? rawItinerary.cancellationPolicy : { ...emptyLocalizedString(), en: DEFAULT_CANCELLATION_POLICY });
-      setInclusions(rawItinerary?.inclusions?.en ? rawItinerary.inclusions : { ...emptyLocalizedString(), en: DEFAULT_INCLUSIONS });
-      setExclusions(rawItinerary?.exclusions?.en ? rawItinerary.exclusions : { ...emptyLocalizedString(), en: DEFAULT_EXCLUSIONS });
+      setCancellationPolicy(rawItinerary?.cancellationPolicy?.en === DEFAULT_CANCELLATION_POLICY.en ? DEFAULT_CANCELLATION_POLICY : rawItinerary?.cancellationPolicy?.en ? rawItinerary.cancellationPolicy : DEFAULT_CANCELLATION_POLICY);
+      setInclusions(rawItinerary?.inclusions?.en === DEFAULT_INCLUSIONS.en ? DEFAULT_INCLUSIONS : rawItinerary?.inclusions?.en ? rawItinerary.inclusions : DEFAULT_INCLUSIONS);
+      setExclusions(rawItinerary?.exclusions?.en === DEFAULT_EXCLUSIONS.en ? DEFAULT_EXCLUSIONS : rawItinerary?.exclusions?.en ? rawItinerary.exclusions : DEFAULT_EXCLUSIONS);
       setRouteLegs([]);
       setExpandedDays(new Set());
     } else {
@@ -566,10 +695,10 @@ export function AdminCustomRequestDetail() {
       setVehicle('');
       setVisaRequirements(emptyLocalizedString());
       setTravelInsurance(emptyLocalizedString());
-      setCancellationPolicy({ ...emptyLocalizedString(), en: DEFAULT_CANCELLATION_POLICY });
-      setInclusions({ ...emptyLocalizedString(), en: DEFAULT_INCLUSIONS });
-      setExclusions({ ...emptyLocalizedString(), en: DEFAULT_EXCLUSIONS });
-      setCustomerFacingNotes({ ...emptyLocalizedString(), en: DEFAULT_CUSTOMER_FACING_NOTES });
+      setCancellationPolicy(DEFAULT_CANCELLATION_POLICY);
+      setInclusions(DEFAULT_INCLUSIONS);
+      setExclusions(DEFAULT_EXCLUSIONS);
+      setCustomerFacingNotes(DEFAULT_CUSTOMER_FACING_NOTES);
       setRouteLegs([]);
       if (request.roomTypePreference) {
         setDays([{ ...emptyDay(1), roomType: request.roomTypePreference }]);
