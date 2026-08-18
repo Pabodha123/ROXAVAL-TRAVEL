@@ -25,6 +25,9 @@ import bookingFr from './locales/fr/booking.json';
 import dashboardEn from './locales/en/dashboard.json';
 import dashboardDe from './locales/de/dashboard.json';
 import dashboardFr from './locales/fr/dashboard.json';
+import quotationEn from './locales/en/quotation.json';
+import quotationDe from './locales/de/quotation.json';
+import quotationFr from './locales/fr/quotation.json';
 
 export const SUPPORTED_LANGUAGES = [
   { code: 'en', label: 'English', nativeLabel: 'English' },
@@ -48,14 +51,14 @@ function detectInitialLanguage(): SupportedLanguageCode {
 
 i18n.use(initReactI18next).init({
   resources: {
-    en: { common: commonEn, home: homeEn, packages: packagesEn, destinations: destinationsEn, activities: activitiesEn, auth: authEn, booking: bookingEn, dashboard: dashboardEn },
-    de: { common: commonDe, home: homeDe, packages: packagesDe, destinations: destinationsDe, activities: activitiesDe, auth: authDe, booking: bookingDe, dashboard: dashboardDe },
-    fr: { common: commonFr, home: homeFr, packages: packagesFr, destinations: destinationsFr, activities: activitiesFr, auth: authFr, booking: bookingFr, dashboard: dashboardFr },
+    en: { common: commonEn, home: homeEn, packages: packagesEn, destinations: destinationsEn, activities: activitiesEn, auth: authEn, booking: bookingEn, dashboard: dashboardEn, quotation: quotationEn },
+    de: { common: commonDe, home: homeDe, packages: packagesDe, destinations: destinationsDe, activities: activitiesDe, auth: authDe, booking: bookingDe, dashboard: dashboardDe, quotation: quotationDe },
+    fr: { common: commonFr, home: homeFr, packages: packagesFr, destinations: destinationsFr, activities: activitiesFr, auth: authFr, booking: bookingFr, dashboard: dashboardFr, quotation: quotationFr },
   },
   lng: detectInitialLanguage(),
   fallbackLng: 'en',
   defaultNS: 'common',
-  ns: ['common', 'home', 'packages', 'destinations', 'activities', 'auth', 'booking', 'dashboard'],
+  ns: ['common', 'home', 'packages', 'destinations', 'activities', 'auth', 'booking', 'dashboard', 'quotation'],
   interpolation: { escapeValue: false },
   returnEmptyString: false,
 });

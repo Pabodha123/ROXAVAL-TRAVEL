@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeftIcon, ArrowRightIcon, BedDoubleIcon, CalendarIcon, CarIcon, MapPinIcon, PlaneIcon, PrinterIcon, StarIcon, UsersIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { ArrowLeftIcon, ArrowRightIcon, BedDoubleIcon, CalendarIcon, CarIcon, Loader2Icon, MapPinIcon, PlaneIcon, PrinterIcon, StarIcon, UsersIcon } from 'lucide-react';
 import { WHATSAPP_DISPLAY_SL, CONTACT_EMAIL, WEBSITE_DISPLAY } from '../../lib/contact';
+import { apiGetOne } from '../../lib/api';
+import { getCurrentLanguage, SUPPORTED_LANGUAGES, type SupportedLanguageCode } from '../../i18n';
 import { NotesBlock } from './NotesBlock';
 import { RouteMap } from './RouteMap';
 
@@ -102,7 +105,33 @@ const nextDate = (iso?: string) => {
   return fmtDate(d.toISOString());
 };
 
-export function QuotationView({ request, backHref }: { request: QuotationRequest; backHref?: string }) {
+// This page has no navbar, so it doesn't inherit the site-wide language
+// switcher. It picks up the site's current language as a starting point
+// but then owns its own language independently -- an admin previewing a
+// quotation, or a customer opening a shared link, can flip it here without
+// touching the rest of the site's language.
+export function QuotationView({ endpoint, backHref }: { endpoint: string; backHref?: string }) {
+  const { t } = useTranslation('quotation');
+  const [docLang, setDocLang] = useState<SupportedLanguageCode>(getCurrentLanguage());
+  const [request, setRequest] = useState<QuotationRequest | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    apiGetOne<QuotationRequest>(endpoint, { lang: docLang }).
+      then((r) => { if (!cancelled) setRequest(r); }).
+      finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [endpoint, docLang]);
+
+  if (loading && !request) {
+    return <div className="grid min-h-screen place-items-center bg-cream"><Loader2Icon className="h-6 w-6 animate-spin text-forest/40" /></div>;
+  }
+  if (!request?.itinerary) {
+    return <div className="grid min-h-screen place-items-center bg-cream text-sm text-forest/50">{t('notReady')}</div>;
+  }
+
   const itin = request.itinerary;
   const days = itin.days || [];
   const nights = Math.max(0, days.length - 1);
@@ -122,18 +151,32 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
         <div className="flex items-center gap-4">
           {backHref &&
             <Link to={backHref} className="flex items-center gap-1.5 text-xs font-semibold text-white/70 hover:text-white">
-              <ArrowLeftIcon className="h-3.5 w-3.5" /> Back
+              <ArrowLeftIcon className="h-3.5 w-3.5" /> {t('back')}
             </Link>
           }
-          <p className="text-sm font-semibold text-white">Quotation Preview</p>
+          <p className="text-sm font-semibold text-white">{t('documentTitle')}</p>
         </div>
-        <button
-          type="button"
-          onClick={() => window.print()}
-          className="flex items-center gap-2 rounded-full bg-gold px-4 py-2 text-xs font-semibold text-forest hover:scale-105 transition-transform"
-        >
-          <PrinterIcon className="h-3.5 w-3.5" /> Print / Save as PDF
-        </button>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 rounded-full bg-white/10 p-1">
+            {SUPPORTED_LANGUAGES.map((l) =>
+              <button
+                key={l.code}
+                type="button"
+                onClick={() => setDocLang(l.code)}
+                className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${docLang === l.code ? 'bg-gold text-forest' : 'text-white/70 hover:text-white'}`}
+              >
+                {l.code.toUpperCase()}
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="flex items-center gap-2 rounded-full bg-gold px-4 py-2 text-xs font-semibold text-forest hover:scale-105 transition-transform"
+          >
+            <PrinterIcon className="h-3.5 w-3.5" /> {t('print')}
+          </button>
+        </div>
       </div>
 
       <div className="mx-auto mt-6 max-w-4xl rounded-2xl border border-forest/15 bg-white px-6 py-10 shadow-soft print:mt-0 print:rounded-none print:shadow-none sm:px-10">
@@ -146,18 +189,18 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
         <div className="border-b border-forest/10 pb-6 print:pb-4">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="font-display text-2xl font-semibold text-forest sm:text-3xl">{itin.title || `${days.length} Days Sri Lankan Tour`}</p>
-              <p className="mt-1 text-sm text-forest/50">Quotation No. {request.referenceNumber}</p>
+              <p className="font-display text-2xl font-semibold text-forest sm:text-3xl">{itin.title || t('defaultTitle', { days: days.length })}</p>
+              <p className="mt-1 text-sm text-forest/50">{t('quotationNo', { ref: request.referenceNumber })}</p>
             </div>
             <div className="rounded-2xl bg-forest px-5 py-3 text-right text-white">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-white/60">Total Cost</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-white/60">{t('totalCost')}</p>
               <p className="font-display text-xl font-bold">{itin.pricing.currency} {itin.pricing.totalPrice.toLocaleString()}</p>
             </div>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-forest/70">
-            <span className="flex items-center gap-1.5"><CalendarIcon className="h-4 w-4 text-emerald" /> {nights} Nights / {days.length} Days</span>
-            <span className="flex items-center gap-1.5"><UsersIcon className="h-4 w-4 text-emerald" /> {request.travelers.adults} Adults{request.travelers.children ? `, ${request.travelers.children} Children` : ''}{request.travelers.infants ? `, ${request.travelers.infants} Infants` : ''}</span>
+            <span className="flex items-center gap-1.5"><CalendarIcon className="h-4 w-4 text-emerald" /> {t('duration', { nights, days: days.length })}</span>
+            <span className="flex items-center gap-1.5"><UsersIcon className="h-4 w-4 text-emerald" /> {request.travelers.adults} {t('adults')}{request.travelers.children ? `, ${request.travelers.children} ${t('children')}` : ''}{request.travelers.infants ? `, ${request.travelers.infants} ${t('infants')}` : ''}</span>
             <span className="flex items-center gap-1.5"><CalendarIcon className="h-4 w-4 text-emerald" /> {fmtDate(request.travelDates.startDate)} – {fmtDate(request.travelDates.endDate)}</span>
           </div>
 
@@ -188,7 +231,7 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
                 <div className="flex items-center gap-3 print:break-inside-avoid">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald text-sm font-bold text-white">{d.dayNumber}</div>
                   <div>
-                    <p className="font-display text-base font-semibold text-forest">Day {d.dayNumber}{d.destinations?.[0]?.name ? ` - ${d.destinations[0].name}` : ''}</p>
+                    <p className="font-display text-base font-semibold text-forest">{t('day')} {d.dayNumber}{d.destinations?.[0]?.name ? ` - ${d.destinations[0].name}` : ''}</p>
                     {d.date && <p className="text-xs text-forest/50">{fmtDate(d.date)}</p>}
                   </div>
                 </div>
@@ -199,19 +242,19 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
                       {a.activity?.image && <img src={a.activity.image} alt={a.activity.name} className="h-20 w-28 shrink-0 rounded-lg object-cover" />}
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-forest">{a.activity?.name}</p>
-                        <p className="text-[11px] font-medium uppercase tracking-wide text-emerald">{a.activity?.category || 'Sightseeing'}</p>
-                        <p className="mt-0.5 text-xs text-forest/50">For {a.adultCount} Adults{a.childCount ? `, ${a.childCount} Children` : ''}{a.infantCount ? `, ${a.infantCount} Infants` : ''}</p>
+                        <p className="text-[11px] font-medium uppercase tracking-wide text-emerald">{a.activity?.category || t('sightseeing')}</p>
+                        <p className="mt-0.5 text-xs text-forest/50">{t('forTravelers')} {a.adultCount} {t('adults')}{a.childCount ? `, ${a.childCount} ${t('children')}` : ''}{a.infantCount ? `, ${a.infantCount} ${t('infants')}` : ''}</p>
                         {a.activity?.description && <p className="mt-1 text-xs leading-relaxed text-forest/60 line-clamp-3">{a.activity.description}</p>}
                       </div>
                     </div>
                   )}
 
-                  {transfers.map((t, i) =>
+                  {transfers.map((tr, i) =>
                     <div key={i} className="flex items-center gap-3 rounded-xl border border-forest/10 p-3 print:break-inside-avoid">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cream text-forest"><CarIcon className="h-5 w-5" /></div>
                       <div>
-                        <p className="text-sm font-semibold text-forest">{t.transfer?.name}</p>
-                        <p className="text-xs text-forest/50">{t.transfer?.type || 'Private'} · {t.transfer?.vehicle?.name || 'Vehicle'} × {t.vehicleCount}</p>
+                        <p className="text-sm font-semibold text-forest">{tr.transfer?.name}</p>
+                        <p className="text-xs text-forest/50">{tr.transfer?.type || t('private')} · {tr.transfer?.vehicle?.name || t('vehicle')} × {tr.vehicleCount}</p>
                       </div>
                     </div>
                   )}
@@ -238,8 +281,8 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
                         </p>
                         <p className="text-xs text-forest/50">{d.hotel.destination?.name}{d.hotel.address ? ` · ${d.hotel.address}` : ''}</p>
                         <p className="mt-1 text-xs text-forest/70">
-                          Check-in {fmtDate(d.date)} · Check-out {nextDate(d.date)}
-                          {d.roomType && <> · Room: {d.roomType}</>}
+                          {t('checkIn')} {fmtDate(d.date)} · {t('checkOut')} {nextDate(d.date)}
+                          {d.roomType && <> · {t('room')}: {d.roomType}</>}
                           {roomType?.mealPlan && <> · {roomType.mealPlan}</>}
                         </p>
                         {d.hotel.description && <p className="mt-1 text-xs leading-relaxed text-forest/60 line-clamp-3">{d.hotel.description}</p>}
@@ -254,17 +297,17 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
 
         {/* Financial summary */}
         <div className="mt-10 border-t border-forest/10 pt-6 print:mt-6 print:break-inside-avoid">
-          <p className="font-display text-lg font-semibold text-forest">Quotation Financial Summary <span className="text-sm font-normal text-forest/50">[ in {itin.pricing.currency} ]</span></p>
+          <p className="font-display text-lg font-semibold text-forest">{t('financialSummary')} <span className="text-sm font-normal text-forest/50">[ in {itin.pricing.currency} ]</span></p>
           <div className="mt-3 overflow-x-auto">
             <table className="w-full min-w-[560px] text-left text-xs">
               <thead>
                 <tr className="border-b border-forest/10 text-forest/50">
-                  <th className="py-2 pr-3 font-semibold">Hotel</th>
-                  <th className="py-2 pr-3 font-semibold">Destination</th>
-                  <th className="py-2 pr-3 font-semibold">Room Type</th>
-                  <th className="py-2 pr-3 font-semibold">Meal Plan</th>
-                  <th className="py-2 pr-3 font-semibold">Rooms</th>
-                  <th className="py-2 font-semibold">Stay</th>
+                  <th className="py-2 pr-3 font-semibold">{t('tableHotel')}</th>
+                  <th className="py-2 pr-3 font-semibold">{t('tableDestination')}</th>
+                  <th className="py-2 pr-3 font-semibold">{t('tableRoomType')}</th>
+                  <th className="py-2 pr-3 font-semibold">{t('tableMealPlan')}</th>
+                  <th className="py-2 pr-3 font-semibold">{t('tableRooms')}</th>
+                  <th className="py-2 font-semibold">{t('tableStay')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -287,13 +330,13 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
 
           <div className="mt-4 flex flex-col items-end gap-1 border-t border-forest/10 pt-4">
             {itin.pricing.discount > 0 &&
-              <p className="text-xs text-forest/50">Base Price: {itin.pricing.currency} {itin.pricing.basePrice.toLocaleString()} &nbsp; Discount: {itin.pricing.currency} {itin.pricing.discount.toLocaleString()}</p>
+              <p className="text-xs text-forest/50">{t('basePrice')}: {itin.pricing.currency} {itin.pricing.basePrice.toLocaleString()} &nbsp; {t('discount')}: {itin.pricing.currency} {itin.pricing.discount.toLocaleString()}</p>
             }
             <p className="font-display text-xl font-bold text-forest">
-              Total: {itin.pricing.currency} {itin.pricing.totalPrice.toLocaleString()}
+              {t('total')}: {itin.pricing.currency} {itin.pricing.totalPrice.toLocaleString()}
             </p>
             <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold ${itin.sightseeingIncluded === false ? 'bg-gold/15 text-forest/70' : 'bg-emerald/10 text-emerald'}`}>
-              {itin.sightseeingIncluded === false ? 'Sightseeing & activities not included' : 'Includes sightseeing & activities'}
+              {itin.sightseeingIncluded === false ? t('sightseeingNotIncluded') : t('sightseeingIncluded')}
             </span>
           </div>
         </div>
@@ -301,11 +344,11 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
         {/* Inclusions / Exclusions */}
         <div className="mt-10 grid gap-8 border-t border-forest/10 pt-6 print:mt-6 print:break-inside-avoid sm:grid-cols-2">
           <div>
-            <p className="font-display text-sm font-semibold text-emerald">✅ Inclusions</p>
+            <p className="font-display text-sm font-semibold text-emerald">✅ {t('inclusions')}</p>
             <div className="mt-3"><NotesBlock text={itin.inclusions} /></div>
           </div>
           <div>
-            <p className="font-display text-sm font-semibold text-red-600">❌ Exclusions</p>
+            <p className="font-display text-sm font-semibold text-red-600">❌ {t('exclusions')}</p>
             <div className="mt-3"><NotesBlock text={itin.exclusions} /></div>
           </div>
         </div>
@@ -314,13 +357,13 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
           <div className="mt-8 grid gap-8 border-t border-forest/10 pt-6 print:mt-5 print:break-inside-avoid sm:grid-cols-2">
             {itin.visaRequirements &&
               <div>
-                <p className="font-display text-sm font-semibold text-forest">Visa Requirements</p>
+                <p className="font-display text-sm font-semibold text-forest">{t('visaRequirements')}</p>
                 <p className="mt-2 text-xs leading-relaxed text-forest/60">{itin.visaRequirements}</p>
               </div>
             }
             {itin.travelInsurance &&
               <div>
-                <p className="font-display text-sm font-semibold text-forest">Travel Insurance</p>
+                <p className="font-display text-sm font-semibold text-forest">{t('travelInsurance')}</p>
                 <p className="mt-2 text-xs leading-relaxed text-forest/60">{itin.travelInsurance}</p>
               </div>
             }
@@ -329,14 +372,14 @@ export function QuotationView({ request, backHref }: { request: QuotationRequest
 
         {itin.cancellationPolicy &&
           <div className="mt-8 border-t border-forest/10 pt-6 print:mt-5 print:break-inside-avoid">
-            <p className="font-display text-sm font-semibold text-forest">💸 Cancellation Policy</p>
+            <p className="font-display text-sm font-semibold text-forest">💸 {t('cancellationPolicy')}</p>
             <div className="mt-3"><NotesBlock text={itin.cancellationPolicy} /></div>
           </div>
         }
 
         {itin.customerFacingNotes &&
           <div className="mt-8 border-t border-forest/10 pt-6 print:mt-5 print:break-inside-avoid">
-            <p className="font-display text-sm font-semibold text-forest">📌 Important Notes</p>
+            <p className="font-display text-sm font-semibold text-forest">📌 {t('importantNotes')}</p>
             <div className="mt-3"><NotesBlock text={itin.customerFacingNotes} /></div>
           </div>
         }

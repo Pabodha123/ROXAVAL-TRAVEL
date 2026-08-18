@@ -98,7 +98,9 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<{
   // Every request carries the active site language so catalog endpoints
   // (Tour Packages/Destinations/Activities/Hotels/Blog) can return
   // admin-authored content in the right locale, with no per-call-site changes.
-  const url = `${API_BASE_URL}${path}${buildQueryString({ ...params, lang: getCurrentLanguage() })}`;
+  // An explicit `lang` in params (e.g. the Quotation page's own language
+  // switcher, independent of the site-wide language) overrides the default.
+  const url = `${API_BASE_URL}${path}${buildQueryString({ lang: getCurrentLanguage(), ...params })}`;
   let res = await fetch(url, init);
 
   if (res.status === 401 && !skipRefresh && path !== '/auth/refresh' && path !== '/auth/login') {
