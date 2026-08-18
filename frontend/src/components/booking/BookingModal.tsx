@@ -10,18 +10,19 @@ export interface BookingSource {
   type: 'package' | 'itinerary';
   id: string;
   name: string;
-  // For a package, this is the per-adult price. For an itinerary, this is
-  // the quoted price - a per-adult rate when pricePerPerson is true (see
-  // below), otherwise a flat group total.
+  // A per-adult rate when pricePerPerson is true (the common case),
+  // otherwise a flat total for the whole booking regardless of adult count
+  // (used by packages designed for an exact couple, e.g. honeymoon tours).
   price: number;
   currency: string;
   minTravelers?: number;
   maxTravelers?: number;
   // What a child pays as a percentage of the adult price (package bookings only).
   childPricePercent?: number;
-  // Itinerary bookings only. When true, `price` is a per-adult rate that
-  // must be multiplied by the traveler count to get the real total -
-  // matches how the quotation itself displays it ("$X / person").
+  // When true (the default), `price` is a per-adult rate that must be
+  // multiplied by the traveler count to get the real total - matches how
+  // the quotation itself displays it ("$X / person"). When false, `price`
+  // is already the flat total and must NOT be multiplied by adult count.
   pricePerPerson?: boolean;
   // Known from the accepted custom tour request — pre-fills the form instead
   // of asking the customer to re-enter what they already told us.
@@ -55,7 +56,7 @@ export function BookingModal({ open, onClose, source, onSuccess }: BookingModalP
   // needed since the traveler mix can't change here.
   const estimatedTotal = source.type === 'itinerary' ?
   source.price * (source.pricePerPerson ? Math.max(adults, 1) : 1) :
-  source.price * Math.max(adults, 1) + source.price * ((source.childPricePercent ?? 50) / 100) * children;
+  source.price * (source.pricePerPerson === false ? 1 : Math.max(adults, 1)) + source.price * ((source.childPricePercent ?? 50) / 100) * children;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,7 +151,11 @@ export function BookingModal({ open, onClose, source, onSuccess }: BookingModalP
           <div className="space-y-1 text-xs text-forest/50">
             {source.type === 'package' &&
             <>
-                <div className="flex justify-between"><span>{adults} Adult{adults === 1 ? '' : 's'} × {source.currency} {source.price.toLocaleString()}</span><span>{source.currency} {(source.price * Math.max(adults, 1)).toLocaleString()}</span></div>
+                {source.pricePerPerson === false ?
+              <div className="flex justify-between"><span>Package price (for {source.maxTravelers ?? adults})</span><span>{source.currency} {source.price.toLocaleString()}</span></div> :
+
+              <div className="flex justify-between"><span>{adults} Adult{adults === 1 ? '' : 's'} × {source.currency} {source.price.toLocaleString()}</span><span>{source.currency} {(source.price * Math.max(adults, 1)).toLocaleString()}</span></div>
+              }
                 {children > 0 &&
               <div className="flex justify-between"><span>{children} Child{children === 1 ? '' : 'ren'} × {source.currency} {(source.price * ((source.childPricePercent ?? 50) / 100)).toLocaleString()} ({source.childPricePercent ?? 50}%)</span><span>{source.currency} {(source.price * ((source.childPricePercent ?? 50) / 100) * children).toLocaleString()}</span></div>
               }

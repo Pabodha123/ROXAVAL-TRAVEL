@@ -57,6 +57,7 @@ export interface TourPackage {
   status: 'draft' | 'published' | 'archived';
   isFeatured: boolean;
   showPrice: boolean;
+  pricePerPerson: boolean;
   createdAt: string;
   updatedAt: string;
 }

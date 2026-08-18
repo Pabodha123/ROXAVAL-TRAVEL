@@ -68,6 +68,7 @@ interface AdminTourPackageRaw {
   status: string;
   isFeatured: boolean;
   showPrice: boolean;
+  pricePerPerson: boolean;
 }
 
 const emptyDay = (n: number): ItineraryDayForm => ({ dayNumber: n, title: emptyLocalizedString(), description: emptyLocalizedString(), destinations: [], activities: [], hotel: '', meals: [] });
@@ -114,6 +115,7 @@ export function AdminPackageForm() {
   const [status, setStatus] = useState('draft');
   const [isFeatured, setIsFeatured] = useState(false);
   const [showPrice, setShowPrice] = useState(true);
+  const [pricePerPerson, setPricePerPerson] = useState(true);
   const initialItinerary = useRef('');
 
   useEffect(() => {
@@ -168,6 +170,7 @@ export function AdminPackageForm() {
       setStatus(p.status);
       setIsFeatured(p.isFeatured);
       setShowPrice(p.showPrice ?? true);
+      setPricePerPerson(p.pricePerPerson ?? true);
     }).
     finally(() => setLoading(false));
   }, [id, isEdit]);
@@ -213,7 +216,8 @@ export function AdminPackageForm() {
       maxTravelers,
       status,
       isFeatured,
-      showPrice
+      showPrice,
+      pricePerPerson
     };
     try {
       if (isEdit) {
@@ -330,9 +334,15 @@ export function AdminPackageForm() {
             <NumberField label="Min Travelers" value={minTravelers} onChange={setMinTravelers} min={1} />
             <NumberField label="Max Travelers" value={maxTravelers} onChange={setMaxTravelers} min={1} />
           </div>
-          <div className="mt-4">
-            <CheckboxField label="Show price to customers" checked={showPrice} onChange={setShowPrice} />
-            <p className="mt-1 text-xs text-forest/50">When off, the package page shows "Contact us for pricing" instead of the price above.</p>
+          <div className="mt-4 space-y-3">
+            <div>
+              <CheckboxField label="Show price to customers" checked={showPrice} onChange={setShowPrice} />
+              <p className="mt-1 text-xs text-forest/50">When off, the package page shows "Contact us for pricing" instead of the price above.</p>
+            </div>
+            <div>
+              <CheckboxField label="Price is per person" checked={pricePerPerson} onChange={setPricePerPerson} />
+              <p className="mt-1 text-xs text-forest/50">Turn off for a fixed-group package (e.g. a honeymoon tour priced for exactly 2) - the price above is then charged once as a flat total, not multiplied by the number of adults.</p>
+            </div>
           </div>
         </div>
 
