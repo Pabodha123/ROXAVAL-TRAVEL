@@ -36,21 +36,8 @@ export function AboutUs() {
         subtitle={t('subtitle')}
         breadcrumbs={[{ label: tc('nav.home'), href: '/' }, { label: t('breadcrumb') }]} />
 
-      {/* Logo */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="mx-auto -mt-4 flex max-w-7xl justify-center px-4 sm:px-6 lg:px-8">
-
-        <div className="rounded-[2rem] bg-white p-6 shadow-lift">
-          <img src="/roxaval-logo-dark.png" alt="Roxaval Travels" className="h-28 w-auto sm:h-36" />
-        </div>
-      </motion.div>
-
       {/* Company Introduction */}
-      <section className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-3xl px-4 pt-20 pb-4 text-center sm:px-6 lg:px-8">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }}>
           <SectionHeading eyebrow={t('whoWeAreEyebrow')} title={t('whoWeAreTitle')} />
           <p className="mt-6 text-base leading-relaxed text-forest/70">
@@ -61,6 +48,19 @@ export function AboutUs() {
           </p>
         </motion.div>
       </section>
+
+      {/* Logo */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="mx-auto flex max-w-7xl justify-center px-4 pb-16 sm:px-6 lg:px-8">
+
+        <div className="rounded-[2rem] bg-white p-6 shadow-lift">
+          <img src="/roxaval-logo-dark.png" alt="Roxaval Travels" className="h-28 w-auto sm:h-36" />
+        </div>
+      </motion.div>
 
       {/* Our Story */}
       <section className="bg-white py-20">
