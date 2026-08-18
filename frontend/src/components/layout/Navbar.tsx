@@ -25,6 +25,7 @@ export function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const exploreRef = useRef<HTMLDivElement>(null);
   const myToursUnread = useUnreadCount('CustomTourRequest', Boolean(user));
   const isHome = location.pathname === '/';
 
@@ -60,9 +61,21 @@ export function Navbar() {
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) setUserMenuOpen(false);
+      if (exploreRef.current && !exploreRef.current.contains(e.target as Node)) setExploreOpen(false);
     };
     document.addEventListener('mousedown', onClick);
     return () => document.removeEventListener('mousedown', onClick);
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setExploreOpen(false);
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
   }, []);
 
   // The Explore dropdown only closes on mouse-leave, which a click that
@@ -130,23 +143,28 @@ export function Navbar() {
 
           })}
 
-          {/* Explore dropdown */}
-          <div
-            className="relative"
-            onMouseEnter={() => setExploreOpen(true)}
-            onMouseLeave={() => setExploreOpen(false)}>
-            
-            <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-cream/90 hover:text-white rounded-full transition-colors">
+          {/* Explore dropdown -- click-toggled (not hover) so it behaves
+              identically on touch devices, which have no hover state to
+              rely on. Closes on: toggling again, an outside click (handled
+              by the exploreRef effect above), Escape (handled above), a
+              route change (effect below), or picking an item -- but NOT
+              from a click that lands inside the dropdown itself. */}
+          <div className="relative" ref={exploreRef}>
+            <button
+              onClick={() => setExploreOpen((v) => !v)}
+              aria-expanded={exploreOpen}
+              className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-cream/90 hover:text-white rounded-full transition-colors">
               {t('nav.explore')}
               <ChevronDownIcon className={`h-4 w-4 transition-transform ${exploreOpen ? 'rotate-180' : ''}`} />
             </button>
             {/* No AnimatePresence/exit -- an animated exit can visually
-                stick open if a route change lands mid-animation. */}
+                stick open if a route change lands mid-animation. Entrance
+                only: fade in with a slight downward move, ~180ms. */}
             {exploreOpen &&
               <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.2 }}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
                 className="absolute right-0 mt-2 w-52 rounded-2xl bg-white shadow-lift p-2 overflow-hidden">
 
                   {exploreLinks.map((l) =>
@@ -186,9 +204,9 @@ export function Navbar() {
               </button>
               {userMenuOpen &&
               <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.2 }}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
                 className="absolute right-0 mt-2 w-52 rounded-2xl bg-white shadow-lift p-2 overflow-hidden">
 
                     {userMenuLinks.map((item) =>

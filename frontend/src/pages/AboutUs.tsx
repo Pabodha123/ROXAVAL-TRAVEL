@@ -42,7 +42,7 @@ export function AboutUs() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="mx-auto -mt-10 flex max-w-7xl justify-center px-4 sm:px-6 lg:px-8">
+        className="mx-auto -mt-4 flex max-w-7xl justify-center px-4 sm:px-6 lg:px-8">
 
         <div className="rounded-[2rem] bg-white p-6 shadow-lift">
           <img src="/roxaval-logo-dark.png" alt="Roxaval Travels" className="h-28 w-auto sm:h-36" />
