@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { ClockIcon, MapPinIcon, GaugeIcon, ArrowRightIcon } from 'lucide-react';
 import type { Activity } from '../../types/activity';
 
@@ -16,6 +17,8 @@ interface ActivityCardProps {
 }
 
 export function ActivityCard({ activity, index = 0 }: ActivityCardProps) {
+  const { t } = useTranslation('activities');
+  const { t: tc } = useTranslation('common');
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
@@ -49,14 +52,14 @@ export function ActivityCard({ activity, index = 0 }: ActivityCardProps) {
 
         <div className="mt-5 flex items-end justify-between border-t border-forest/10 pt-4">
           <div>
-            <p className="text-[11px] uppercase tracking-wide text-forest/50">From</p>
+            <p className="text-[11px] uppercase tracking-wide text-forest/50">{t('detail.from')}</p>
             <p className="font-display text-2xl font-semibold text-forest">${activity.priceFrom}</p>
           </div>
           <Link
             to={`/activity/${activity._id}`}
             className="group/btn inline-flex items-center gap-1.5 rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-emerald">
 
-            View Details
+            {tc('buttons.viewDetails')}
             <ArrowRightIcon className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
           </Link>
         </div>

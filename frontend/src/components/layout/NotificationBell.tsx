@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { BellIcon } from 'lucide-react';
 import { apiGetList, apiPatch, ApiMeta } from '../../lib/api';
 import { notificationTypeMeta } from '../../lib/notificationTypes';
@@ -16,6 +17,8 @@ interface NotificationItem {
 }
 
 export function NotificationBell() {
+  const { t } = useTranslation('dashboard');
+  const { t: tc } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -91,13 +94,13 @@ export function NotificationBell() {
           className="absolute right-0 mt-2 w-80 rounded-2xl bg-white shadow-lift p-2 overflow-hidden">
 
             <div className="flex items-center justify-between px-3 py-1.5">
-              <p className="text-xs font-semibold uppercase tracking-wide text-forest/50">Notifications</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-forest/50">{t('notifications.title')}</p>
               {unreadCount > 0 &&
-            <button onClick={markAllRead} className="text-xs font-semibold text-emerald hover:underline">Mark all read</button>
+            <button onClick={markAllRead} className="text-xs font-semibold text-emerald hover:underline">{t('notifications.markAllRead')}</button>
             }
             </div>
             <div className="max-h-80 overflow-y-auto">
-              {notifications.length === 0 && <p className="p-4 text-center text-xs text-forest/40">No notifications yet.</p>}
+              {notifications.length === 0 && <p className="p-4 text-center text-xs text-forest/40">{t('notifications.empty')}</p>}
               {notifications.map((n) => {
             const meta = notificationTypeMeta(n.type);
             const Icon = meta.icon;
@@ -120,7 +123,7 @@ export function NotificationBell() {
           })}
             </div>
             <Link to="/notifications" onClick={() => setOpen(false)} className="mt-1 block rounded-xl px-3 py-2 text-center text-xs font-semibold text-emerald hover:bg-cream">
-              View all
+              {tc('buttons.viewAll')}
             </Link>
           </motion.div>
         }

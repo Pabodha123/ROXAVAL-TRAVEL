@@ -216,7 +216,7 @@ export function QuotationView({ endpoint, backHref }: { endpoint: string; backHr
           }
         </div>
 
-        <RouteMap days={days} />
+        <RouteMap days={days} lang={docLang} />
 
         {/* Day by day */}
         <div className="mt-8 space-y-8 print:space-y-5">

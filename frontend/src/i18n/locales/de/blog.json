@@ -1,0 +1,42 @@
+{
+  "list": {
+    "storiesGuides": "Geschichten & Ratgeber",
+    "pageTitle": "Das Roxaval Journal",
+    "pageSubtitle": "Reiseführer, Kultur, Kulinarik und Inspiration für Ihr nächstes Sri-Lanka-Abenteuer.",
+    "featuredStory": "Empfohlene Geschichte",
+    "readFullStory": "Ganze Geschichte lesen",
+    "loadingArticles": "Artikel werden geladen…",
+    "noArticlesFound": "Keine Artikel gefunden",
+    "noArticlesHint": "Versuchen Sie einen anderen Suchbegriff oder eine andere Kategorie.",
+    "popularPosts": "Beliebte Beiträge",
+    "recentPosts": "Neueste Beiträge"
+  },
+  "details": {
+    "back": "Zurück",
+    "sriLanka": "Sri Lanka",
+    "honeymoonGuideTagline": "Ein Flitterwochen-Ratgeber für Sri Lanka",
+    "views": "{{count}} Aufrufe",
+    "shareFacebook": "Auf Facebook teilen",
+    "shareX": "Auf X teilen",
+    "copyLink": "Link kopieren",
+    "copied": "Kopiert!",
+    "share": "Teilen",
+    "moreLoveStories": "Weitere Liebesgeschichten",
+    "moreCoastalReads": "Weitere Küstengeschichten",
+    "relatedArticles": "Ähnliche Artikel",
+    "loadingArticle": "Artikel wird geladen…",
+    "articleNotFound": "Artikel nicht gefunden"
+  },
+  "comments": {
+    "title": "Kommentare",
+    "placeholder": "Teilen Sie Ihre Gedanken…",
+    "posting": "Wird gesendet…",
+    "postComment": "Kommentar Veröffentlichen",
+    "postFailed": "Kommentar konnte nicht veröffentlicht werden.",
+    "loginLink": "Anmelden",
+    "loginSuffix": ", um an der Unterhaltung teilzunehmen.",
+    "empty": "Noch keine Kommentare — teilen Sie als Erste(r) Ihre Gedanken.",
+    "traveler": "Reisender",
+    "deleteAria": "Kommentar löschen"
+  }
+}

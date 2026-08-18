@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import {
   MapPinIcon, MailIcon, MessageCircleIcon, ClockIcon, GlobeIcon,
   FacebookIcon, InstagramIcon, YoutubeIcon, MusicIcon, SendIcon,
@@ -21,14 +22,6 @@ interface Settings {
   socialLinks: { facebook: string; instagram: string; tiktok: string; youtube: string; whatsapp: string };
 }
 
-const FAQS = [
-{ q: 'How quickly will I get a response?', a: 'Our team typically replies within 24 hours, often much sooner during business hours.' },
-{ q: 'Can I customize any tour package?', a: 'Absolutely - every package can be tailored, or we can design a fully custom itinerary from scratch via "Plan My Tour".' },
-{ q: 'What payment methods do you accept?', a: 'Online bank transfer (with an uploaded receipt for our team to verify), or WhatsApp-coordinated payment.' },
-{ q: 'Do you offer airport pickup?', a: 'Yes, airport transfers can be included in any custom itinerary or package booking.' },
-{ q: 'Is travel insurance included?', a: 'Travel insurance is not included by default - see our Terms & Conditions for details and recommendations.' }];
-
-
 const DEFAULT_SETTINGS: Settings = {
   companyName: 'Roxaval Travels',
   address: ADDRESS_SRI_LANKA,
@@ -45,6 +38,15 @@ const SOCIAL_ICONS: Record<string, React.ComponentType<{className?: string;}>> =
 };
 
 export function ContactUs() {
+  const { t } = useTranslation('contact');
+  const { t: tc } = useTranslation('common');
+  const FAQS = [
+    { q: t('faq1Q'), a: t('faq1A') },
+    { q: t('faq2Q'), a: t('faq2A') },
+    { q: t('faq3Q'), a: t('faq3A') },
+    { q: t('faq4Q'), a: t('faq4A') },
+    { q: t('faq5Q'), a: t('faq5A') },
+  ];
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
@@ -73,7 +75,7 @@ export function ContactUs() {
       setSubmitted(true);
       setForm({ name: '', email: '', phone: '', subject: '', message: '' });
     } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : 'Something went wrong. Please try again.');
+      setError(err instanceof ApiRequestError ? err.message : tc('status.error'));
     } finally {
       setSubmitting(false);
     }
@@ -82,10 +84,10 @@ export function ContactUs() {
   return (
     <main className="min-h-screen bg-cream pt-16">
       <PageBanner
-        eyebrow="Get In Touch"
-        title="Contact Us"
-        subtitle="Questions, custom tour ideas, or just want to say hello - we'd love to hear from you."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Contact Us' }]} />
+        eyebrow={t('eyebrow')}
+        title={t('title')}
+        subtitle={t('subtitle')}
+        breadcrumbs={[{ label: tc('nav.home'), href: '/' }, { label: t('title') }]} />
 
 
       <section className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
@@ -96,41 +98,41 @@ export function ContactUs() {
               <div className="grid h-16 w-16 place-items-center rounded-full bg-emerald/10 text-emerald">
                 <CheckIcon className="h-8 w-8" />
               </div>
-              <h3 className="font-display mt-5 text-2xl font-semibold text-forest">Message Sent!</h3>
-              <p className="mt-2 max-w-sm text-sm text-forest/60">Thank you for reaching out. Our travel experts will get back to you shortly.</p>
-              <button onClick={() => setSubmitted(false)} className="mt-6 rounded-full border border-forest/15 px-6 py-2.5 text-sm font-semibold text-forest hover:bg-cream">Send another message</button>
+              <h3 className="font-display mt-5 text-2xl font-semibold text-forest">{t('messageSentTitle')}</h3>
+              <p className="mt-2 max-w-sm text-sm text-forest/60">{t('messageSentBody')}</p>
+              <button onClick={() => setSubmitted(false)} className="mt-6 rounded-full border border-forest/15 px-6 py-2.5 text-sm font-semibold text-forest hover:bg-cream">{t('sendAnother')}</button>
             </div> :
 
           <form onSubmit={handleSubmit} className="space-y-5">
-              <h2 className="font-display text-2xl font-semibold text-forest">Send Us a Message</h2>
+              <h2 className="font-display text-2xl font-semibold text-forest">{t('sendUsMessage')}</h2>
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-forest">Full Name</label>
+                  <label className="mb-1.5 block text-sm font-medium text-forest">{t('fullName')}</label>
                   <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-forest">Email</label>
+                  <label className="mb-1.5 block text-sm font-medium text-forest">{t('email')}</label>
                   <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" />
                 </div>
               </div>
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-forest">Phone (optional)</label>
+                  <label className="mb-1.5 block text-sm font-medium text-forest">{t('phoneOptional')}</label>
                   <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-forest">Subject</label>
+                  <label className="mb-1.5 block text-sm font-medium text-forest">{t('subject')}</label>
                   <input required value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} className="w-full rounded-xl border border-forest/10 bg-cream/50 px-4 py-3 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" />
                 </div>
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-forest">Message</label>
-                <textarea required rows={5} minLength={10} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="w-full rounded-2xl border border-forest/10 bg-cream/50 p-4 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" placeholder="Tell us how we can help..." />
+                <label className="mb-1.5 block text-sm font-medium text-forest">{t('message')}</label>
+                <textarea required rows={5} minLength={10} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="w-full rounded-2xl border border-forest/10 bg-cream/50 p-4 outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" placeholder={t('messagePlaceholder')} />
               </div>
               {error && <p className="rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-600">{error}</p>}
               <button type="submit" disabled={submitting} className="flex items-center gap-2 rounded-full bg-gold px-8 py-3.5 text-sm font-semibold text-forest transition-transform hover:scale-105 disabled:opacity-70">
                 {submitting ? <Loader2Icon className="h-4 w-4 animate-spin" /> : <SendIcon className="h-4 w-4" />}
-                Send Message
+                {t('sendMessage')}
               </button>
             </form>
           }
@@ -145,15 +147,15 @@ export function ContactUs() {
               <li className="flex gap-3"><MessageCircleIcon className="h-5 w-5 shrink-0 text-gold" /> WhatsApp : {WHATSAPP_DISPLAY}</li>
               <li className="flex gap-3"><MailIcon className="h-5 w-5 shrink-0 text-gold" /> {settings.email}</li>
               <li className="flex gap-3"><GlobeIcon className="h-5 w-5 shrink-0 text-gold" /> <a href={WEBSITE_URL} target="_blank" rel="noreferrer" className="hover:text-gold transition-colors">{WEBSITE_DISPLAY}</a></li>
-              <li className="flex gap-3"><ClockIcon className="h-5 w-5 shrink-0 text-gold" /> Mon–Sat: 8:30 AM – 6:30 PM &middot; Sun: By appointment</li>
-              <li className="flex gap-3"><ShieldAlertIcon className="h-5 w-5 shrink-0 text-gold" /> Emergency (24/7): {WHATSAPP_DISPLAY_SL}</li>
+              <li className="flex gap-3"><ClockIcon className="h-5 w-5 shrink-0 text-gold" /> {t('hours')}</li>
+              <li className="flex gap-3"><ShieldAlertIcon className="h-5 w-5 shrink-0 text-gold" /> {t('emergency247')} {WHATSAPP_DISPLAY_SL}</li>
             </ul>
             <div className="mt-6 flex flex-wrap gap-3">
               <a href={whatsAppLink('Hi Roxaval Travels, I have a question!', WHATSAPP_NUMBER_SL)} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-full bg-emerald px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-105">
-                <MessageCircleIcon className="h-4 w-4" /> WhatsApp (Sri Lanka)
+                <MessageCircleIcon className="h-4 w-4" /> {t('whatsappSriLanka')}
               </a>
               <a href={whatsAppLink('Hi Roxaval Travels, I have a question!')} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-full bg-emerald px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-105">
-                <MessageCircleIcon className="h-4 w-4" /> WhatsApp (UAE)
+                <MessageCircleIcon className="h-4 w-4" /> {t('whatsappUae')}
               </a>
               {Object.entries(settings.socialLinks).filter(([k]) => k !== 'whatsapp').map(([key, url]) => {
                 const Icon = SOCIAL_ICONS[key];
@@ -181,7 +183,7 @@ export function ContactUs() {
 
       {/* FAQ */}
       <section className="mx-auto max-w-3xl px-4 pb-20 sm:px-6 lg:px-8">
-        <SectionHeading eyebrow="Quick Answers" title="Frequently Asked Questions" />
+        <SectionHeading eyebrow={t('quickAnswers')} title={t('faqTitle')} />
         <div className="mt-10 space-y-3">
           {FAQS.map((f, i) =>
           <div key={f.q} className="overflow-hidden rounded-2xl bg-white shadow-soft">

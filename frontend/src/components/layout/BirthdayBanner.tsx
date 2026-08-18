@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
 import { XIcon, GiftIcon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -34,6 +35,7 @@ function fireConfetti() {
  * again on a fresh visit later that same day.
  */
 export function BirthdayBanner() {
+  const { t } = useTranslation('common');
   const { user, loading: authLoading } = useAuth();
   const [info, setInfo] = useState<BirthdayInfo | null>(null);
   const [open, setOpen] = useState(false);
@@ -89,9 +91,9 @@ export function BirthdayBanner() {
 
               <img src="/roxaval-icon.png" alt="" className="h-9 w-9 object-contain" />
               <p className="mt-2.5 text-[12px] font-bold uppercase tracking-[0.25em] text-gold">Roxaval Travels</p>
-              <p className="mt-0.5 text-[10px] italic tracking-wide text-gold/80">Designed for unforgettable journeys ✨</p>
+              <p className="mt-0.5 text-[10px] italic tracking-wide text-gold/80">{t('footer.tagline')}</p>
               <h2 className="font-display mt-24 text-4xl italic leading-tight text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.6)]">
-                🎈 Happy Birthday,<br />{info.firstName}! 🎈
+                🎈 {t('birthday.happyBirthday')}<br />{info.firstName}! 🎈
               </h2>
             </div>
 
@@ -106,7 +108,7 @@ export function BirthdayBanner() {
 
               {info.coupon &&
             <div className="mt-4 rounded-2xl border border-dashed border-gold/60 p-4 text-center">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-gold">Birthday Gift · {info.coupon.discountPercent}% Off</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-gold">{t('birthday.giftOff', { percent: info.coupon.discountPercent })}</p>
                   <p className="mt-1.5 flex items-center justify-center gap-2 font-display text-xl font-bold tracking-wider text-white">
                     <GiftIcon className="h-5 w-5 text-gold" /> {info.coupon.code}
                   </p>
@@ -117,7 +119,7 @@ export function BirthdayBanner() {
               onClick={() => setOpen(false)}
               className="mt-5 w-full rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-[#0f1210] transition-transform hover:scale-[1.02] active:scale-95">
 
-                Thank You!
+                {t('birthday.thankYou')}
               </button>
             </div>
           </motion.div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2Icon, MessageCircleIcon, SendIcon } from 'lucide-react';
 import { useMessages } from '../../hooks/useMessages';
 import { useAuth } from '../../context/AuthContext';
@@ -8,14 +9,14 @@ interface MessagingPanelProps {
   requestId: string;
 }
 
-function dayLabel(iso: string): string {
+function dayLabel(iso: string, todayLabel: string, yesterdayLabel: string): string {
   const date = new Date(iso);
   const today = new Date();
   const yesterday = new Date();
   yesterday.setDate(today.getDate() - 1);
   const sameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString();
-  if (sameDay(date, today)) return 'Today';
-  if (sameDay(date, yesterday)) return 'Yesterday';
+  if (sameDay(date, today)) return todayLabel;
+  if (sameDay(date, yesterday)) return yesterdayLabel;
   return formatDate(date);
 }
 
@@ -25,6 +26,7 @@ function dayLabel(iso: string): string {
  * page — same component, same hook, opposite viewer role.
  */
 export function MessagingPanel({ requestId }: MessagingPanelProps) {
+  const { t } = useTranslation('dashboard');
   const { user } = useAuth();
   const { messages, loading, sending, send } = useMessages(requestId);
   const [text, setText] = useState('');
@@ -47,7 +49,7 @@ export function MessagingPanel({ requestId }: MessagingPanelProps) {
   return (
     <div className="rounded-2xl bg-white p-6 shadow-soft">
       <p className="flex items-center gap-2 font-display text-sm font-semibold text-forest">
-        <MessageCircleIcon className="h-4 w-4 text-emerald" /> Conversation
+        <MessageCircleIcon className="h-4 w-4 text-emerald" /> {t('messaging.conversation')}
       </p>
 
       <div className="mt-4 max-h-96 space-y-3 overflow-y-auto pr-1">
@@ -55,11 +57,11 @@ export function MessagingPanel({ requestId }: MessagingPanelProps) {
         <div className="grid h-24 place-items-center"><Loader2Icon className="h-5 w-5 animate-spin text-forest/30" /></div>
         }
         {!loading && messages.length === 0 &&
-        <p className="py-6 text-center text-sm text-forest/40">No messages yet - say hello!</p>
+        <p className="py-6 text-center text-sm text-forest/40">{t('messaging.noMessages')}</p>
         }
         {messages.map((m) => {
           const isMine = m.senderRole === viewerRole;
-          const label = dayLabel(m.createdAt);
+          const label = dayLabel(m.createdAt, t('messaging.today'), t('messaging.yesterday'));
           const showDivider = label !== lastDay;
           lastDay = label;
           return (
@@ -74,7 +76,7 @@ export function MessagingPanel({ requestId }: MessagingPanelProps) {
               <div className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm ${isMine ? 'bg-emerald text-white' : 'bg-cream text-forest'}`}>
                   <p className={`mb-0.5 text-[11px] font-semibold ${isMine ? 'text-white/70' : 'text-forest/50'}`}>
-                    {isMine ? 'You' : m.senderRole === 'admin' ? 'Roxaval Travels' : m.sender?.fullName || 'Customer'}
+                    {isMine ? t('messaging.you') : m.senderRole === 'admin' ? 'Roxaval Travels' : m.sender?.fullName || t('messaging.customer')}
                   </p>
                   <p className="whitespace-pre-wrap">{m.text}</p>
                 </div>
@@ -96,7 +98,7 @@ export function MessagingPanel({ requestId }: MessagingPanelProps) {
             }
           }}
           rows={1}
-          placeholder="Type a message…"
+          placeholder={t('messaging.typeMessage')}
           className="flex-1 resize-none rounded-2xl border border-forest/10 bg-cream/50 px-4 py-2.5 text-sm outline-none focus:border-emerald focus:ring-1 focus:ring-emerald" />
 
         <button

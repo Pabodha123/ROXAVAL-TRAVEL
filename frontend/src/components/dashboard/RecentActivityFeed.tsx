@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { CheckIcon } from 'lucide-react';
 import { apiGetList } from '../../lib/api';
 import { notificationTypeMeta } from '../../lib/notificationTypes';
@@ -20,6 +21,7 @@ interface ActivityItem {
  * type-colored dot (see notificationTypes.ts) for unread ones.
  */
 export function RecentActivityFeed() {
+  const { t } = useTranslation('dashboard');
   const [items, setItems] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,7 +44,7 @@ export function RecentActivityFeed() {
 
   return (
     <div className="mt-8 rounded-2xl bg-white p-6 shadow-soft">
-      <p className="font-display text-sm font-semibold text-forest">Recent Activity</p>
+      <p className="font-display text-sm font-semibold text-forest">{t('recentActivity')}</p>
       <div className="mt-4 space-y-1">
         {items.map((n) => {
           const meta = notificationTypeMeta(n.type);

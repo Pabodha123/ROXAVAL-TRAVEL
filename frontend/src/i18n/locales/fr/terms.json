@@ -1,0 +1,77 @@
+{
+  "eyebrow": "À Lire Attentivement",
+  "pageTitle": "Conditions Générales",
+  "subtitle": "Les politiques qui régissent chaque réservation effectuée auprès de Roxaval Travels.",
+  "lastUpdated": "Dernière mise à jour : janvier 2026. En réservant un circuit avec Roxaval Travels, vous acceptez les conditions décrites ci-dessous.",
+  "sections": {
+    "bookingPolicy": {
+      "title": "Politique de Réservation",
+      "body": "Toutes les réservations sont soumises à disponibilité et ne sont confirmées qu'une fois l'acompte requis reçu et accusé réception par Roxaval Travels. Une référence de réservation et une confirmation seront émises pour chaque réservation confirmée."
+    },
+    "paymentPolicy": {
+      "title": "Politique de Paiement",
+      "body": "Un acompte non remboursable (généralement 30 % du coût total du circuit) est requis pour confirmer une réservation, le solde restant étant dû avant la date de début du circuit, comme indiqué au moment de la réservation. Les modes de paiement acceptés sont le virement bancaire en ligne (vérifié à partir d'un reçu téléversé) et le paiement coordonné via WhatsApp."
+    },
+    "cancellationPolicy": {
+      "title": "Politique d'Annulation",
+      "intro": "Les annulations doivent être soumises par écrit (e-mail ou WhatsApp). Des frais d'annulation sont appliqués sous forme de pourcentage du coût total du circuit, en fonction du délai de préavis :",
+      "bullet1": "30 jours ou plus avant le départ : seul l'acompte est perdu",
+      "bullet2": "15 à 29 jours avant le départ : 50 % du coût total du circuit",
+      "bullet3": "0 à 14 jours avant le départ : 100 % du coût total du circuit"
+    },
+    "refundPolicy": {
+      "title": "Politique de Remboursement",
+      "body": "Les remboursements éligibles (selon la Politique d'Annulation ci-dessus) sont traités vers le mode de paiement d'origine dans un délai de 14 jours ouvrables. Les remboursements pour les services non utilisés pendant un circuit en cours sont examinés au cas par cas et ne sont pas garantis."
+    },
+    "travelInsurance": {
+      "title": "Assurance Voyage",
+      "body": "Roxaval Travels recommande vivement à tous les voyageurs de souscrire une assurance voyage complète couvrant les urgences médicales, l'annulation de voyage, la perte de bagages et la responsabilité civile avant le départ. L'assurance voyage n'est incluse dans aucun forfait ou itinéraire sur mesure, sauf indication contraire expresse."
+    },
+    "passportVisa": {
+      "title": "Passeport & Exigences de Visa",
+      "body": "Il incombe exclusivement au voyageur de détenir un passeport valide au moins six mois après la durée du séjour prévu et d'obtenir tout visa requis (y compris l'ETA du Sri Lanka le cas échéant) avant l'arrivée. Roxaval Travels peut conseiller sur les exigences mais décline toute responsabilité en cas de refus d'entrée dû à des documents insuffisants."
+    },
+    "customerResponsibilities": {
+      "title": "Responsabilités du Client",
+      "body": "Les voyageurs sont tenus de fournir des informations personnelles et médicales exactes, d'arriver ponctuellement aux activités et transferts prévus, de respecter les lois et coutumes locales, et de se comporter de manière à ne mettre en danger ni eux-mêmes, ni les autres voyageurs, les guides ou l'environnement."
+    },
+    "companyResponsibilities": {
+      "title": "Responsabilités de l'Entreprise",
+      "body": "Roxaval Travels s'engage à organiser tous les services confirmés (hébergement, transport, guidage et activités) tels que décrits dans l'itinéraire, en faisant appel à des partenaires locaux agréés et vérifiés, et à fournir une assistance rapide tout au long du voyage."
+    },
+    "privacyStatement": {
+      "title": "Déclaration de Confidentialité",
+      "body": "Les informations personnelles collectées lors de la réservation (nom, coordonnées, informations de paiement) sont utilisées uniquement pour organiser et gérer vos services de voyage et ne sont jamais vendues à des tiers. Les données sont stockées en toute sécurité et partagées uniquement avec les partenaires directement impliqués dans la fourniture de vos services réservés (par exemple, hôtels, prestataires de transport)."
+    },
+    "liabilityDisclaimer": {
+      "title": "Clause de Non-Responsabilité",
+      "body": "Roxaval Travels agit en tant qu'agent coordonnant des prestataires de services tiers (hôtels, opérateurs de transport, opérateurs d'activités) et n'est pas responsable de leurs actes, omissions, retards ou défaillances échappant à son contrôle raisonnable. Les voyageurs participent à toutes les activités à leurs propres risques."
+    },
+    "forceMajeure": {
+      "title": "Force Majeure",
+      "body": "Roxaval Travels ne saurait être tenu responsable de tout manquement à ses obligations résultant de circonstances échappant à son contrôle raisonnable, notamment les catastrophes naturelles, les conditions météorologiques extrêmes, les troubles civils, les restrictions gouvernementales, les pandémies ou les grèves de transport. Dans de tels cas, nous ferons des efforts raisonnables pour proposer des solutions alternatives."
+    },
+    "tourChanges": {
+      "title": "Modifications du Circuit",
+      "body": "Les détails de l'itinéraire (routes, horaires, hébergement) peuvent occasionnellement devoir être modifiés en raison de la météo, de la sécurité, des conditions locales ou des exigences opérationnelles. Roxaval Travels s'efforcera toujours de proposer une alternative comparable et informera les voyageurs de tout changement important dès que raisonnablement possible."
+    },
+    "childPolicy": {
+      "title": "Politique Enfants",
+      "body": "Les enfants sont les bienvenus sur la plupart des circuits. Les tarifs enfants s'appliquent généralement aux enfants âgés de 2 à 11 ans partageant une chambre avec un adulte payant, à un tarif réduit indiqué dans le devis de l'itinéraire. Les bébés de moins de 2 ans voyagent généralement gratuitement lorsqu'aucun lit ou siège supplémentaire n'est requis. Les politiques d'âge spécifiques varient selon l'hôtel et l'activité et seront confirmées lors de la planification de l'itinéraire."
+    },
+    "hotelPolicy": {
+      "title": "Politique Hôtelière",
+      "body": "L'enregistrement standard à l'hôtel se fait à partir de 14h00 et le départ avant 11h00, sauf accord contraire. Les types de chambres et les formules de repas sont conformes à ce qui est confirmé dans votre itinéraire ; un enregistrement anticipé ou un départ tardif est soumis à disponibilité et peut entraîner des frais supplémentaires payables directement à l'hôtel."
+    },
+    "transportationPolicy": {
+      "title": "Politique de Transport",
+      "body": "Tous les transports terrestres sont assurés par des véhicules modernes et climatisés, conduits par des chauffeurs agréés et expérimentés. Les types de véhicules sont sélectionnés en fonction de la taille du groupe et des exigences de l'itinéraire. Les voyageurs sont tenus de suivre à tout moment les consignes de sécurité du chauffeur/guide."
+    },
+    "contactInformation": {
+      "title": "Coordonnées",
+      "bodyBefore": "Pour toute question concernant ces Conditions Générales, veuillez nous contacter via notre page ",
+      "contactLink": "Contact",
+      "bodyAfter": ", par e-mail à info@roxavaltravels.com, ou par téléphone au +94 77 880 3522."
+    }
+  }
+}

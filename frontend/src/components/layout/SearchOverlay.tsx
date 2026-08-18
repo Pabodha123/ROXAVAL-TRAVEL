@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { SearchIcon, XIcon, Loader2Icon } from 'lucide-react';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { searchAll, totalResultCount, EMPTY_RESULTS } from '../../lib/search';
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function SearchOverlay({ open, onClose }: Props) {
+  const { t } = useTranslation('common');
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResults>(EMPTY_RESULTS);
   const [loading, setLoading] = useState(false);
@@ -67,12 +69,12 @@ export function SearchOverlay({ open, onClose }: Props) {
     navigate(item.href);
   };
 
-  const groups: { key: SearchCategory; items: SearchResultItem[] }[] = [
-  { key: 'Tour Packages', items: results.packages },
-  { key: 'Destinations', items: results.destinations },
-  { key: 'Activities', items: results.activities },
-  { key: 'Hotels', items: results.hotels },
-  { key: 'Blog', items: results.blog }];
+  const groups: { key: SearchCategory; label: string; items: SearchResultItem[] }[] = [
+  { key: 'Tour Packages', label: t('nav.packages'), items: results.packages },
+  { key: 'Destinations', label: t('nav.destinations'), items: results.destinations },
+  { key: 'Activities', label: t('nav.activities'), items: results.activities },
+  { key: 'Hotels', label: t('search.categoryHotels'), items: results.hotels },
+  { key: 'Blog', label: t('nav.blog'), items: results.blog }];
 
   const total = totalResultCount(results);
 
@@ -101,7 +103,7 @@ export function SearchOverlay({ open, onClose }: Props) {
               ref={inputRef}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search tours, destinations, activities, hotels, blog…"
+              placeholder={t('search.placeholder')}
               className="flex-1 text-sm text-forest outline-none placeholder:text-forest/40 sm:text-base" />
 
               {loading && <Loader2Icon className="h-4 w-4 shrink-0 animate-spin text-forest/40" />}
@@ -112,14 +114,14 @@ export function SearchOverlay({ open, onClose }: Props) {
 
             <div className="max-h-[60vh] overflow-y-auto p-2">
               {!query.trim() &&
-            <p className="p-6 text-center text-sm text-forest/40">Start typing to search across tours, destinations, activities, hotels and our blog.</p>
+            <p className="p-6 text-center text-sm text-forest/40">{t('search.startTyping')}</p>
             }
               {query.trim() && !loading && total === 0 &&
-            <p className="p-6 text-center text-sm text-forest/40">No results for &ldquo;{query}&rdquo;.</p>
+            <p className="p-6 text-center text-sm text-forest/40">{t('search.noResultsForShort', { query })}</p>
             }
               {groups.map((g) => g.items.length === 0 ? null :
             <div key={g.key} className="px-2 py-2">
-                  <p className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-forest/40">{g.key}</p>
+                  <p className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-forest/40">{g.label}</p>
                   {g.items.map((item) =>
               <button
                 key={`${g.key}-${item.id}`}
@@ -151,7 +153,7 @@ export function SearchOverlay({ open, onClose }: Props) {
             onClick={goToResults}
             className="flex w-full items-center justify-center gap-2 border-t border-forest/10 bg-cream/40 px-5 py-3 text-sm font-semibold text-emerald hover:bg-cream">
 
-                View all results for &ldquo;{query}&rdquo;
+                {t('search.viewAllResultsFor', { query })}
               </button>
           }
           </motion.div>

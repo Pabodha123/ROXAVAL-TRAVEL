@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2Icon, SaveIcon, CheckIcon } from 'lucide-react';
 import { PageBanner } from '../components/layout/PageBanner';
 import { DateField } from '../components/ui/DateField';
@@ -19,6 +20,8 @@ const inputClass = 'w-full rounded-xl border border-forest/15 bg-white px-4 py-3
 const labelClass = 'mb-1.5 block text-sm font-medium text-forest';
 
 export function Profile() {
+  const { t } = useTranslation('dashboard');
+  const { t: tc } = useTranslation('common');
   const { refreshMe } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -57,7 +60,7 @@ export function Profile() {
       await refreshMe();
       setSaved(true);
     } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : 'Failed to save profile.');
+      setError(err instanceof ApiRequestError ? err.message : t('profile.saveFailed'));
     } finally {
       setSaving(false);
     }
@@ -66,10 +69,10 @@ export function Profile() {
   return (
     <main className="min-h-screen bg-cream pt-16">
       <PageBanner
-        eyebrow="My Account"
-        title="Your Profile"
-        subtitle="Keep your details up to date - including your birthday, so we can send you something special every year."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Profile' }]} />
+        eyebrow={t('profile.eyebrow')}
+        title={t('profile.title')}
+        subtitle={t('profile.subtitle')}
+        breadcrumbs={[{ label: tc('nav.home'), href: '/' }, { label: t('profile.breadcrumb') }]} />
 
       <section className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
         {loading || !profile ?
@@ -78,34 +81,34 @@ export function Profile() {
         <form onSubmit={handleSubmit} className="space-y-5 rounded-3xl bg-white p-6 shadow-soft sm:p-10">
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
-                <label className={labelClass}>Full Name</label>
+                <label className={labelClass}>{t('profile.fullName')}</label>
                 <input required value={profile.fullName} onChange={(e) => update('fullName', e.target.value)} className={inputClass} />
               </div>
               <div>
-                <label className={labelClass}>Phone</label>
+                <label className={labelClass}>{t('profile.phone')}</label>
                 <input value={profile.phone} onChange={(e) => update('phone', e.target.value)} className={inputClass} />
               </div>
               <div>
-                <label className={labelClass}>Date of Birth</label>
+                <label className={labelClass}>{t('profile.dateOfBirth')}</label>
                 <DateField value={profile.dateOfBirth} onChange={(v) => update('dateOfBirth', v)} className={inputClass} />
               </div>
               <div>
-                <label className={labelClass}>Passport Number</label>
+                <label className={labelClass}>{t('profile.passportNumber')}</label>
                 <input value={profile.passportNumber} onChange={(e) => update('passportNumber', e.target.value)} className={inputClass} />
               </div>
               <div>
-                <label className={labelClass}>Country</label>
+                <label className={labelClass}>{t('profile.country')}</label>
                 <input value={profile.country} onChange={(e) => update('country', e.target.value)} className={inputClass} />
               </div>
               <div className="sm:col-span-2">
-                <label className={labelClass}>Address</label>
+                <label className={labelClass}>{t('profile.address')}</label>
                 <input value={profile.address} onChange={(e) => update('address', e.target.value)} className={inputClass} />
               </div>
             </div>
 
             <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-forest">
               <input type="checkbox" checked={profile.marketingOptIn} onChange={(e) => update('marketingOptIn', e.target.checked)} className="h-4 w-4 rounded border-forest/30 text-emerald focus:ring-emerald" />
-              Send me travel deals and inspiration by email
+              {t('profile.marketingOptIn')}
             </label>
 
             {error && <p className="text-sm font-medium text-red-500">{error}</p>}
@@ -113,9 +116,9 @@ export function Profile() {
             <div className="flex items-center gap-4 border-t border-forest/10 pt-5">
               <button type="submit" disabled={saving} className="flex items-center gap-2 rounded-full bg-emerald px-7 py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02] active:scale-95 disabled:opacity-70">
                 {saving ? <Loader2Icon className="h-4 w-4 animate-spin" /> : <SaveIcon className="h-4 w-4" />}
-                Save Changes
+                {tc('buttons.saveChanges')}
               </button>
-              {saved && <span className="flex items-center gap-1.5 text-sm font-medium text-emerald"><CheckIcon className="h-4 w-4" /> Saved</span>}
+              {saved && <span className="flex items-center gap-1.5 text-sm font-medium text-emerald"><CheckIcon className="h-4 w-4" /> {t('profile.saved')}</span>}
             </div>
           </form>
         }

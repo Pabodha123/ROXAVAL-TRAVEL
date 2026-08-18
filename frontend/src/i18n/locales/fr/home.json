@@ -55,5 +55,22 @@
     "titleHighlight": "Voyage Idéal ?",
     "subtitle": "Créez votre propre itinéraire personnalisé au Sri Lanka selon vos préférences de voyage. Nos experts planifieront le voyage parfait pour vous.",
     "createMyCustomTour": "Créer Mon Voyage Sur Mesure"
+  },
+  "coreValues": {
+    "eyebrow": "Ce que nous défendons",
+    "title": "Nos valeurs fondamentales",
+    "trustTitle": "Confiance",
+    "trustText": "Des prix transparents et des conseils honnêtes, à chaque fois.",
+    "authenticityTitle": "Authenticité",
+    "authenticityText": "De véritables expériences locales, pas des circuits standardisés.",
+    "excellenceTitle": "Excellence",
+    "excellenceText": "Une planification minutieuse pour que chaque détail semble sans effort.",
+    "careTitle": "Attention",
+    "careText": "Votre confort et votre sécurité, pris en charge de l'arrivée au départ."
+  },
+  "hotelPartners": {
+    "eyebrow": "Nos partenaires",
+    "title": "Nos partenaires hôteliers",
+    "subtitle": "Tarifs préférentiels et service prioritaire auprès des plus grands groupes hôteliers du Sri Lanka."
   }
 }

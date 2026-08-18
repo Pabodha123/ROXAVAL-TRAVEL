@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { CalendarIcon, EyeIcon, FlameIcon, ClockIcon, ArrowRightIcon } from 'lucide-react';
 import { Pagination } from '../components/ui/Pagination';
 import { LoadingState, EmptyState, ErrorState } from '../components/ui/StatusState';
@@ -55,6 +56,7 @@ function SidebarList({ title, icon: Icon, posts }: {title: string;icon: React.Co
 }
 
 export function Blog() {
+  const { t } = useTranslation('blog');
   const [popular, setPopular] = useState<BlogListItem[]>([]);
   const [recent, setRecent] = useState<BlogListItem[]>([]);
 
@@ -75,9 +77,9 @@ export function Blog() {
       <section className="border-b border-forest/10 bg-white py-14 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <BackButton className="mb-6" />
-          <p className="text-center text-xs font-semibold uppercase tracking-[0.35em] text-gold">Stories &amp; Guides</p>
-          <h1 className="mt-3 text-center font-display text-4xl font-semibold text-forest sm:text-5xl">The Roxaval Journal</h1>
-          <p className="mx-auto mt-3 max-w-xl text-center font-display text-base italic text-forest/55">Travel guides, culture, food and inspiration for your next Sri Lankan adventure.</p>
+          <p className="text-center text-xs font-semibold uppercase tracking-[0.35em] text-gold">{t('list.storiesGuides')}</p>
+          <h1 className="mt-3 text-center font-display text-4xl font-semibold text-forest sm:text-5xl">{t('list.pageTitle')}</h1>
+          <p className="mx-auto mt-3 max-w-xl text-center font-display text-base italic text-forest/55">{t('list.pageSubtitle')}</p>
 
           {featured &&
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mt-12 grid gap-8 overflow-hidden rounded-[2rem] bg-cream shadow-lift lg:grid-cols-2">
@@ -85,11 +87,11 @@ export function Blog() {
                 <img src={resolveImage(featured.featuredImage)} alt={featured.title} className="h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
               </Link>
               <div className="flex flex-col justify-center p-8 sm:p-12">
-                <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-gold/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-forest"><FlameIcon className="h-3.5 w-3.5 text-gold" /> Featured Story</span>
+                <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-gold/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-forest"><FlameIcon className="h-3.5 w-3.5 text-gold" /> {t('list.featuredStory')}</span>
                 <Link to={`/blog/${featured.slug}`} className="mt-4 font-display text-2xl font-semibold leading-snug text-forest transition-colors hover:text-emerald sm:text-3xl">{featured.title}</Link>
                 <p className="mt-3 font-display text-base italic leading-relaxed text-forest/60">{featured.excerpt}</p>
                 <Link to={`/blog/${featured.slug}`} className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-semibold text-cream transition-colors hover:bg-emerald">
-                  Read the Full Story <ArrowRightIcon className="h-4 w-4" />
+                  {t('list.readFullStory')} <ArrowRightIcon className="h-4 w-4" />
                 </Link>
               </div>
             </motion.div>
@@ -100,10 +102,10 @@ export function Blog() {
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
           <div>
-            {loading && items.length === 0 && <LoadingState title="Loading articles…" />}
+            {loading && items.length === 0 && <LoadingState title={t('list.loadingArticles')} />}
             {error && <ErrorState message={error} />}
             {!loading && !error && items.length === 0 &&
-            <EmptyState title="No articles found" message="Try a different search term or category." />
+            <EmptyState title={t('list.noArticlesFound')} message={t('list.noArticlesHint')} />
             }
 
             <div className="grid gap-6 sm:grid-cols-2">
@@ -118,8 +120,8 @@ export function Blog() {
           </div>
 
           <div className="space-y-6">
-            <SidebarList title="Popular Posts" icon={EyeIcon} posts={popular} />
-            <SidebarList title="Recent Posts" icon={ClockIcon} posts={recent} />
+            <SidebarList title={t('list.popularPosts')} icon={EyeIcon} posts={popular} />
+            <SidebarList title={t('list.recentPosts')} icon={ClockIcon} posts={recent} />
           </div>
         </div>
       </section>

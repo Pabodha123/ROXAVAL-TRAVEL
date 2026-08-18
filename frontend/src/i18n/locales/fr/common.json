@@ -96,7 +96,15 @@
     "noResultsFor": "Nous n'avons rien trouvé correspondant à « {{query}} ». Essayez un autre terme de recherche.",
     "resultCount_one": "{{count}} résultat pour « {{query}} »",
     "resultCount_other": "{{count}} résultats pour « {{query}} »",
-    "categoryHotels": "Hôtels"
+    "categoryHotels": "Hôtels",
+    "startTyping": "Commencez à taper pour rechercher parmi les circuits, destinations, activités, hôtels et notre blog.",
+    "noResultsForShort": "Aucun résultat pour « {{query}} ».",
+    "viewAllResultsFor": "Voir tous les résultats pour « {{query}} »"
+  },
+  "birthday": {
+    "happyBirthday": "Joyeux anniversaire,",
+    "thankYou": "Merci !",
+    "giftOff": "Cadeau d'anniversaire · {{percent}}% de réduction"
   },
   "validation": {
     "required": "Ce champ est obligatoire",

@@ -1,0 +1,77 @@
+{
+  "eyebrow": "Bitte Sorgfältig Lesen",
+  "pageTitle": "Allgemeine Geschäftsbedingungen",
+  "subtitle": "Die Richtlinien, die für jede bei Roxaval Travels vorgenommene Buchung gelten.",
+  "lastUpdated": "Zuletzt aktualisiert: Januar 2026. Mit der Buchung einer Reise bei Roxaval Travels stimmen Sie den nachstehenden Bedingungen zu.",
+  "sections": {
+    "bookingPolicy": {
+      "title": "Buchungsrichtlinie",
+      "body": "Alle Buchungen unterliegen der Verfügbarkeit und werden erst bestätigt, sobald die erforderliche Anzahlung eingegangen ist und von Roxaval Travels bestätigt wurde. Für jede bestätigte Reservierung werden eine Buchungsreferenz und eine Bestätigung ausgestellt."
+    },
+    "paymentPolicy": {
+      "title": "Zahlungsrichtlinie",
+      "body": "Zur Bestätigung einer Buchung ist eine nicht erstattungsfähige Anzahlung (in der Regel 30 % der Gesamtreisekosten) erforderlich; der Restbetrag ist vor Reisebeginn zum bei der Buchung angegebenen Zeitpunkt fällig. Akzeptierte Zahlungsmethoden sind Online-Banküberweisung (verifiziert anhand eines hochgeladenen Belegs) und über WhatsApp koordinierte Zahlung."
+    },
+    "cancellationPolicy": {
+      "title": "Stornierungsrichtlinie",
+      "intro": "Stornierungen müssen schriftlich (per E-Mail oder WhatsApp) eingereicht werden. Die Stornogebühren werden als Prozentsatz der Gesamtreisekosten berechnet, abhängig davon, wie weit im Voraus die Benachrichtigung erfolgt:",
+      "bullet1": "30+ Tage vor Abreise: nur die Anzahlung verfällt",
+      "bullet2": "15–29 Tage vor Abreise: 50 % der Gesamtreisekosten",
+      "bullet3": "0–14 Tage vor Abreise: 100 % der Gesamtreisekosten"
+    },
+    "refundPolicy": {
+      "title": "Rückerstattungsrichtlinie",
+      "body": "Berechtigte Rückerstattungen (gemäß der obigen Stornierungsrichtlinie) werden innerhalb von 14 Werktagen auf die ursprüngliche Zahlungsmethode zurückerstattet. Rückerstattungen für nicht genutzte Leistungen während einer laufenden Reise werden im Einzelfall geprüft und sind nicht garantiert."
+    },
+    "travelInsurance": {
+      "title": "Reiseversicherung",
+      "body": "Roxaval Travels empfiehlt allen Reisenden dringend, vor der Abreise eine umfassende Reiseversicherung abzuschließen, die medizinische Notfälle, Reiserücktritt, Gepäckverlust und persönliche Haftung abdeckt. Eine Reiseversicherung ist in keinem Paket oder individuellen Reiseplan enthalten, sofern nicht ausdrücklich anders angegeben."
+    },
+    "passportVisa": {
+      "title": "Reisepass- & Visumanforderungen",
+      "body": "Es liegt in der alleinigen Verantwortung des Reisenden, einen Reisepass zu besitzen, der mindestens sechs Monate über den geplanten Aufenthalt hinaus gültig ist, und vor der Ankunft alle erforderlichen Visa (einschließlich des ETA für Sri Lanka, sofern zutreffend) zu beschaffen. Roxaval Travels kann zu den Anforderungen beraten, übernimmt jedoch keine Haftung für eine verweigerte Einreise aufgrund unzureichender Dokumente."
+    },
+    "customerResponsibilities": {
+      "title": "Verantwortlichkeiten des Kunden",
+      "body": "Von Reisenden wird erwartet, dass sie korrekte persönliche und gesundheitsbezogene Angaben machen, pünktlich zu geplanten Aktivitäten und Transfers erscheinen, lokale Gesetze und Bräuche respektieren und sich so verhalten, dass sie sich selbst, andere Reisende, Guides oder die Umwelt nicht gefährden."
+    },
+    "companyResponsibilities": {
+      "title": "Verantwortlichkeiten des Unternehmens",
+      "body": "Roxaval Travels verpflichtet sich, alle bestätigten Leistungen (Unterkunft, Transport, Führung und Aktivitäten) wie im Reiseplan beschrieben zu organisieren, dabei lizenzierte und geprüfte lokale Partner einzusetzen und den Reisenden während der gesamten Reise zeitnahe Unterstützung zu bieten."
+    },
+    "privacyStatement": {
+      "title": "Datenschutzerklärung",
+      "body": "Bei der Buchung erhobene persönliche Daten (Name, Kontaktdaten, Zahlungsinformationen) werden ausschließlich zur Organisation und Verwaltung Ihrer Reiseleistungen verwendet und niemals an Dritte verkauft. Die Daten werden sicher gespeichert und nur mit Partnern geteilt, die direkt an der Erbringung Ihrer gebuchten Leistungen beteiligt sind (z. B. Hotels, Transportanbieter)."
+    },
+    "liabilityDisclaimer": {
+      "title": "Haftungsausschluss",
+      "body": "Roxaval Travels tritt als Vermittler auf, der Drittanbieter (Hotels, Transportunternehmen, Aktivitätsanbieter) koordiniert, und haftet nicht für deren Handlungen, Unterlassungen, Verzögerungen oder Ausfälle, die außerhalb seiner angemessenen Kontrolle liegen. Reisende nehmen an allen Aktivitäten auf eigenes Risiko teil."
+    },
+    "forceMajeure": {
+      "title": "Höhere Gewalt",
+      "body": "Roxaval Travels haftet nicht für die Nichterfüllung seiner Pflichten, wenn diese auf Umstände zurückzuführen ist, die außerhalb seiner angemessenen Kontrolle liegen, einschließlich Naturkatastrophen, extremer Wetterereignisse, ziviler Unruhen, behördlicher Beschränkungen, Pandemien oder Transportstreiks. In solchen Fällen bemühen wir uns nach besten Kräften, alternative Regelungen anzubieten."
+    },
+    "tourChanges": {
+      "title": "Reiseänderungen",
+      "body": "Details des Reiseplans (Routen, Zeiten, Unterkunft) können sich gelegentlich aufgrund von Wetter, Sicherheit, lokalen Gegebenheiten oder betrieblichen Anforderungen ändern. Roxaval Travels wird stets bestrebt sein, eine vergleichbare Alternative anzubieten, und wird Reisende so schnell wie vernünftigerweise möglich über wesentliche Änderungen informieren."
+    },
+    "childPolicy": {
+      "title": "Kinderrichtlinie",
+      "body": "Kinder sind bei den meisten Reisen willkommen. Die Preise für Kinder gelten in der Regel für Gäste im Alter von 2–11 Jahren, die sich ein Zimmer mit einem zahlenden Erwachsenen teilen, zu einem im Reiseangebot ausgewiesenen ermäßigten Satz. Kleinkinder unter 2 Jahren reisen in der Regel kostenlos, sofern kein zusätzliches Bett oder kein zusätzlicher Sitzplatz erforderlich ist. Genaue Altersregelungen variieren je nach Hotel und Aktivität und werden während der Reiseplanung bestätigt."
+    },
+    "hotelPolicy": {
+      "title": "Hotelrichtlinie",
+      "body": "Der reguläre Hotel-Check-in ist ab 14:00 Uhr, der Check-out bis 11:00 Uhr, sofern nicht anders vereinbart. Zimmertypen und Verpflegungspläne entsprechen den Angaben in Ihrem Reiseplan; ein früher Check-in oder später Check-out unterliegt der Verfügbarkeit und kann mit zusätzlichen Kosten verbunden sein, die direkt an das Hotel zu zahlen sind."
+    },
+    "transportationPolicy": {
+      "title": "Transportrichtlinie",
+      "body": "Der gesamte Bodentransport erfolgt mit modernen, klimatisierten Fahrzeugen, die von lizenzierten, erfahrenen Fahrern gesteuert werden. Die Fahrzeugtypen werden je nach Gruppengröße und Anforderungen des Reiseplans ausgewählt. Von Reisenden wird erwartet, dass sie jederzeit den Sicherheitsanweisungen des Fahrers/Guides folgen."
+    },
+    "contactInformation": {
+      "title": "Kontaktinformationen",
+      "bodyBefore": "Bei Fragen zu diesen Allgemeinen Geschäftsbedingungen wenden Sie sich bitte über unsere Seite ",
+      "contactLink": "Kontakt",
+      "bodyAfter": " an uns, schreiben Sie uns an info@roxavaltravels.com oder rufen Sie uns unter +94 77 880 3522 an."
+    }
+  }
+}

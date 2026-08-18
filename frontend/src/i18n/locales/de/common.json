@@ -96,7 +96,15 @@
     "noResultsFor": "Wir konnten nichts finden, das zu „{{query}}“ passt. Versuchen Sie einen anderen Suchbegriff.",
     "resultCount_one": "{{count}} Ergebnis für „{{query}}“",
     "resultCount_other": "{{count}} Ergebnisse für „{{query}}“",
-    "categoryHotels": "Hotels"
+    "categoryHotels": "Hotels",
+    "startTyping": "Beginnen Sie zu tippen, um Touren, Reiseziele, Aktivitäten, Hotels und unseren Blog zu durchsuchen.",
+    "noResultsForShort": "Keine Ergebnisse für „{{query}}“.",
+    "viewAllResultsFor": "Alle Ergebnisse für „{{query}}“ anzeigen"
+  },
+  "birthday": {
+    "happyBirthday": "Alles Gute zum Geburtstag,",
+    "thankYou": "Vielen Dank!",
+    "giftOff": "Geburtstagsgeschenk · {{percent}}% Rabatt"
   },
   "validation": {
     "required": "Dieses Feld ist erforderlich",

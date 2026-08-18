@@ -1,0 +1,42 @@
+{
+  "list": {
+    "storiesGuides": "Récits & Guides",
+    "pageTitle": "Le Journal Roxaval",
+    "pageSubtitle": "Guides de voyage, culture, gastronomie et inspiration pour votre prochaine aventure sri-lankaise.",
+    "featuredStory": "Article à la Une",
+    "readFullStory": "Lire l'Article Complet",
+    "loadingArticles": "Chargement des articles…",
+    "noArticlesFound": "Aucun article trouvé",
+    "noArticlesHint": "Essayez un autre terme de recherche ou une autre catégorie.",
+    "popularPosts": "Articles Populaires",
+    "recentPosts": "Articles Récents"
+  },
+  "details": {
+    "back": "Retour",
+    "sriLanka": "Sri Lanka",
+    "honeymoonGuideTagline": "Un Guide de Lune de Miel au Sri Lanka",
+    "views": "{{count}} vues",
+    "shareFacebook": "Partager sur Facebook",
+    "shareX": "Partager sur X",
+    "copyLink": "Copier le lien",
+    "copied": "Copié !",
+    "share": "Partager",
+    "moreLoveStories": "Plus d'Histoires d'Amour",
+    "moreCoastalReads": "Plus de Lectures Côtières",
+    "relatedArticles": "Articles Similaires",
+    "loadingArticle": "Chargement de l'article…",
+    "articleNotFound": "Article introuvable"
+  },
+  "comments": {
+    "title": "Commentaires",
+    "placeholder": "Partagez vos réflexions…",
+    "posting": "Publication…",
+    "postComment": "Publier le Commentaire",
+    "postFailed": "Échec de la publication du commentaire.",
+    "loginLink": "Se connecter",
+    "loginSuffix": " pour rejoindre la conversation.",
+    "empty": "Aucun commentaire pour l'instant — soyez le premier à partager vos réflexions.",
+    "traveler": "Voyageur",
+    "deleteAria": "Supprimer le commentaire"
+  }
+}

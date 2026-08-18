@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Polyline, useMap } from 'react-leaflet';
+import { useTranslation } from 'react-i18next';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import type { SupportedLanguageCode } from '../../i18n';
 
 interface RouteStop {
   dayNumber: number;
@@ -48,7 +50,8 @@ type MapDest = { name: string; mapLocation?: { lat?: number; lng?: number } };
  * eager-loaded relation. Mirroring that fallback here is what makes the
  * map actually have coordinates to plot.
  */
-export function RouteMap({ days }: { days: { dayNumber: number; destinations?: MapDest[]; hotel?: { destination?: MapDest } }[] }) {
+export function RouteMap({ days, lang }: { days: { dayNumber: number; destinations?: MapDest[]; hotel?: { destination?: MapDest } }[]; lang?: SupportedLanguageCode }) {
+  const { t } = useTranslation('quotation');
   const stops = useMemo(() => {
     const result: RouteStop[] = [];
     days.forEach((d) => {
@@ -67,7 +70,7 @@ export function RouteMap({ days }: { days: { dayNumber: number; destinations?: M
 
   return (
     <div className="mt-8 border-b border-forest/10 pb-8 print:mt-4 print:break-inside-avoid print:pb-4">
-      <p className="font-display text-sm font-semibold text-forest">Trip Itinerary Route</p>
+      <p className="font-display text-sm font-semibold text-forest">{t('tripRoute', { lng: lang })}</p>
       <div className="mt-3 h-80 w-full overflow-hidden rounded-2xl border border-forest/10 print:mt-2 print:h-56">
         <MapContainer center={[7.8731, 80.7718]} zoom={7} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
           <TileLayer

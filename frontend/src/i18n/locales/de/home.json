@@ -55,5 +55,22 @@
     "titleHighlight": "Nicht Gefunden?",
     "subtitle": "Erstellen Sie Ihre eigene, persönliche Sri-Lanka-Reiseroute nach Ihren Reisewünschen. Unsere Reiseexperten planen die perfekte Reise für Sie.",
     "createMyCustomTour": "Meine Individuelle Reise Erstellen"
+  },
+  "coreValues": {
+    "eyebrow": "Wofür wir stehen",
+    "title": "Unsere Grundwerte",
+    "trustTitle": "Vertrauen",
+    "trustText": "Transparente Preise und ehrliche Beratung, jedes Mal.",
+    "authenticityTitle": "Authentizität",
+    "authenticityText": "Echte lokale Erlebnisse statt Reisen von der Stange.",
+    "excellenceTitle": "Exzellenz",
+    "excellenceText": "Sorgfältige Planung, damit sich jedes Detail mühelos anfühlt.",
+    "careTitle": "Fürsorge",
+    "careText": "Ihr Komfort und Ihre Sicherheit, von der Ankunft bis zur Abreise."
+  },
+  "hotelPartners": {
+    "eyebrow": "Mit wem wir zusammenarbeiten",
+    "title": "Unsere Hotelpartner",
+    "subtitle": "Vorzugspreise und bevorzugter Service von Sri Lankas führenden Hotelgruppen."
   }
 }

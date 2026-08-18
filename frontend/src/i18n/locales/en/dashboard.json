@@ -10,6 +10,32 @@
     "subtitle": "Everything we've sent you, in one place.",
     "markAllRead": "Mark all as read",
     "empty": "No notifications yet",
-    "emptyHint": "We'll let you know when something needs your attention."
+    "emptyHint": "We'll let you know when something needs your attention.",
+    "loading": "Loading notifications…"
+  },
+  "recentActivity": "Recent Activity",
+  "messaging": {
+    "conversation": "Conversation",
+    "noMessages": "No messages yet - say hello!",
+    "typeMessage": "Type a message…",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "you": "You",
+    "customer": "Customer"
+  },
+  "profile": {
+    "eyebrow": "My Account",
+    "title": "Your Profile",
+    "subtitle": "Keep your details up to date - including your birthday, so we can send you something special every year.",
+    "breadcrumb": "Profile",
+    "fullName": "Full Name",
+    "phone": "Phone",
+    "dateOfBirth": "Date of Birth",
+    "passportNumber": "Passport Number",
+    "country": "Country",
+    "address": "Address",
+    "marketingOptIn": "Send me travel deals and inspiration by email",
+    "saveFailed": "Failed to save profile.",
+    "saved": "Saved"
   }
 }

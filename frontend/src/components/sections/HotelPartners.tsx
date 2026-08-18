@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { SectionHeading } from '../ui/SectionHeading';
 
 interface HotelPartner {
@@ -24,10 +25,11 @@ const HOTEL_PARTNERS: HotelPartner[] = [
 const MARQUEE_ITEMS = [...HOTEL_PARTNERS, ...HOTEL_PARTNERS];
 
 export function HotelPartners() {
+  const { t } = useTranslation('home');
   return (
     <section className="bg-cream py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading eyebrow="Who We Work With" title="Our Hotel Partners" subtitle="Preferred rates and priority service from Sri Lanka's leading hotel groups." />
+        <SectionHeading eyebrow={t('hotelPartners.eyebrow')} title={t('hotelPartners.title')} subtitle={t('hotelPartners.subtitle')} />
       </div>
 
       <div className="relative mt-14 overflow-hidden">

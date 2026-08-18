@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { StarIcon, PackageIcon, CalendarIcon, ExternalLinkIcon } from 'lucide-react';
 import { PageBanner } from '../components/layout/PageBanner';
 import { Pagination } from '../components/ui/Pagination';
@@ -11,10 +12,6 @@ import { formatDate } from '../lib/date';
 import type { Review, ReviewStats } from '../types/review';
 
 const RATING_OPTIONS = [5, 4, 3, 2, 1];
-const SORT_OPTIONS = [
-{ label: 'Newest', value: '-createdAt' },
-{ label: 'Highest Rated', value: '-rating' },
-{ label: 'Lowest Rated', value: 'rating' }];
 
 
 function Stars({ rating, size = 'h-4 w-4' }: {rating: number;size?: string;}) {
@@ -26,7 +23,8 @@ function Stars({ rating, size = 'h-4 w-4' }: {rating: number;size?: string;}) {
 }
 
 function ReviewCard({ review, index }: {review: Review;index: number;}) {
-  const name = review.customer?.user?.fullName || review.reviewerName || 'Verified Traveler';
+  const { t } = useTranslation('reviews');
+  const name = review.customer?.user?.fullName || review.reviewerName || t('verifiedTraveler');
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.4, delay: (index % 6) * 0.06 }} className="rounded-3xl bg-white p-6 shadow-soft">
       <div className="flex items-center justify-between gap-3">
@@ -42,7 +40,7 @@ function ReviewCard({ review, index }: {review: Review;index: number;}) {
           </div>
         </div>
         {review.source === 'tripadvisor' &&
-        <span className="shrink-0 rounded-full bg-[#34e0a1]/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#00695c]">via Tripadvisor</span>
+        <span className="shrink-0 rounded-full bg-[#34e0a1]/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#00695c]">{t('viaTripadvisor')}</span>
         }
       </div>
       <div className="mt-3"><Stars rating={review.rating} /></div>
@@ -57,9 +55,16 @@ function ReviewCard({ review, index }: {review: Review;index: number;}) {
 }
 
 export function Reviews() {
+  const { t } = useTranslation('reviews');
+  const { t: tc } = useTranslation('common');
   const [rating, setRating] = useState('');
   const [sort, setSort] = useState('-createdAt');
   const [stats, setStats] = useState<ReviewStats | null>(null);
+
+  const SORT_OPTIONS = [
+  { label: t('sortNewest'), value: '-createdAt' },
+  { label: t('sortHighest'), value: '-rating' },
+  { label: t('sortLowest'), value: 'rating' }];
 
   const { items, meta, loading, error, hasMore, loadMore } = useApiList<Review>('/reviews', {
     rating: rating || undefined,
@@ -73,10 +78,10 @@ export function Reviews() {
   return (
     <main className="min-h-screen bg-cream pt-16">
       <PageBanner
-        eyebrow="Traveler Stories"
-        title="Customer Reviews"
-        subtitle="Real experiences from travelers who explored Sri Lanka with us."
-        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Reviews' }]} />
+        eyebrow={t('eyebrow')}
+        title={t('title')}
+        subtitle={t('subtitle')}
+        breadcrumbs={[{ label: tc('nav.home'), href: '/' }, { label: t('breadcrumb') }]} />
 
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
@@ -85,7 +90,7 @@ export function Reviews() {
             <div className="text-center sm:border-r sm:border-forest/10 sm:pr-8">
               <p className="font-display text-5xl font-semibold text-forest">{stats.avgRating.toFixed(1)}</p>
               <div className="mt-2 flex justify-center"><Stars rating={Math.round(stats.avgRating)} size="h-5 w-5" /></div>
-              <p className="mt-2 text-sm text-forest/50">{stats.totalReviews} review{stats.totalReviews === 1 ? '' : 's'}</p>
+              <p className="mt-2 text-sm text-forest/50">{t('reviewCount', { count: stats.totalReviews })}</p>
             </div>
             <div className="space-y-2">
               {RATING_OPTIONS.map((r) => {
@@ -93,7 +98,7 @@ export function Reviews() {
                 const pct = stats.totalReviews > 0 ? count / stats.totalReviews * 100 : 0;
                 return (
                   <div key={r} className="flex items-center gap-3 text-sm">
-                    <span className="w-10 shrink-0 text-forest/60">{r} star</span>
+                    <span className="w-10 shrink-0 text-forest/60">{t('starRow', { count: r })}</span>
                     <div className="h-2 flex-1 overflow-hidden rounded-full bg-forest/5">
                       <div className="h-full rounded-full bg-gold" style={{ width: `${pct}%` }} />
                     </div>
@@ -108,20 +113,20 @@ export function Reviews() {
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-white p-5 shadow-soft">
           <div className="flex flex-wrap gap-3">
             <select value={rating} onChange={(e) => setRating(e.target.value)} className="rounded-full border border-forest/15 bg-white px-4 py-2.5 text-sm font-medium text-forest/80 outline-none focus:border-emerald">
-              <option value="">All Ratings</option>
-              {RATING_OPTIONS.map((r) => <option key={r} value={r}>{r} Star{r === 1 ? '' : 's'}</option>)}
+              <option value="">{t('allRatings')}</option>
+              {RATING_OPTIONS.map((r) => <option key={r} value={r}>{t('starOption', { count: r })}</option>)}
             </select>
             <select value={sort} onChange={(e) => setSort(e.target.value)} className="rounded-full border border-forest/15 bg-white px-4 py-2.5 text-sm font-medium text-forest/80 outline-none focus:border-emerald">
               {SORT_OPTIONS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
           </div>
-          <Link to="/my-tours" className="rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-forest transition-transform hover:scale-105">Book a Tour to Share Your Story</Link>
+          <Link to="/my-tours" className="rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-forest transition-transform hover:scale-105">{t('bookTourCta')}</Link>
         </div>
 
-        {loading && items.length === 0 && <LoadingState title="Loading reviews…" />}
+        {loading && items.length === 0 && <LoadingState title={t('loadingReviews')} />}
         {error && <ErrorState message={error} />}
         {!loading && !error && items.length === 0 &&
-        <EmptyState title="No reviews yet" message="Be the first to share your Roxaval Travels experience." />
+        <EmptyState title={t('noReviewsYet')} message={t('noReviewsHint')} />
         }
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -131,14 +136,14 @@ export function Reviews() {
         <Pagination meta={meta} shown={items.length} hasMore={hasMore} loading={loading} onLoadMore={loadMore} />
 
         <div className="mt-14 flex flex-col items-center gap-3 rounded-3xl border border-forest/10 bg-white p-8 text-center shadow-soft">
-          <p className="font-display text-lg font-semibold text-forest">Read More Reviews on Tripadvisor</p>
-          <p className="max-w-md text-sm text-forest/60">See what travelers are saying about Roxaval Travels on Tripadvisor.</p>
+          <p className="font-display text-lg font-semibold text-forest">{t('tripadvisorTitle')}</p>
+          <p className="max-w-md text-sm text-forest/60">{t('tripadvisorSubtitle')}</p>
           <a
             href="https://www.tripadvisor.com/Attraction_Review-g293962-d27987234-Reviews-Roxaval_Travels-Colombo_Western_Province.html"
             target="_blank"
             rel="noreferrer"
             className="mt-1 flex items-center gap-2 rounded-full bg-[#34e0a1] px-6 py-3 text-sm font-semibold text-[#00332a] transition-transform hover:scale-105">
-            View on Tripadvisor <ExternalLinkIcon className="h-4 w-4" />
+            {t('viewOnTripadvisor')} <ExternalLinkIcon className="h-4 w-4" />
           </a>
         </div>
       </section>

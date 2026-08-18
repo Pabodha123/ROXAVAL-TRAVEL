@@ -35,6 +35,7 @@
   "travelInsurance": "Assurance voyage",
   "cancellationPolicy": "Politique d'annulation",
   "importantNotes": "Remarques importantes",
+  "tripRoute": "Itinéraire du Voyage",
   "notReady": "Votre itinéraire n'est pas encore prêt.",
   "notBuilt": "Aucun itinéraire n'a encore été créé pour cette demande."
 }

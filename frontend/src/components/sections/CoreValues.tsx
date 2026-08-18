@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { ShieldCheckIcon, CompassIcon, SparklesIcon, HeartHandshakeIcon } from 'lucide-react';
 import { SectionHeading } from '../ui/SectionHeading';
 
@@ -8,21 +9,22 @@ import { SectionHeading } from '../ui/SectionHeading';
 // these wide cards, and a plain "top" position was cutting the subject out
 // entirely (showing empty sky instead of the trophy / joined hands).
 const CORE_VALUES = [
-{ icon: ShieldCheckIcon, title: 'Trust', text: 'Transparent pricing and honest advice, every single time.', image: 'https://i.pinimg.com/1200x/74/a5/c5/74a5c5256dff6317fda83322f9ea8076.jpg', objectPosition: 'center 75%' },
-{ icon: CompassIcon, title: 'Authenticity', text: 'Real local experiences, not cookie-cutter tours.', image: 'https://i.pinimg.com/1200x/09/04/cc/0904cc5fb13d2d7d30afa341b5138098.jpg', objectPosition: 'center 55%' },
-{ icon: SparklesIcon, title: 'Excellence', text: 'Meticulous planning so every detail feels effortless.', image: 'https://i.pinimg.com/736x/c8/93/36/c893364fb36b5860b20672fa52d0d082.jpg', objectPosition: 'center 40%' },
-{ icon: HeartHandshakeIcon, title: 'Care', text: 'Your comfort and safety, looked after from arrival to departure.', image: 'https://i.pinimg.com/736x/d2/c3/73/d2c3734879e0f54a15c330f142a92740.jpg', objectPosition: 'center 45%' }];
+{ icon: ShieldCheckIcon, key: 'trust', image: 'https://i.pinimg.com/1200x/74/a5/c5/74a5c5256dff6317fda83322f9ea8076.jpg', objectPosition: 'center 75%' },
+{ icon: CompassIcon, key: 'authenticity', image: 'https://i.pinimg.com/1200x/09/04/cc/0904cc5fb13d2d7d30afa341b5138098.jpg', objectPosition: 'center 55%' },
+{ icon: SparklesIcon, key: 'excellence', image: 'https://i.pinimg.com/736x/c8/93/36/c893364fb36b5860b20672fa52d0d082.jpg', objectPosition: 'center 40%' },
+{ icon: HeartHandshakeIcon, key: 'care', image: 'https://i.pinimg.com/736x/d2/c3/73/d2c3734879e0f54a15c330f142a92740.jpg', objectPosition: 'center 45%' }];
 
 
 export function CoreValues() {
+  const { t } = useTranslation('home');
   return (
     <section className="bg-white py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading eyebrow="What We Stand For" title="Our Core Values" />
+        <SectionHeading eyebrow={t('coreValues.eyebrow')} title={t('coreValues.title')} />
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {CORE_VALUES.map((v, i) =>
           <motion.div
-            key={v.title}
+            key={v.key}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
@@ -42,8 +44,8 @@ export function CoreValues() {
                 <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-emerald/10 text-emerald">
                   <v.icon className="h-7 w-7" />
                 </div>
-                <h3 className="mt-5 font-display text-lg font-semibold text-forest">{v.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-forest/65">{v.text}</p>
+                <h3 className="mt-5 font-display text-lg font-semibold text-forest">{t(`coreValues.${v.key}Title`)}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-forest/65">{t(`coreValues.${v.key}Text`)}</p>
               </div>
             </motion.div>
           )}

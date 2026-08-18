@@ -1,0 +1,42 @@
+{
+  "list": {
+    "storiesGuides": "Stories & Guides",
+    "pageTitle": "The Roxaval Journal",
+    "pageSubtitle": "Travel guides, culture, food and inspiration for your next Sri Lankan adventure.",
+    "featuredStory": "Featured Story",
+    "readFullStory": "Read the Full Story",
+    "loadingArticles": "Loading articles…",
+    "noArticlesFound": "No articles found",
+    "noArticlesHint": "Try a different search term or category.",
+    "popularPosts": "Popular Posts",
+    "recentPosts": "Recent Posts"
+  },
+  "details": {
+    "back": "Back",
+    "sriLanka": "Sri Lanka",
+    "honeymoonGuideTagline": "A Sri Lanka Honeymoon Guide",
+    "views": "{{count}} views",
+    "shareFacebook": "Share on Facebook",
+    "shareX": "Share on X",
+    "copyLink": "Copy link",
+    "copied": "Copied!",
+    "share": "Share",
+    "moreLoveStories": "More Love Stories",
+    "moreCoastalReads": "More Coastal Reads",
+    "relatedArticles": "Related Articles",
+    "loadingArticle": "Loading article…",
+    "articleNotFound": "Article not found"
+  },
+  "comments": {
+    "title": "Comments",
+    "placeholder": "Share your thoughts…",
+    "posting": "Posting…",
+    "postComment": "Post Comment",
+    "postFailed": "Failed to post comment.",
+    "loginLink": "Log in",
+    "loginSuffix": " to join the conversation.",
+    "empty": "No comments yet — be the first to share your thoughts.",
+    "traveler": "Traveler",
+    "deleteAria": "Delete comment"
+  }
+}

@@ -10,6 +10,32 @@
     "subtitle": "Tout ce que nous vous avons envoyé, au même endroit.",
     "markAllRead": "Tout marquer comme lu",
     "empty": "Aucune notification pour l'instant",
-    "emptyHint": "Nous vous informerons lorsque quelque chose nécessitera votre attention."
+    "emptyHint": "Nous vous informerons lorsque quelque chose nécessitera votre attention.",
+    "loading": "Chargement des notifications…"
+  },
+  "recentActivity": "Activité Récente",
+  "messaging": {
+    "conversation": "Conversation",
+    "noMessages": "Aucun message pour l'instant - dites bonjour !",
+    "typeMessage": "Écrire un message…",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "you": "Vous",
+    "customer": "Client"
+  },
+  "profile": {
+    "eyebrow": "Mon Compte",
+    "title": "Votre Profil",
+    "subtitle": "Gardez vos informations à jour - y compris votre date de naissance, afin que nous puissions vous envoyer quelque chose de spécial chaque année.",
+    "breadcrumb": "Profil",
+    "fullName": "Nom Complet",
+    "phone": "Téléphone",
+    "dateOfBirth": "Date de Naissance",
+    "passportNumber": "Numéro de Passeport",
+    "country": "Pays",
+    "address": "Adresse",
+    "marketingOptIn": "Envoyez-moi des offres de voyage et de l'inspiration par e-mail",
+    "saveFailed": "Échec de l'enregistrement du profil.",
+    "saved": "Enregistré"
   }
 }

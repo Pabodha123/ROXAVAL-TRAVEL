@@ -10,6 +10,32 @@
     "subtitle": "Alles, was wir Ihnen gesendet haben, an einem Ort.",
     "markAllRead": "Alle als gelesen markieren",
     "empty": "Noch keine Benachrichtigungen",
-    "emptyHint": "Wir informieren Sie, sobald etwas Ihre Aufmerksamkeit erfordert."
+    "emptyHint": "Wir informieren Sie, sobald etwas Ihre Aufmerksamkeit erfordert.",
+    "loading": "Benachrichtigungen werden geladen…"
+  },
+  "recentActivity": "Letzte Aktivität",
+  "messaging": {
+    "conversation": "Unterhaltung",
+    "noMessages": "Noch keine Nachrichten - sagen Sie Hallo!",
+    "typeMessage": "Nachricht eingeben…",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "you": "Sie",
+    "customer": "Kunde"
+  },
+  "profile": {
+    "eyebrow": "Mein Konto",
+    "title": "Ihr Profil",
+    "subtitle": "Halten Sie Ihre Daten aktuell - einschließlich Ihres Geburtstags, damit wir Ihnen jedes Jahr etwas Besonderes schicken können.",
+    "breadcrumb": "Profil",
+    "fullName": "Vollständiger Name",
+    "phone": "Telefon",
+    "dateOfBirth": "Geburtsdatum",
+    "passportNumber": "Reisepassnummer",
+    "country": "Land",
+    "address": "Adresse",
+    "marketingOptIn": "Senden Sie mir Reiseangebote und Inspiration per E-Mail",
+    "saveFailed": "Profil konnte nicht gespeichert werden.",
+    "saved": "Gespeichert"
   }
 }

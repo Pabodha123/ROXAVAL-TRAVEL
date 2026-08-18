@@ -55,5 +55,22 @@
     "titleHighlight": "Perfect Tour?",
     "subtitle": "Create your own personalized Sri Lanka itinerary based on your travel preferences. Our travel experts will plan the perfect journey for you.",
     "createMyCustomTour": "Create My Custom Tour"
+  },
+  "coreValues": {
+    "eyebrow": "What We Stand For",
+    "title": "Our Core Values",
+    "trustTitle": "Trust",
+    "trustText": "Transparent pricing and honest advice, every single time.",
+    "authenticityTitle": "Authenticity",
+    "authenticityText": "Real local experiences, not cookie-cutter tours.",
+    "excellenceTitle": "Excellence",
+    "excellenceText": "Meticulous planning so every detail feels effortless.",
+    "careTitle": "Care",
+    "careText": "Your comfort and safety, looked after from arrival to departure."
+  },
+  "hotelPartners": {
+    "eyebrow": "Who We Work With",
+    "title": "Our Hotel Partners",
+    "subtitle": "Preferred rates and priority service from Sri Lanka's leading hotel groups."
   }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useApiList } from '../../hooks/useApiList';
 import { apiPatch } from '../../lib/api';
 import { Pagination } from '../ui/Pagination';
@@ -23,6 +24,7 @@ interface NotificationItem {
  * customer notification center and the admin notifications page.
  */
 export function NotificationsPanel() {
+  const { t } = useTranslation('dashboard');
   const { items, meta, loading, error, hasMore, loadMore } = useApiList<NotificationItem>('/notifications', {}, 15);
   const [readIds, setReadIds] = React.useState<Set<string>>(new Set());
 
@@ -39,15 +41,15 @@ export function NotificationsPanel() {
   const isRead = (n: NotificationItem) => n.isRead || readIds.has(n._id);
   const anyUnread = items.some((n) => !isRead(n));
 
-  if (loading && items.length === 0) return <LoadingState title="Loading notifications…" />;
+  if (loading && items.length === 0) return <LoadingState title={t('notifications.loading')} />;
   if (error) return <ErrorState message={error} />;
-  if (items.length === 0) return <EmptyState title="No notifications yet" message="We'll let you know as soon as something needs your attention." />;
+  if (items.length === 0) return <EmptyState title={t('notifications.empty')} message={t('notifications.emptyHint')} />;
 
   return (
     <div>
       {anyUnread &&
       <div className="mb-4 flex justify-end">
-          <button onClick={markAllRead} className="text-sm font-semibold text-emerald hover:underline">Mark all as read</button>
+          <button onClick={markAllRead} className="text-sm font-semibold text-emerald hover:underline">{t('notifications.markAllRead')}</button>
         </div>
       }
       <div className="space-y-3">

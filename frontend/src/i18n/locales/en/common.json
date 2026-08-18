@@ -96,7 +96,15 @@
     "noResultsFor": "We couldn't find anything matching \"{{query}}\". Try a different search term.",
     "resultCount_one": "{{count}} result for \"{{query}}\"",
     "resultCount_other": "{{count}} results for \"{{query}}\"",
-    "categoryHotels": "Hotels"
+    "categoryHotels": "Hotels",
+    "startTyping": "Start typing to search across tours, destinations, activities, hotels and our blog.",
+    "noResultsForShort": "No results for \"{{query}}\".",
+    "viewAllResultsFor": "View all results for \"{{query}}\""
+  },
+  "birthday": {
+    "happyBirthday": "Happy Birthday,",
+    "thankYou": "Thank You!",
+    "giftOff": "Birthday Gift · {{percent}}% Off"
   },
   "validation": {
     "required": "This field is required",

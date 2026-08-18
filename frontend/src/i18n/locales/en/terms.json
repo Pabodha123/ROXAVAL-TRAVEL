@@ -1,0 +1,77 @@
+{
+  "eyebrow": "Please Read Carefully",
+  "pageTitle": "Terms & Conditions",
+  "subtitle": "The policies that govern every booking made with Roxaval Travels.",
+  "lastUpdated": "Last updated: January 2026. By booking a tour with Roxaval Travels, you agree to the terms outlined below.",
+  "sections": {
+    "bookingPolicy": {
+      "title": "Booking Policy",
+      "body": "All bookings are subject to availability and are only confirmed once the required advance payment has been received and acknowledged by Roxaval Travels. A booking reference and confirmation will be issued for every confirmed reservation."
+    },
+    "paymentPolicy": {
+      "title": "Payment Policy",
+      "body": "A non-refundable advance payment (typically 30% of the total tour cost) is required to confirm a booking, with the remaining balance due before the tour start date as specified at the time of booking. Accepted payment methods are online bank transfer (verified against an uploaded receipt) and WhatsApp-coordinated payment."
+    },
+    "cancellationPolicy": {
+      "title": "Cancellation Policy",
+      "intro": "Cancellations must be submitted in writing (email or WhatsApp). Cancellation charges are applied as a percentage of the total tour cost based on how far in advance notice is given:",
+      "bullet1": "30+ days before departure: advance payment forfeited only",
+      "bullet2": "15–29 days before departure: 50% of total tour cost",
+      "bullet3": "0–14 days before departure: 100% of total tour cost"
+    },
+    "refundPolicy": {
+      "title": "Refund Policy",
+      "body": "Eligible refunds (per the Cancellation Policy above) are processed to the original payment method within 14 business days. Refunds for unused services during an active tour are considered on a case-by-case basis and are not guaranteed."
+    },
+    "travelInsurance": {
+      "title": "Travel Insurance",
+      "body": "Roxaval Travels strongly recommends all travelers obtain comprehensive travel insurance covering medical emergencies, trip cancellation, lost baggage and personal liability before departure. Travel insurance is not included in any package or custom itinerary unless explicitly stated."
+    },
+    "passportVisa": {
+      "title": "Passport & Visa Requirements",
+      "body": "It is the traveler's sole responsibility to hold a passport valid for at least six months beyond the intended stay and to obtain any required visa (including Sri Lanka's ETA where applicable) before arrival. Roxaval Travels can advise on requirements but accepts no liability for denied entry due to inadequate documentation."
+    },
+    "customerResponsibilities": {
+      "title": "Customer Responsibilities",
+      "body": "Travelers are expected to provide accurate personal and health information, arrive punctually for scheduled activities and transfers, respect local laws and customs, and behave in a manner that does not endanger themselves, other travelers, guides or the environment."
+    },
+    "companyResponsibilities": {
+      "title": "Company Responsibilities",
+      "body": "Roxaval Travels commits to arranging all confirmed services (accommodation, transport, guiding and activities) as described in the itinerary, using licensed and vetted local partners, and providing timely support throughout the traveler's journey."
+    },
+    "privacyStatement": {
+      "title": "Privacy Statement",
+      "body": "Personal information collected during booking (name, contact details, payment information) is used solely to arrange and manage your travel services and is never sold to third parties. Data is stored securely and shared only with partners directly involved in delivering your booked services (e.g. hotels, transport providers)."
+    },
+    "liabilityDisclaimer": {
+      "title": "Liability Disclaimer",
+      "body": "Roxaval Travels acts as an agent coordinating third-party service providers (hotels, transport operators, activity operators) and is not liable for their acts, omissions, delays or failures beyond its reasonable control. Travelers participate in all activities at their own risk."
+    },
+    "forceMajeure": {
+      "title": "Force Majeure",
+      "body": "Roxaval Travels is not liable for any failure to perform its obligations where such failure results from circumstances beyond its reasonable control, including natural disasters, extreme weather, civil unrest, government restrictions, pandemics or transportation strikes. In such cases, we will make reasonable efforts to offer alternative arrangements."
+    },
+    "tourChanges": {
+      "title": "Tour Changes",
+      "body": "Itinerary details (routes, timings, accommodation) may occasionally need to change due to weather, safety, local conditions or operational requirements. Roxaval Travels will always aim to provide a comparable alternative and will notify travelers of significant changes as soon as reasonably possible."
+    },
+    "childPolicy": {
+      "title": "Child Policy",
+      "body": "Children are welcome on most tours. Pricing for children typically applies to guests aged 2–11 sharing a room with a paying adult, at a reduced rate reflected in the itinerary quote. Infants under 2 usually travel free of charge where no extra bed or seat is required. Specific age policies vary by hotel and activity and will be confirmed during itinerary planning."
+    },
+    "hotelPolicy": {
+      "title": "Hotel Policy",
+      "body": "Standard hotel check-in is from 2:00 PM and check-out by 11:00 AM unless otherwise arranged. Room types and meal plans are as confirmed in your itinerary; early check-in or late check-out is subject to availability and may incur additional charges payable directly to the hotel."
+    },
+    "transportationPolicy": {
+      "title": "Transportation Policy",
+      "body": "All ground transportation is provided using modern, air-conditioned vehicles operated by licensed, experienced drivers. Vehicle types are selected based on group size and itinerary requirements. Travelers are expected to follow driver/guide safety instructions at all times."
+    },
+    "contactInformation": {
+      "title": "Contact Information",
+      "bodyBefore": "For any questions regarding these Terms & Conditions, please reach out via our ",
+      "contactLink": "Contact Us",
+      "bodyAfter": " page, email us at info@roxavaltravels.com, or call +94 77 880 3522."
+    }
+  }
+}
