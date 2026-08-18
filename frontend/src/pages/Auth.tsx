@@ -141,7 +141,7 @@ export function Auth() {
         <BackButton className="mb-5" />
 
         <div className="flex flex-col items-center text-center">
-          <img src="/roxaval-icon.png" alt="" className="h-12 w-12 object-contain" />
+          <img src="/roxaval-icon-dark.png" alt="" className="h-12 w-12 object-contain" />
           <h1 className="font-display mt-4 text-2xl font-semibold text-forest">
             {tab === 'login' ? t('welcomeBack') : t('createAccount')}
           </h1>

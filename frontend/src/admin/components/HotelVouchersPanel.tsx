@@ -101,7 +101,11 @@ function VoucherCard({
         <button onClick={() => setEditing((v) => !v)} className="flex items-center gap-1.5 rounded-lg border border-forest/10 px-3 py-1.5 text-xs font-semibold text-forest hover:bg-cream">
           <PencilIcon className="h-3.5 w-3.5" /> {editing ? 'Cancel' : 'Edit'}
         </button>
-        <button onClick={onEmailHotel} disabled={emailingHotel} className="flex items-center gap-1.5 rounded-lg border border-forest/10 px-3 py-1.5 text-xs font-semibold text-forest hover:bg-cream disabled:opacity-60">
+        <button
+          onClick={onEmailHotel}
+          disabled={emailingHotel || !voucher.hotelSnapshot.contactEmail}
+          title={voucher.hotelSnapshot.contactEmail ? undefined : 'No contact email on file for this hotel — add one under the hotel\'s Contact Info and regenerate the voucher.'}
+          className="flex items-center gap-1.5 rounded-lg border border-forest/10 px-3 py-1.5 text-xs font-semibold text-forest hover:bg-cream disabled:opacity-60">
           {emailingHotel ? <Loader2Icon className="h-3.5 w-3.5 animate-spin" /> : <MailIcon className="h-3.5 w-3.5" />} Email Hotel
         </button>
         <button onClick={onEmailCustomer} disabled={emailingCustomer} className="flex items-center gap-1.5 rounded-lg border border-forest/10 px-3 py-1.5 text-xs font-semibold text-forest hover:bg-cream disabled:opacity-60">

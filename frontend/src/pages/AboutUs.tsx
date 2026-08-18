@@ -45,7 +45,7 @@ export function AboutUs() {
         className="mx-auto -mt-10 flex max-w-7xl justify-center px-4 sm:px-6 lg:px-8">
 
         <div className="rounded-[2rem] bg-white p-6 shadow-lift">
-          <img src="/roxaval-logo.png" alt="Roxaval Travels" className="h-28 w-auto sm:h-36" />
+          <img src="/roxaval-logo-dark.png" alt="Roxaval Travels" className="h-28 w-auto sm:h-36" />
         </div>
       </motion.div>
 
