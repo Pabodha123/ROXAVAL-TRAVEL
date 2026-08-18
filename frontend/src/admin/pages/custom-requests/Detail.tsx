@@ -596,7 +596,7 @@ export function AdminCustomRequestDetail() {
   useEffect(() => {
     if (!request) return;
     setCurrency(request.estimatedBudget?.currency || 'USD');
-    if (request.itinerary && !forceEdit && !['Changes Requested', 'Rejected'].includes(request.itinerary.status)) return;
+    if (request.itinerary && !forceEdit && !['Draft', 'Changes Requested', 'Rejected'].includes(request.itinerary.status)) return;
     if (request.itinerary) {
       const itin = request.itinerary;
       setTitle(itin.title);
@@ -1060,7 +1060,11 @@ export function AdminCustomRequestDetail() {
 
   if (loading || !request) return <div className="grid h-64 place-items-center"><Loader2Icon className="h-6 w-6 animate-spin text-forest/40" /></div>;
 
-  const showBuilder = forceEdit || !request.itinerary || ['Changes Requested', 'Rejected'].includes(request.itinerary.status);
+  // A 'Draft' itinerary (saved via "View Quotation" to preview before
+  // sending) must still show the full builder + Send button, not the
+  // read-only "already sent" summary — only 'Sent'/'Accepted' actually
+  // went to the customer.
+  const showBuilder = forceEdit || !request.itinerary || ['Draft', 'Changes Requested', 'Rejected'].includes(request.itinerary.status);
 
   return (
     <div>
